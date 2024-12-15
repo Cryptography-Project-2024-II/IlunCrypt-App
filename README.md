@@ -15,3 +15,7 @@ Aplicación diseñada para realizar **cifrado, descifrado** y **criptoanálisis*
 ### **Tecnologías utilizadas**  
 - Lenguaje de programación: Java 17 
 - ........
+
+### **Requisitos para desarrollo**
+- IDE: IntelliJ IDEA 2024.3.1
+- JDK: OpenJDK 17 (LTS).
