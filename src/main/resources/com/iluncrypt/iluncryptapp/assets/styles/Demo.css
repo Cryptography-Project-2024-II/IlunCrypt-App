@@ -51,7 +51,7 @@
 }
 
 .rootPane .always-on-top-icon {
-	-mfx-color: -mfx-purple;
+	-mfx-color: -mfx-primary;
 	-fx-opacity: 0.5;
 }
 
@@ -67,7 +67,7 @@
  * Sidebar
 **************************************************/
 .rootPane .sidebar {
-	-fx-background-color: -mfx-orange;
+	-fx-background-color: -mfx-primary;
 	-fx-background-insets: -1 -5 -1 -1;
 	-fx-background-radius: 10 20 20 10;
 }

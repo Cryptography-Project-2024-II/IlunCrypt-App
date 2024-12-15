@@ -1,5 +1,7 @@
 package com.iluncrypt.iluncryptapp;
 
+import fr.brouillard.oss.cssfx.CSSFX;
+
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
@@ -9,17 +11,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 
 import java.io.IOException;
 
 public class IlunCrypt extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-
+        CSSFX.start();
         UserAgentBuilder.builder()
                 .themes(JavaFXThemes.MODENA)
                 .themes(MaterialFXStylesheets.forAssemble(true))
@@ -41,6 +45,9 @@ public class IlunCrypt extends Application {
         double stageHeight = screenHeight * 0.8;
 
         Scene scene = new Scene(root, stageWidth, stageHeight);
+
+        Image icon = new Image(getClass().getResourceAsStream("assets/icons/icon-512.png"));
+        stage.getIcons().add(icon);
 
         stage.setWidth(stageWidth);
         stage.setHeight(stageHeight);
