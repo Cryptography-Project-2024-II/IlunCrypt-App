@@ -67,9 +67,9 @@
  * Sidebar
 **************************************************/
 .rootPane .sidebar {
-	-fx-background-color: -mfx-purple;
+	-fx-background-color: -mfx-orange;
 	-fx-background-insets: -1 -5 -1 -1;
-	-fx-background-radius: 0 20 20 0;
+	-fx-background-radius: 10 20 20 10;
 }
 
 .rootPane .sidebar .header {

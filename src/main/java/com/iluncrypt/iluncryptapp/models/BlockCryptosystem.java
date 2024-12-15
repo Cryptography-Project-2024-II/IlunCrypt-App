@@ -1,5 +1,7 @@
 package com.iluncrypt.iluncryptapp.models;
 
+import java.util.List;
+
 public abstract class BlockCryptosystem extends Cryptosystem {
 
     public BlockCryptosystem(Alphabet alphabet, Key key) {
