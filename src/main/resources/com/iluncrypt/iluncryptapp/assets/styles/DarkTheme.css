@@ -1,0 +1,8 @@
+.rootPane {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-label {
+    -fx-text-fill: #cccccc;
+}

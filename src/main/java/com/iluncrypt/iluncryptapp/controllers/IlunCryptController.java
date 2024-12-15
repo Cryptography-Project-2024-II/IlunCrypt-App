@@ -1,11 +1,11 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.MFXDemoResourcesLoader;
-import io.github.palexdev.materialfx.controls.MFXIconWrapper;
-import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
-import io.github.palexdev.materialfx.controls.MFXScrollPane;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
+import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
+import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
@@ -27,6 +27,8 @@ import javafx.stage.Stage;
 
 
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class IlunCryptController implements Initializable {
@@ -37,6 +39,8 @@ public class IlunCryptController implements Initializable {
     private double xOffset;
     private double yOffset;
     private final ToggleGroup toggleGroup;
+
+    private ResourceBundle bundle;
 
     @FXML
     private HBox windowHeader;
@@ -65,10 +69,21 @@ public class IlunCryptController implements Initializable {
     @FXML
     private StackPane logoContainer;
 
+    @FXML
+    private MFXToggleButton themeToggle;       // Botón MaterialFX para cambiar el tema
+
+    @FXML
+    private MFXComboBox<String> languageComboBox; // ComboBox MaterialFX para el cambio de idioma
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setLanguage("en");
+        setupThemeToggle();
+        setupLanguageComboBox();
         enableResize();
         enableWindowDrag();
+        initializeLoader();
         closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
         minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> ((Stage) rootPane.getScene().getWindow()).setIconified(true));
         alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -98,6 +113,38 @@ public class IlunCryptController implements Initializable {
         );
         logo.setClip(clip);
         logoContainer.getChildren().add(logo);
+    }
+
+    // Configura el botón de cambio de tema
+    private void setupThemeToggle() {
+        themeToggle.setText("Light Theme");
+        themeToggle.setOnAction(event -> {
+            if (themeToggle.isSelected()) {
+                themeToggle.setText(bundle.getString("theme.dark"));
+                rootPane.getStylesheets().clear();
+                rootPane.getStylesheets().add(getClass().getResource("../assets/styles/DarkTheme.css").toExternalForm());
+            } else {
+                themeToggle.setText(bundle.getString("theme.light"));
+                rootPane.getStylesheets().clear();
+                rootPane.getStylesheets().add(getClass().getResource("../assets/styles/Demo.css").toExternalForm());
+            }
+        });
+    }
+
+    // Configura el ComboBox para el cambio de idioma
+    private void setupLanguageComboBox() {
+        languageComboBox.getItems().addAll("Español", "Português", "English", "Français");
+        languageComboBox.setPromptText("");
+
+        languageComboBox.setOnAction(event -> {
+            String selectedLanguage = languageComboBox.getValue();
+            switch (selectedLanguage) {
+                case "Español" -> setLanguage("es");
+                case "Português" -> setLanguage("pt");
+                case "English" -> setLanguage("en");
+                case "Français" -> setLanguage("fr");
+            }
+        });
     }
 
     private void enableWindowDrag() {
@@ -243,10 +290,43 @@ public class IlunCryptController implements Initializable {
         });
     }
 
+    private void initializeLoader() {
+        MFXLoader loader = new MFXLoader();
+        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", MFXDemoResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(true).get());
+
+        loader.setOnLoadedAction(beans -> {
+            List<ToggleButton> nodes = beans.stream()
+                    .map(bean -> {
+                        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                        toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                        if (bean.isDefaultView()) {
+                            contentPane.getChildren().setAll(bean.getRoot());
+                            toggle.setSelected(true);
+                        }
+                        return toggle;
+                    })
+                    .toList();
+            navBar.getChildren().setAll(nodes);
+        });
+        loader.start();
+    }
+
     public IlunCryptController(Stage stage) {
         this.stage = stage;
         this.toggleGroup = new ToggleGroup();
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
+    }
+
+    public void setLanguage(String lang) {
+        Locale locale = new Locale(lang);
+        bundle = ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", locale);
+        updateUI();
+    }
+
+    private void updateUI() {
+        themeToggle.setText(bundle.getString("theme.light"));
+        languageComboBox.setPromptText(bundle.getString("label.language"));
     }
 
     private ToggleButton createToggle(String icon, String text) {
