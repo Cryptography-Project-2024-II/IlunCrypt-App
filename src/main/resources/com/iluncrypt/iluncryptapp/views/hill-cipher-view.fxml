@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="535.0" prefWidth="778.0" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncrypDecryptOptionsController">
+   <columnConstraints>
+      <ColumnConstraints halignment="CENTER" />
+      <ColumnConstraints halignment="CENTER" />
+      <ColumnConstraints halignment="CENTER" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="CENTER" minWidth="10.0" prefWidth="100.0" />
+
+      <ColumnConstraints halignment="CENTER" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="CENTER" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="CENTER" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="CENTER" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints prefHeight="32.0" />
+      <RowConstraints minHeight="10.0" prefHeight="32.0" />
+      <RowConstraints minHeight="10.0" prefHeight="32.0" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <padding>
+      <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+   </padding>
+   <children>
+      <StackPane minHeight="150.0" minWidth="300.0" prefHeight="495.0" prefWidth="464.0" styleClass="grid-background" GridPane.columnSpan="8" GridPane.rowSpan="10">
+         <GridPane.margin>
+            <Insets left="-15.0" right="-15.0" />
+         </GridPane.margin>
+      </StackPane>
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Hill Cipher" GridPane.columnSpan="8">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Cipher" GridPane.rowIndex="5" />
+      <TextArea prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnSpan="8" GridPane.rowIndex="3" GridPane.rowSpan="2" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Decipher" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="N (matriz size)" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+      <TextArea prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnSpan="8" GridPane.rowIndex="6" GridPane.rowSpan="2" />
+      <TextArea prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Clear text" GridPane.columnSpan="7" GridPane.rowIndex="2" />
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Cipher text" GridPane.columnSpan="7" GridPane.rowIndex="8" />
+      <Separator prefWidth="200.0" GridPane.columnSpan="7" GridPane.rowIndex="1" />
+      <TextArea prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Matrix" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+   </children>
+</GridPane>

@@ -292,12 +292,15 @@ public class IlunCryptController implements Initializable {
 
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
-        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+        //loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+
         loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", MFXDemoResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(true).get());
 
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = beans.stream()
                     .map(bean -> {
+
                         ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
                         toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
                         if (bean.isDefaultView()) {
