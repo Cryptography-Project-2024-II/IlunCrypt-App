@@ -19,6 +19,7 @@ import javafx.stage.StageStyle;
 
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class IlunCrypt extends Application {
     @Override
@@ -32,7 +33,7 @@ public class IlunCrypt extends Application {
                 .build()
                 .setGlobal();
 
-        FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("views/ilun-crypt-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL("views/ilun-crypt-view.fxml"));
         loader.setControllerFactory(c -> new IlunCryptController(stage));
 
         Parent root = loader.load();
@@ -46,11 +47,12 @@ public class IlunCrypt extends Application {
 
         Scene scene = new Scene(root, stageWidth, stageHeight);
 
-        Image icon = new Image(getClass().getResourceAsStream("assets/icons/icon-512.png"));
+        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/icons/icon-512.png")));
         stage.getIcons().add(icon);
 
         stage.setWidth(stageWidth);
         stage.setHeight(stageHeight);
+        stage.setResizable(false);
 
         stage.setMinWidth(screenWidth * 0.5);
         stage.setMinHeight(screenHeight * 0.5);

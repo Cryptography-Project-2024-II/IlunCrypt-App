@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
-import com.iluncrypt.iluncryptapp.MFXDemoResourcesLoader;
+import com.iluncrypt.iluncryptapp.ResourcesLoader;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
@@ -11,10 +11,13 @@ import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
+import javafx.util.Duration;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 
@@ -32,13 +36,15 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class IlunCryptController implements Initializable {
-    private static final int RESIZE_MARGIN = 10; // Tamaño de la zona de redimensionamiento
-    private boolean isResizing = false; // Indica si estamos redimensionando
-
+    private double xOffset = 0;
+    private double yOffset = 0;
     private final Stage stage;
-    private double xOffset;
-    private double yOffset;
     private final ToggleGroup toggleGroup;
+
+    private static final int TOP_INTERACTION_AREA = 50;
+
+    private boolean isMaximized = false;
+
 
     private ResourceBundle bundle;
 
@@ -47,6 +53,9 @@ public class IlunCryptController implements Initializable {
 
     @FXML
     private MFXFontIcon closeIcon;
+
+    @FXML
+    private MFXFontIcon maximizeIcon;
 
     @FXML
     private MFXFontIcon minimizeIcon;
@@ -81,9 +90,9 @@ public class IlunCryptController implements Initializable {
         setLanguage("en");
         setupThemeToggle();
         setupLanguageComboBox();
-        enableResize();
-        enableWindowDrag();
+        enableTopBorderDrag();
         initializeLoader();
+        setupTooltips();
         closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
         minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> ((Stage) rootPane.getScene().getWindow()).setIconified(true));
         alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -92,10 +101,11 @@ public class IlunCryptController implements Initializable {
             stage.setAlwaysOnTop(newVal);
         });
 
+        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> toggleMaximize());
 
         ScrollUtils.addSmoothScrolling(scrollPane);
 
-        Image image = new Image(MFXDemoResourcesLoader.load("assets/icons/icon-512.png"), 64, 64, true, true);
+        Image image = new Image(ResourcesLoader.load("assets/icons/icon-512.png"), 64, 64, true, true);
         ImageView logo = new ImageView(image);
         Circle clip = new Circle(30);
         clip.centerXProperty().bind(
@@ -113,6 +123,79 @@ public class IlunCryptController implements Initializable {
         );
         logo.setClip(clip);
         logoContainer.getChildren().add(logo);
+    }
+
+    private void setupTooltips() {
+        Tooltip alwaysOnTopTooltip = new Tooltip("Toggle Always on Top");
+        Tooltip minimizeTooltip = new Tooltip("Minimize Window");
+        Tooltip maximizeTooltip = new Tooltip("Maximize/Restore Window");
+        Tooltip closeTooltip = new Tooltip("Close Application");
+
+        alwaysOnTopTooltip.setShowDelay(Duration.millis(100)); // Retraso antes de mostrar
+        alwaysOnTopTooltip.setHideDelay(Duration.millis(200)); // Retraso antes de ocultar
+        alwaysOnTopTooltip.setShowDuration(Duration.seconds(5)); // Tiempo máximo visible
+
+        minimizeTooltip.setShowDelay(Duration.millis(100));
+        minimizeTooltip.setHideDelay(Duration.millis(200));
+        minimizeTooltip.setShowDuration(Duration.seconds(5));
+
+        maximizeTooltip.setShowDelay(Duration.millis(100));
+        maximizeTooltip.setHideDelay(Duration.millis(200));
+        maximizeTooltip.setShowDuration(Duration.seconds(5));
+
+        closeTooltip.setShowDelay(Duration.millis(100));
+        closeTooltip.setHideDelay(Duration.millis(200));
+        closeTooltip.setShowDuration(Duration.seconds(5));
+
+        Tooltip.install(alwaysOnTopIcon, alwaysOnTopTooltip); // Tooltip para AlwaysOnTopIcon
+        Tooltip.install(minimizeIcon, minimizeTooltip);       // Tooltip para MinimizeIcon
+        Tooltip.install(maximizeIcon, maximizeTooltip);       // Tooltip para MaximizeIcon
+        Tooltip.install(closeIcon, closeTooltip);             // Tooltip para CloseIcon
+    }
+
+
+    private void enableTopBorderDrag() {
+        windowHeader.setOnMouseMoved(event -> {
+            // Cambiar cursor a manita abierta solo si no está sobre los botones
+            if (!isOverButton(event)) {
+                windowHeader.setCursor(Cursor.OPEN_HAND);
+            } else {
+                windowHeader.setCursor(Cursor.DEFAULT);
+            }
+        });
+
+        windowHeader.setOnMousePressed(event -> {
+            if (!isOverButton(event)) { // Solo permitir arrastre si no se hace clic en un botón
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+                windowHeader.setCursor(Cursor.CLOSED_HAND); // Cambiar a manita cerrada
+            }
+        });
+
+        windowHeader.setOnMouseDragged(event -> {
+            if (!isOverButton(event)) { // Solo arrastrar si no está sobre un botón
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+
+        windowHeader.setOnMouseReleased(event -> {
+            if (!isOverButton(event)) {
+                windowHeader.setCursor(Cursor.OPEN_HAND); // Restaurar a manita abierta
+            } else {
+                windowHeader.setCursor(Cursor.DEFAULT); // Restaurar a cursor por defecto
+            }
+        });
+
+        windowHeader.setOnMouseExited(event -> windowHeader.setCursor(Cursor.DEFAULT)); // Restaurar cursor al salir
+    }
+
+    // Método para verificar si el ratón está sobre un botón
+    private boolean isOverButton(MouseEvent event) {
+        return alwaysOnTopIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                minimizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                maximizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                closeIcon.getBoundsInParent().contains(event.getX(), event.getY());
     }
 
     // Configura el botón de cambio de tema
@@ -147,155 +230,12 @@ public class IlunCryptController implements Initializable {
         });
     }
 
-    private void enableWindowDrag() {
-        windowHeader.setOnMousePressed(event -> {
-            // Cambia el cursor a MOVE solo si no está en modo "resize"
-            if (!isResizing) {
-                windowHeader.setCursor(javafx.scene.Cursor.MOVE); // Cambiar el cursor a arrastrar
-                xOffset = stage.getX() - event.getScreenX();
-                yOffset = stage.getY() - event.getScreenY();
-            }
-        });
-
-        windowHeader.setOnMouseDragged(event -> {
-            // Mueve la ventana solo si no está en modo "resize"
-            if (!isResizing) {
-                stage.setX(event.getScreenX() + xOffset);
-                stage.setY(event.getScreenY() + yOffset);
-            }
-        });
-
-        windowHeader.setOnMouseReleased(event -> {
-            // Restaurar el cursor al valor predeterminado
-            windowHeader.setCursor(javafx.scene.Cursor.DEFAULT);
-        });
-    }
-
-    private void enableResize() {
-        rootPane.setOnMouseMoved(event -> {
-            double mouseX = event.getSceneX();
-            double mouseY = event.getSceneY();
-            double width = stage.getWidth();
-            double height = stage.getHeight();
-
-            if (mouseX < RESIZE_MARGIN && mouseY < RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.NW_RESIZE);
-                isResizing = true;
-            } else if (mouseX < RESIZE_MARGIN && mouseY > height - RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.SW_RESIZE);
-                isResizing = true;
-            } else if (mouseX > width - RESIZE_MARGIN && mouseY < RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.NE_RESIZE);
-                isResizing = true;
-            } else if (mouseX > width - RESIZE_MARGIN && mouseY > height - RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.SE_RESIZE);
-                isResizing = true;
-            } else if (mouseX < RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.W_RESIZE);
-                isResizing = true;
-            } else if (mouseX > width - RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.E_RESIZE);
-                isResizing = true;
-            } else if (mouseY < RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.N_RESIZE);
-                isResizing = true;
-            } else if (mouseY > height - RESIZE_MARGIN) {
-                rootPane.setCursor(javafx.scene.Cursor.S_RESIZE);
-                isResizing = true;
-            } else {
-                rootPane.setCursor(javafx.scene.Cursor.DEFAULT);
-                isResizing = false;
-            }
-        });
-
-        rootPane.setOnMouseDragged(event -> {
-            double mouseX = event.getSceneX();
-            double mouseY = event.getSceneY();
-            double newWidth = stage.getWidth();
-            double newHeight = stage.getHeight();
-            double newX = stage.getX();
-            double newY = stage.getY();
-
-            if (rootPane.getCursor() == javafx.scene.Cursor.W_RESIZE) {
-                newWidth = stage.getWidth() - mouseX;
-                if (newWidth >= stage.getMinWidth()) {
-                    newX = stage.getX() + mouseX; // Solo mover el borde izquierdo
-                } else {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.E_RESIZE) {
-                newWidth = mouseX;
-                if (newWidth < stage.getMinWidth()) {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.N_RESIZE) {
-                newHeight = stage.getHeight() - mouseY;
-                if (newHeight >= stage.getMinHeight()) {
-                    newY = stage.getY() + mouseY; // Solo mover el borde superior
-                } else {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.S_RESIZE) {
-                newHeight = mouseY;
-                if (newHeight < stage.getMinHeight()) {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.NW_RESIZE) {
-                newWidth = stage.getWidth() - mouseX;
-                newHeight = stage.getHeight() - mouseY;
-                if (newWidth >= stage.getMinWidth() && newHeight >= stage.getMinHeight()) {
-                    newX = stage.getX() + mouseX; // Ajustar solo el borde izquierdo
-                    newY = stage.getY() + mouseY; // Ajustar solo el borde superior
-                } else {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.NE_RESIZE) {
-                newWidth = mouseX;
-                newHeight = stage.getHeight() - mouseY;
-                if (newWidth >= stage.getMinWidth() && newHeight >= stage.getMinHeight()) {
-                    newY = stage.getY() + mouseY; // Ajustar solo el borde superior
-                } else {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.SW_RESIZE) {
-                newWidth = stage.getWidth() - mouseX;
-                newHeight = mouseY;
-                if (newWidth >= stage.getMinWidth() && newHeight >= stage.getMinHeight()) {
-                    newX = stage.getX() + mouseX; // Ajustar solo el borde izquierdo
-                } else {
-                    return;
-                }
-            } else if (rootPane.getCursor() == javafx.scene.Cursor.SE_RESIZE) {
-                newWidth = mouseX;
-                newHeight = mouseY;
-                if (newWidth < stage.getMinWidth() || newHeight < stage.getMinHeight()) {
-                    return;
-                }
-            }
-
-            // Aplicar los nuevos tamaños y posiciones
-            if (newWidth >= stage.getMinWidth()) {
-                stage.setWidth(newWidth);
-            }
-            if (newHeight >= stage.getMinHeight()) {
-                stage.setHeight(newHeight);
-            }
-            stage.setX(newX);
-            stage.setY(newY);
-        });
-
-        rootPane.setOnMouseReleased(event -> {
-            rootPane.setCursor(javafx.scene.Cursor.DEFAULT);
-            isResizing = false;
-        });
-    }
-
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
         //loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
-        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
 
-        loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", MFXDemoResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(true).get());
 
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = beans.stream()
@@ -313,6 +253,25 @@ public class IlunCryptController implements Initializable {
             navBar.getChildren().setAll(nodes);
         });
         loader.start();
+    }
+
+    private void toggleMaximize() {
+        if (isMaximized) {
+            // Restaurar tamaño de la ventana
+            stage.setMaximized(false);
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double stageWidth = screenBounds.getWidth() * 0.8;
+            double stageHeight = screenBounds.getHeight() * 0.8;
+            stage.setWidth(stageWidth); // Tamaño predeterminado
+            stage.setHeight(stageHeight);
+            stage.centerOnScreen(); // Centrar la ventana
+            maximizeIcon.setDescription("fas-circle-chevron-up"); // Cambiar a icono de expandir
+        } else {
+            // Maximizar la ventana
+            stage.setMaximized(true); // Configurar estado maximizado
+            maximizeIcon.setDescription("fas-circle-chevron-down"); // Cambiar a icono de restaurar
+        }
+        isMaximized = !isMaximized; // Alternar el estado
     }
 
     public IlunCryptController(Stage stage) {

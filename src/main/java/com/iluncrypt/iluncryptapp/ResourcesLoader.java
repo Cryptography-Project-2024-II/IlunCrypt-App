@@ -25,13 +25,13 @@ import java.net.URL;
  * Utility class which manages the access to this project's assets.
  * Helps keeping the assets files structure organized.
  */
-public class MFXDemoResourcesLoader {
+public class ResourcesLoader {
 
-	private MFXDemoResourcesLoader() {
+	private ResourcesLoader() {
 	}
 
 	public static URL loadURL(String path) {
-		return MFXDemoResourcesLoader.class.getResource(path);
+		return ResourcesLoader.class.getResource(path);
 	}
 
 	public static String load(String path) {
@@ -39,7 +39,7 @@ public class MFXDemoResourcesLoader {
 	}
 
 	public static InputStream loadStream(String name) {
-		return MFXDemoResourcesLoader.class.getResourceAsStream(name);
+		return ResourcesLoader.class.getResourceAsStream(name);
 	}
 
 }
