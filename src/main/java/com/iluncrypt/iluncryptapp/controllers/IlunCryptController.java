@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.util.Duration;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -28,26 +27,32 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Main controller for the IlunCrypt application.
+ * Manages the application views, events, and global settings.
+ */
 public class IlunCryptController implements Initializable {
-    private double xOffset = 0;
-    private double yOffset = 0;
+    private static IlunCryptController instance;
+    private final MFXLoader loader = new MFXLoader();
     private final Stage stage;
     private final ToggleGroup toggleGroup;
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     private static final int TOP_INTERACTION_AREA = 50;
 
     private boolean isMaximized = false;
-
-
     private ResourceBundle bundle;
 
+    // FXML bindings
     @FXML
     private HBox windowHeader;
 
@@ -79,222 +84,163 @@ public class IlunCryptController implements Initializable {
     private StackPane logoContainer;
 
     @FXML
-    private MFXToggleButton themeToggle;       // Botón MaterialFX para cambiar el tema
+    private MFXToggleButton themeToggle;
 
     @FXML
-    private MFXComboBox<String> languageComboBox; // ComboBox MaterialFX para el cambio de idioma
+    private MFXComboBox<String> languageComboBox;
 
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        setLanguage("en");
-        setupThemeToggle();
-        setupLanguageComboBox();
-        enableTopBorderDrag();
-        initializeLoader();
-        setupTooltips();
-        closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
-        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> ((Stage) rootPane.getScene().getWindow()).setIconified(true));
-        alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            boolean newVal = !stage.isAlwaysOnTop();
-            alwaysOnTopIcon.pseudoClassStateChanged(PseudoClass.getPseudoClass("always-on-top"), newVal);
-            stage.setAlwaysOnTop(newVal);
-        });
-
-        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> toggleMaximize());
-
-        ScrollUtils.addSmoothScrolling(scrollPane);
-
-        Image image = new Image(ResourcesLoader.load("assets/icons/icon-512.png"), 64, 64, true, true);
-        ImageView logo = new ImageView(image);
-        Circle clip = new Circle(30);
-        clip.centerXProperty().bind(
-                javafx.beans.binding.Bindings.createDoubleBinding(
-                        () -> logo.getLayoutBounds().getCenterX(),
-                        logo.layoutBoundsProperty()
-                )
-        );
-
-        clip.centerYProperty().bind(
-                javafx.beans.binding.Bindings.createDoubleBinding(
-                        () -> logo.getLayoutBounds().getCenterY(),
-                        logo.layoutBoundsProperty()
-                )
-        );
-        logo.setClip(clip);
-        logoContainer.getChildren().add(logo);
-    }
-
-    private void setupTooltips() {
-        Tooltip alwaysOnTopTooltip = new Tooltip("Toggle Always on Top");
-        Tooltip minimizeTooltip = new Tooltip("Minimize Window");
-        Tooltip maximizeTooltip = new Tooltip("Maximize/Restore Window");
-        Tooltip closeTooltip = new Tooltip("Close Application");
-
-        alwaysOnTopTooltip.setShowDelay(Duration.millis(100)); // Retraso antes de mostrar
-        alwaysOnTopTooltip.setHideDelay(Duration.millis(200)); // Retraso antes de ocultar
-        alwaysOnTopTooltip.setShowDuration(Duration.seconds(5)); // Tiempo máximo visible
-
-        minimizeTooltip.setShowDelay(Duration.millis(100));
-        minimizeTooltip.setHideDelay(Duration.millis(200));
-        minimizeTooltip.setShowDuration(Duration.seconds(5));
-
-        maximizeTooltip.setShowDelay(Duration.millis(100));
-        maximizeTooltip.setHideDelay(Duration.millis(200));
-        maximizeTooltip.setShowDuration(Duration.seconds(5));
-
-        closeTooltip.setShowDelay(Duration.millis(100));
-        closeTooltip.setHideDelay(Duration.millis(200));
-        closeTooltip.setShowDuration(Duration.seconds(5));
-
-        Tooltip.install(alwaysOnTopIcon, alwaysOnTopTooltip); // Tooltip para AlwaysOnTopIcon
-        Tooltip.install(minimizeIcon, minimizeTooltip);       // Tooltip para MinimizeIcon
-        Tooltip.install(maximizeIcon, maximizeTooltip);       // Tooltip para MaximizeIcon
-        Tooltip.install(closeIcon, closeTooltip);             // Tooltip para CloseIcon
-    }
-
-
-    private void enableTopBorderDrag() {
-        windowHeader.setOnMouseMoved(event -> {
-            // Cambiar cursor a manita abierta solo si no está sobre los botones
-            if (!isOverButton(event)) {
-                windowHeader.setCursor(Cursor.OPEN_HAND);
-            } else {
-                windowHeader.setCursor(Cursor.DEFAULT);
-            }
-        });
-
-        windowHeader.setOnMousePressed(event -> {
-            if (!isOverButton(event)) { // Solo permitir arrastre si no se hace clic en un botón
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-                windowHeader.setCursor(Cursor.CLOSED_HAND); // Cambiar a manita cerrada
-            }
-        });
-
-        windowHeader.setOnMouseDragged(event -> {
-            if (!isOverButton(event)) { // Solo arrastrar si no está sobre un botón
-                stage.setX(event.getScreenX() - xOffset);
-                stage.setY(event.getScreenY() - yOffset);
-            }
-        });
-
-        windowHeader.setOnMouseReleased(event -> {
-            if (!isOverButton(event)) {
-                windowHeader.setCursor(Cursor.OPEN_HAND); // Restaurar a manita abierta
-            } else {
-                windowHeader.setCursor(Cursor.DEFAULT); // Restaurar a cursor por defecto
-            }
-        });
-
-        windowHeader.setOnMouseExited(event -> windowHeader.setCursor(Cursor.DEFAULT)); // Restaurar cursor al salir
-    }
-
-    // Método para verificar si el ratón está sobre un botón
-    private boolean isOverButton(MouseEvent event) {
-        return alwaysOnTopIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
-                minimizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
-                maximizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
-                closeIcon.getBoundsInParent().contains(event.getX(), event.getY());
-    }
-
-    // Configura el botón de cambio de tema
-    private void setupThemeToggle() {
-        themeToggle.setText("Light Theme");
-        themeToggle.setOnAction(event -> {
-            if (themeToggle.isSelected()) {
-                themeToggle.setText(bundle.getString("theme.dark"));
-                rootPane.getStylesheets().clear();
-                rootPane.getStylesheets().add(getClass().getResource("../assets/styles/DarkTheme.css").toExternalForm());
-            } else {
-                themeToggle.setText(bundle.getString("theme.light"));
-                rootPane.getStylesheets().clear();
-                rootPane.getStylesheets().add(getClass().getResource("../assets/styles/Demo.css").toExternalForm());
-            }
-        });
-    }
-
-    // Configura el ComboBox para el cambio de idioma
-    private void setupLanguageComboBox() {
-        languageComboBox.getItems().addAll("Español", "Português", "English", "Français");
-        languageComboBox.setPromptText("");
-
-        languageComboBox.setOnAction(event -> {
-            String selectedLanguage = languageComboBox.getValue();
-            switch (selectedLanguage) {
-                case "Español" -> setLanguage("es");
-                case "Português" -> setLanguage("pt");
-                case "English" -> setLanguage("en");
-                case "Français" -> setLanguage("fr");
-            }
-        });
-    }
-
-    private void initializeLoader() {
-        MFXLoader loader = new MFXLoader();
-        //loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", MFXDemoResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
-        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
-
-        loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(true).get());
-
-        loader.setOnLoadedAction(beans -> {
-            List<ToggleButton> nodes = beans.stream()
-                    .map(bean -> {
-
-                        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-                        toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
-                        if (bean.isDefaultView()) {
-                            contentPane.getChildren().setAll(bean.getRoot());
-                            toggle.setSelected(true);
-                        }
-                        return toggle;
-                    })
-                    .toList();
-            navBar.getChildren().setAll(nodes);
-        });
-        loader.start();
-    }
-
-    private void toggleMaximize() {
-        if (isMaximized) {
-            // Restaurar tamaño de la ventana
-            stage.setMaximized(false);
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            double stageWidth = screenBounds.getWidth() * 0.8;
-            double stageHeight = screenBounds.getHeight() * 0.8;
-            stage.setWidth(stageWidth); // Tamaño predeterminado
-            stage.setHeight(stageHeight);
-            stage.centerOnScreen(); // Centrar la ventana
-            maximizeIcon.setDescription("fas-circle-chevron-up"); // Cambiar a icono de expandir
-        } else {
-            // Maximizar la ventana
-            stage.setMaximized(true); // Configurar estado maximizado
-            maximizeIcon.setDescription("fas-circle-chevron-down"); // Cambiar a icono de restaurar
-        }
-        isMaximized = !isMaximized; // Alternar el estado
-    }
-
+    /**
+     * Constructor with stage injection.
+     *
+     * @param stage The main application stage.
+     */
     public IlunCryptController(Stage stage) {
         this.stage = stage;
         this.toggleGroup = new ToggleGroup();
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
+        instance = this;
     }
 
-    public void setLanguage(String lang) {
-        Locale locale = new Locale(lang);
-        bundle = ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", locale);
-        updateUI();
+    /**
+     * Get the main controller instance (singleton).
+     *
+     * @return The main controller instance.
+     */
+    public static IlunCryptController getInstance() {
+        return instance;
     }
 
-    private void updateUI() {
-        themeToggle.setText(bundle.getString("theme.light"));
-        languageComboBox.setPromptText(bundle.getString("label.language"));
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.bundle = resourceBundle != null ? resourceBundle : ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", Locale.ENGLISH);
+        initializeUIComponents();
+        registerViews();
+        initializeLoader();
     }
 
+    /**
+     * Initialize UI components and listeners.
+     */
+    private void initializeUIComponents() {
+        setupThemeToggle();
+        setupLanguageComboBox();
+        enableTopBorderDrag();
+        setupTooltips();
+        setupLogo();
+        setupWindowControls();
+    }
+
+    /**
+     * Setup the views loader and navigation system.
+     */
+    private void initializeLoader() {
+        loader.setOnLoadedAction(beans -> {
+            // Process each bean and handle nodes safely
+            List<ToggleButton> nodes = beans.stream()
+                    .map(bean -> {
+                        // Check if a node mapper exists and returns a valid node
+                        if (bean.getBeanToNodeMapper() != null) {
+                            ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                            if (toggle != null) {
+                                toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                                if (bean.isDefaultView()) {
+                                    contentPane.getChildren().setAll(bean.getRoot());
+                                    toggle.setSelected(true);
+                                }
+                                return toggle;
+                            }
+                        }
+                        return null; // Return null if no valid node exists
+                    })
+                    .filter(toggle -> toggle != null) // Filter out null nodes
+                    .toList();
+
+            // Add valid nodes to the navigation bar
+            navBar.getChildren().setAll(nodes);
+
+            // Automatically load the default root view if specified
+            beans.stream()
+                    .filter(MFXLoaderBean::isDefaultView)
+                    .findFirst()
+                    .ifPresent(bean -> contentPane.getChildren().setAll(bean.getRoot()));
+        });
+
+        loader.start();
+    }
+
+
+    /**
+     * Register application views with their respective FXML files.
+     */
+    private void registerViews() {
+        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("MULTIPLICATIVE-CIPHER", ResourcesLoader.loadURL("views/multiplicative-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SHIFT-CIPHER", ResourcesLoader.loadURL("views/shift-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("HILL-CIPHER", ResourcesLoader.loadURL("views/hill-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("PERMUTATION-CIPHER", ResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SUBSTITUTION-CIPHER", ResourcesLoader.loadURL("views/substitution-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("VIGENERE-CIPHER", ResourcesLoader.loadURL("views/vigenere-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+
+
+    }
+
+    /**
+     * Register a single view.
+     *
+     * @param id       The unique ID of the view.
+     * @param fxmlPath The path to the FXML file.
+     */
+    private void registerView(String id, String fxmlPath) {
+        URL fxmlUrl = ResourcesLoader.loadURL(fxmlPath);
+        if (fxmlUrl == null) {
+            throw new IllegalArgumentException("FXML file not found at path: " + fxmlPath);
+        }
+        loader.addView(MFXLoaderBean.of(id, fxmlUrl).setDefaultRoot(false).get());
+    }
+
+    /**
+     * Load a registered view into the content pane.
+     *
+     * @param id The unique ID of the view.
+     */
+    public void loadView(String id) {
+        if (contentPane == null) {
+            throw new IllegalStateException("contentPane is not initialized. Check the FXML bindings.");
+        }
+
+        Optional<MFXLoaderBean> bean = Optional.ofNullable(loader.getView(id));
+        if (bean.isEmpty()) {
+            throw new IllegalStateException("View not registered with ID: " + id);
+        }
+
+        if (bean.get().getRoot() == null) {
+            throw new IllegalStateException("Root node for view with ID '" + id + "' is null. Check the FXML file.");
+        }
+
+        contentPane.getChildren().setAll(bean.get().getRoot());
+    }
+
+    /**
+     * Create a toggle button for navigation.
+     *
+     * @param icon The icon to display.
+     * @param text The button text.
+     * @return The created toggle button.
+     */
     private ToggleButton createToggle(String icon, String text) {
         return createToggle(icon, text, 0);
     }
 
+    /**
+     * Create a toggle button for navigation with rotation.
+     *
+     * @param icon   The icon to display.
+     * @param text   The button text.
+     * @param rotate Rotation angle for the icon.
+     * @return The created toggle button.
+     */
     private ToggleButton createToggle(String icon, String text, double rotate) {
         MFXIconWrapper wrapper = new MFXIconWrapper(icon, 24, 32);
         MFXRectangleToggleNode toggleNode = new MFXRectangleToggleNode(text, wrapper);
@@ -305,4 +251,173 @@ public class IlunCryptController implements Initializable {
         return toggleNode;
     }
 
+    /**
+     * Setup window control buttons for minimize, maximize, close, and always-on-top.
+     */
+    private void setupWindowControls() {
+        closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
+
+        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
+
+        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> toggleMaximize());
+
+        alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            boolean isAlwaysOnTop = !stage.isAlwaysOnTop();
+            stage.setAlwaysOnTop(isAlwaysOnTop);
+            alwaysOnTopIcon.pseudoClassStateChanged(PseudoClass.getPseudoClass("always-on-top"), isAlwaysOnTop);
+        });
+    }
+
+    /**
+     * Toggle maximize and restore for the application window.
+     */
+    private void toggleMaximize() {
+        if (isMaximized) {
+            stage.setMaximized(false);
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setWidth(screenBounds.getWidth() * 0.8);
+            stage.setHeight(screenBounds.getHeight() * 0.8);
+            stage.centerOnScreen();
+            maximizeIcon.setDescription("fas-circle-chevron-up");
+        } else {
+            stage.setMaximized(true);
+            maximizeIcon.setDescription("fas-circle-chevron-down");
+        }
+        isMaximized = !isMaximized;
+    }
+
+    /**
+     * Setup the application logo and its clipping shape.
+     */
+    private void setupLogo() {
+        Image image = new Image(ResourcesLoader.load("assets/icons/icon-512.png"), 64, 64, true, true);
+        ImageView logo = new ImageView(image);
+        Circle clip = new Circle(30);
+        clip.centerXProperty().bind(
+                javafx.beans.binding.Bindings.createDoubleBinding(
+                        () -> logo.getLayoutBounds().getCenterX(),
+                        logo.layoutBoundsProperty()
+                )
+        );
+        clip.centerYProperty().bind(
+                javafx.beans.binding.Bindings.createDoubleBinding(
+                        () -> logo.getLayoutBounds().getCenterY(),
+                        logo.layoutBoundsProperty()
+                )
+        );
+        logo.setClip(clip);
+        logoContainer.getChildren().add(logo);
+    }
+
+    /**
+     * Setup tooltips for window controls.
+     */
+    private void setupTooltips() {
+        Tooltip.install(alwaysOnTopIcon, createTooltip("Toggle Always on Top"));
+        Tooltip.install(minimizeIcon, createTooltip("Minimize Window"));
+        Tooltip.install(maximizeIcon, createTooltip("Maximize/Restore Window"));
+        Tooltip.install(closeIcon, createTooltip("Close Application"));
+    }
+
+    /**
+     * Create a custom tooltip with standardized delays.
+     *
+     * @param text The tooltip text.
+     * @return The configured tooltip.
+     */
+    private Tooltip createTooltip(String text) {
+        Tooltip tooltip = new Tooltip(text);
+        tooltip.setShowDelay(Duration.millis(100));
+        tooltip.setHideDelay(Duration.millis(200));
+        tooltip.setShowDuration(Duration.seconds(5));
+        return tooltip;
+    }
+
+    /**
+     * Enable dragging functionality for the top border of the window.
+     */
+    private void enableTopBorderDrag() {
+        windowHeader.setOnMouseMoved(event -> {
+            // Change cursor to open hand only if not over buttons
+            if (!isOverButton(event)) {
+                windowHeader.setCursor(Cursor.OPEN_HAND);
+            } else {
+                windowHeader.setCursor(Cursor.DEFAULT);
+            }
+        });
+
+        windowHeader.setOnMousePressed(event -> {
+            if (!isOverButton(event)) { // Only allow drag if not clicking on a button
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+                windowHeader.setCursor(Cursor.CLOSED_HAND); // Change to closed hand cursor
+            }
+        });
+
+        windowHeader.setOnMouseDragged(event -> {
+            if (!isOverButton(event)) { // Only drag if not over a button
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+
+        windowHeader.setOnMouseReleased(event -> {
+            if (!isOverButton(event)) {
+                windowHeader.setCursor(Cursor.OPEN_HAND); // Restore to open hand cursor
+            } else {
+                windowHeader.setCursor(Cursor.DEFAULT); // Restore to default cursor
+            }
+        });
+
+        windowHeader.setOnMouseExited(event -> windowHeader.setCursor(Cursor.DEFAULT)); // Restore cursor on exit
+    }
+
+    /**
+     * Check if the mouse event is over a button in the window header.
+     *
+     * @param event The mouse event.
+     * @return True if the mouse is over a button, false otherwise.
+     */
+    private boolean isOverButton(MouseEvent event) {
+        return alwaysOnTopIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                minimizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                maximizeIcon.getBoundsInParent().contains(event.getX(), event.getY()) ||
+                closeIcon.getBoundsInParent().contains(event.getX(), event.getY());
+    }
+
+    /**
+     * Setup the theme toggle functionality.
+     */
+    private void setupThemeToggle() {
+        themeToggle.setText("Light Theme");
+        themeToggle.setOnAction(event -> {
+            if (themeToggle.isSelected()) {
+                themeToggle.setText("Dark Theme");
+                rootPane.getStylesheets().clear();
+                rootPane.getStylesheets().add(ResourcesLoader.load("/styles/DarkTheme.css"));
+            } else {
+                themeToggle.setText("Light Theme");
+                rootPane.getStylesheets().clear();
+                rootPane.getStylesheets().add(ResourcesLoader.load("/styles/LightTheme.css"));
+            }
+        });
+    }
+
+    /**
+     * Setup the language selection combo box.
+     */
+    private void setupLanguageComboBox() {
+        languageComboBox.getItems().addAll("English", "Español", "Français", "Português");
+        languageComboBox.setOnAction(event -> {
+            String selected = languageComboBox.getValue();
+            if (selected.equals("Español")) setLanguage("es");
+            if (selected.equals("Français")) setLanguage("fr");
+            if (selected.equals("Português")) setLanguage("pt");
+            if (selected.equals("English")) setLanguage("en");
+        });
+    }
+
+    private void setLanguage(String lang) {
+        bundle = ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", new Locale(lang));
+    }
 }

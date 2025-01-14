@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncrypDecryptOptionsController">
+<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" />
       <ColumnConstraints halignment="CENTER" />
@@ -30,12 +30,12 @@
          </GridPane.margin>
       </StackPane>
       <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Classical Ciphers" GridPane.columnSpan="3" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Multiplicative" GridPane.rowIndex="2" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Affine" GridPane.rowIndex="1" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Caesar (Shift)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Hill" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Permutation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Substitution" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Vigenère" GridPane.rowIndex="3" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Affine" onAction="#handleAffineCipher" GridPane.rowIndex="1" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Multiplicative" onAction="#handleMultiplicativeCipher" GridPane.rowIndex="2" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Caesar (Shift)" onAction="#handleShiftCipher" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Hill" onAction="#handleHillCipher" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Permutation" onAction="#handlePermutationCipher" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Substitution" onAction="#handleSubstitutionCipher" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Vigenère" onAction="#handleVigenereCipher" GridPane.rowIndex="3" />
    </children>
 </GridPane>

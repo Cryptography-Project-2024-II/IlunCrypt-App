@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="535.0" prefWidth="778.0" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncrypDecryptOptionsController">
+<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="535.0" prefWidth="778.0" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.ShiftCipherController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" />
       <ColumnConstraints halignment="CENTER" />
