@@ -29,9 +29,11 @@
 .top-bar {
 	-fx-background-color: -mfx-light;
 	-fx-padding: 10; /* Internal padding for spacing */
-	-fx-background-radius: 10;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+	-fx-background-radius: 10 10 0 0; /* Round only the top corners */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, 0, 0); /* No vertical shadow */
 }
+
+
 
 /* Title inside the top bar */
 .top-bar-title {
@@ -102,4 +104,15 @@
 	-fx-font-size: 14px;
 	-fx-alignment: center;
 	-fx-text-alignment: center;
+}
+
+.mfx-text-field .floating-text {
+	-fx-font-family: 'Visby Round CF Demi Bold';
+	-fx-background-color: transparent;
+	-fx-font-size: 16;
+}
+
+.mfx-combo-box .floating-text {
+	-fx-font-family: 'Visby Round CF Demi Bold';
+	-fx-background-color: transparent;
 }

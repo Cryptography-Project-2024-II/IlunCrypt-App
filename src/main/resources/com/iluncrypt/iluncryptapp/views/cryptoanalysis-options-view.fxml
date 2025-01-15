@@ -5,32 +5,61 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        stylesheets="@../assets/styles/Buttons.css"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
+
+   <!-- Define column constraints for responsive design -->
    <columnConstraints>
-      <ColumnConstraints halignment="CENTER" />
-      <ColumnConstraints halignment="CENTER" />
+      <ColumnConstraints hgrow="SOMETIMES" />
+      <ColumnConstraints hgrow="ALWAYS" />
    </columnConstraints>
+
+   <!-- Define row constraints -->
    <rowConstraints>
-      <RowConstraints prefHeight="32.0" />
-      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
    </rowConstraints>
-   <padding>
-      <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
-   </padding>
-   <children>
-      <StackPane minHeight="150.0" minWidth="300.0" styleClass="grid-background" GridPane.columnSpan="2" GridPane.rowSpan="3">
-         <GridPane.margin>
-            <Insets left="-15.0" right="-15.0" />
-         </GridPane.margin>
+
+   <!-- Background Section -->
+   <StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="2" GridPane.rowSpan="2">
+      <GridPane.margin>
+         <Insets top="20.0" bottom="20.0" />
+      </GridPane.margin>
+   </StackPane>
+
+   <!-- Top Bar Section -->
+   <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="2" GridPane.rowIndex="0">
+      <HBox spacing="10.0" alignment="CENTER">
+         <!-- Centered Title -->
+         <Label text="Cryptoanalysis Methods" styleClass="top-bar-title" alignment="CENTER" />
+      </HBox>
+   </StackPane>
+
+   <!-- Main Content Section -->
+   <HBox spacing="20.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+      <!-- Buttons Section -->
+      <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;">
+         <MFXButton text="Index of Coincidence (Friedman)" styleClass="outline-button" onAction="#handleFriedman" prefWidth="200.0" prefHeight="40.0" />
+         <MFXButton text="Brauer Data Analysis" styleClass="outline-button" onAction="#handleBrauer" prefWidth="200.0" prefHeight="40.0" />
+         <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce" prefWidth="200.0" prefHeight="40.0" />
+         <MFXButton text="Frequency Analysis" styleClass="outline-button" onAction="#handleFrequency" prefWidth="200.0" prefHeight="40.0" />
+      </VBox>
+
+      <!-- Dynamic Content Section -->
+      <StackPane fx:id="dynamicContent" styleClass="dynamic-container" prefWidth="400.0" prefHeight="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 10;">
+         <Label fx:id="contentLabel" text="Hover over a method to see details." wrapText="true" style="-fx-text-alignment: left; -fx-alignment: top-left;" StackPane.alignment="TOP_LEFT" />
       </StackPane>
-      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Cryptoanalysis Methods" GridPane.columnSpan="2" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Brute force" GridPane.rowIndex="2" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text=" Index of coincidence (Friedman)" GridPane.rowIndex="1" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Brauer data analysis" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <MFXButton minHeight="28.0" minWidth="90.0" styleClass="outline-button" text="Frequency analysis" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-   </children>
+   </HBox>
 </GridPane>

@@ -216,5 +216,6 @@ public class AffineCipherController implements Initializable {
     }
 
     public void showOtherSettings(ActionEvent actionEvent) {
+
     }
 }

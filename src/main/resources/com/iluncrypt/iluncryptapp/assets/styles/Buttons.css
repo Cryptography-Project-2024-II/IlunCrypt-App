@@ -47,6 +47,29 @@
 	-fx-text-fill: -mfx-secondary;
 }
 
+.outline-button-green {
+	-fx-background-color: transparent;
+	-fx-border-color: -mfx-green;
+	-fx-border-radius: 3;
+
+	-fx-text-fill: -mfx-green;
+}
+.outline-button-green:hover,focused{
+	-fx-background-color: -mfx-green;
+	-fx-text-fill: white;
+}
+
+.outline-button-red {
+	-fx-background-color: transparent;
+	-fx-border-color: -mfx-red;
+	-fx-border-radius: 3;
+
+	-fx-text-fill: -mfx-red;
+}
+.outline-button-red:hover,focused{
+	-fx-background-color: -mfx-red;
+	-fx-text-fill: white;
+}
 /* Default icon color matches the button text */
 .button-icon {
 	-fx-fill: #fff;
@@ -57,15 +80,8 @@
 	-fx-fill: -mfx-light; /* Matches the hover text color */
 }
 
-.outline-button:hover{
+.outline-button:hover,focused{
 	-fx-background-color: -mfx-secondary;
-	-fx-text-fill: white;
-}
-
-
-.outline-button:focused {
-	-fx-background-color: -mfx-primary;
-	-fx-border-color: -mfx-primary;
 	-fx-text-fill: white;
 }
 

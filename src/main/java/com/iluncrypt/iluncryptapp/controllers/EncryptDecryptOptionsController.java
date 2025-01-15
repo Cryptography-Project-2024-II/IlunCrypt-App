@@ -1,6 +1,9 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 
 public class EncryptDecryptOptionsController {
 
@@ -54,5 +57,50 @@ public class EncryptDecryptOptionsController {
     private IlunCryptController getIlunCryptController() {
         // Obtener el controlador principal según tu implementación (singleton, dependencia, etc.)
         return IlunCryptController.getInstance();
+    }
+
+    @FXML
+    private Label contentLabel;
+
+    @FXML
+    private void handleHoverAffine() {
+        contentLabel.setText("Affine Cipher: Description...");
+    }
+
+    @FXML
+    private void handleHoverMultiplicative() {
+        contentLabel.setText("Multiplicative Cipher: Description...");
+    }
+
+    public void handleHoverShift(MouseEvent mouseEvent) {
+        contentLabel.setText("Shift Cipher: Description...");
+    }
+
+    public void handleHoverHill(MouseEvent mouseEvent) {
+        contentLabel.setText("Hill Cipher: Description...");
+    }
+
+    public void handleHoverPermutation(MouseEvent mouseEvent) {
+        contentLabel.setText("Permutation Cipher: Description...");
+    }
+
+    public void handleHoverSubstitution(MouseEvent mouseEvent) {
+        contentLabel.setText("Substitution Cipher: Description...");
+    }
+
+    public void handleHoverVigenere(MouseEvent mouseEvent) {
+        contentLabel.setText("Vigenère Cipher: Description...");
+    }
+
+    public void handleFriedman(ActionEvent actionEvent) {
+    }
+
+    public void handleBrauer(ActionEvent actionEvent) {
+    }
+
+    public void handleBruteForce(ActionEvent actionEvent) {
+    }
+
+    public void handleFrequency(ActionEvent actionEvent) {
     }
 }

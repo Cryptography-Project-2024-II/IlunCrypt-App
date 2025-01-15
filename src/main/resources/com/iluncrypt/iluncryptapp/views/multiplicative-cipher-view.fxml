@@ -151,7 +151,7 @@
          <!-- Center Section: Key Input -->
          <VBox spacing="15.0" alignment="CENTER">
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-               <Label text="Key:" alignment="CENTER_LEFT" styleClass="text-label" />
+               <Label text="Key" alignment="CENTER_LEFT" styleClass="text-label" />
                <MFXFontIcon description="fas-key" size="16.0" />
                <Label text=":" styleClass="text-label" />
                <HBox spacing="5.0" alignment="CENTER">
@@ -172,12 +172,12 @@
 
          <!-- Right Section: Cipher/Decipher -->
          <VBox spacing="15.0" alignment="CENTER_RIGHT">
-            <MFXButton text="Cipher" styleClass="outline-button" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Cipher" styleClass="outline-button-green" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Decipher" styleClass="outline-button" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Decipher" styleClass="outline-button-red" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock-open" size="16.0" styleClass="button-icon"/>
                </graphic>

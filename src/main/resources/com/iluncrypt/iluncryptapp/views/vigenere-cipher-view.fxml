@@ -155,12 +155,12 @@
 
          <!-- Right Section: Cipher/Decipher -->
          <VBox spacing="15.0" alignment="CENTER_RIGHT">
-            <MFXButton text="Cipher" styleClass="outline-button" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Cipher" styleClass="outline-button-green" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Decipher" styleClass="outline-button" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Decipher" styleClass="outline-button-red" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock-open" size="16.0" styleClass="button-icon"/>
                </graphic>
