@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class PermutationCipherController implements Initializable {
+public class SubstitutionCipherController implements Initializable {
 
     // FXML bindings
     @FXML
@@ -212,14 +212,14 @@ public class PermutationCipherController implements Initializable {
         return "DecryptedText"; // Replace with real implementation
     }
 
-    public void editPermutation(ActionEvent actionEvent) {
-    }
-
     public void exportEncryptedMessage(ActionEvent actionEvent) {
         System.out.println("Exporting encrypted message...");
     }
 
     public void showOtherSettings(ActionEvent actionEvent) {
         System.out.println("Opening other settings...");
+    }
+
+    public void editSubstitution(ActionEvent actionEvent) {
     }
 }

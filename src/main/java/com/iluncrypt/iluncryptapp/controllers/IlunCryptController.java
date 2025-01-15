@@ -134,6 +134,15 @@ public class IlunCryptController implements Initializable {
     }
 
     /**
+     * Retrieves the primary stage of the application.
+     *
+     * @return The main Stage object.
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
      * Setup the views loader and navigation system.
      */
     private void initializeLoader() {

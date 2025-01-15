@@ -47,6 +47,16 @@
 	-fx-text-fill: -mfx-secondary;
 }
 
+/* Default icon color matches the button text */
+.button-icon {
+	-fx-fill: #fff;
+}
+
+/* Hover effect for icons in buttons */
+.mfx-button:hover .button-icon {
+	-fx-fill: -mfx-light; /* Matches the hover text color */
+}
+
 .outline-button:hover{
 	-fx-background-color: -mfx-secondary;
 	-fx-text-fill: white;
@@ -59,6 +69,15 @@
 	-fx-text-fill: white;
 }
 
+/* Default icon color matches the button text */
+.button-icon {
+	-mfx-color: -fx-text-fill;
+}
+
+/* Hover effect for icons in buttons */
+.mfx-button:hover .button-icon {
+	-mfx-color: -fx-text-fill; /* Matches the hover text color */
+}
 
 .link-button {
 	-fx-background-color: transparent;

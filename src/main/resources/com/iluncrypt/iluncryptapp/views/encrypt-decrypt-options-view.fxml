@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
+<GridPane fx:id="grid" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="grid-pane" stylesheets="@../assets/styles/Buttons.css" vgap="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" />
       <ColumnConstraints halignment="CENTER" />

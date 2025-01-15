@@ -1,6 +1,10 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import com.iluncrypt.iluncryptapp.utils.Dialog;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -10,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,6 +36,9 @@ public class AffineCipherController implements Initializable {
 
     @FXML
     private MFXTextField textFieldB;
+
+    @FXML
+    private MFXButton btnInfo;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,12 +74,7 @@ public class AffineCipherController implements Initializable {
      * Displays a dialog with information about the Affine Cipher.
      */
     @FXML
-    private void showInfoDialog() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Affine Cipher Information");
-        alert.setHeaderText("About the Affine Cipher");
-        alert.setContentText("The Affine Cipher is a substitution cipher using modular arithmetic.");
-        alert.showAndWait();
+    private void showInfoDialog(ActionEvent event) {
     }
 
     /**
@@ -207,5 +210,11 @@ public class AffineCipherController implements Initializable {
     private String affineDecrypt(String cipherText, int a, int b) {
         // Example decryption logic (placeholder)
         return "DecryptedText"; // Replace with real implementation
+    }
+
+    public void exportEncryptedText(ActionEvent actionEvent) {
+    }
+
+    public void showOtherSettings(ActionEvent actionEvent) {
     }
 }
