@@ -128,14 +128,14 @@
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected {
 	-fx-background-color: white;
 	-fx-background-radius: 5;
-	-fx-text-fill: #601cbe;
+	-fx-text-fill: -mfx-primary;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .selection-rectangle {
 	-fx-stroke: transparent;
-	-fx-fill: #601cbe;
+	-fx-fill: -mfx-primary;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .mfx-icon-wrapper .mfx-font-icon {
-	-mfx-color: #601cbe;
+	-mfx-color: -mfx-primary;
 }

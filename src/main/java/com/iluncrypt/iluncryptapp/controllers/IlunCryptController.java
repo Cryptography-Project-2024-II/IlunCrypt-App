@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -128,6 +129,8 @@ public class IlunCryptController implements Initializable {
         setupTooltips();
         setupLogo();
         setupWindowControls();
+        rootPane.widthProperty().addListener((observable, oldValue, newValue) -> adjustContentPaneAnchors(newValue.doubleValue(), rootPane.getHeight()));
+        rootPane.heightProperty().addListener((observable, oldValue, newValue) -> adjustContentPaneAnchors(rootPane.getWidth(), newValue.doubleValue()));
     }
 
     /**
@@ -420,4 +423,17 @@ public class IlunCryptController implements Initializable {
     private void setLanguage(String lang) {
         bundle = ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", new Locale(lang));
     }
+
+    private void adjustContentPaneAnchors(double width, double height) {
+        double leftAnchor = width * 0.22; // Por ejemplo, 20% del ancho total
+        double rightAnchor = width * 0.05; // Por ejemplo, 5% del ancho total
+        double topAnchor = height * 0.05; // Por ejemplo, 10% de la altura total
+        double bottomAnchor = 0; // Sin ancla inferior
+
+        AnchorPane.setLeftAnchor(contentPane, leftAnchor);
+        AnchorPane.setRightAnchor(contentPane, rightAnchor);
+        AnchorPane.setTopAnchor(contentPane, topAnchor);
+        AnchorPane.setBottomAnchor(contentPane, bottomAnchor);
+    }
+
 }

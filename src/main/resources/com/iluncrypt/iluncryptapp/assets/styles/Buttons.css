@@ -41,15 +41,21 @@
 
 .outline-button {
 	-fx-background-color: transparent;
-	-fx-border-color: -mfx-purple;
+	-fx-border-color: -mfx-secondary;
 	-fx-border-radius: 3;
 
-	-fx-text-fill: -mfx-purple;
+	-fx-text-fill: -mfx-secondary;
 }
 
-.outline-button:hover,
+.outline-button:hover{
+	-fx-background-color: -mfx-secondary;
+	-fx-text-fill: white;
+}
+
+
 .outline-button:focused {
-	-fx-background-color: -mfx-purple;
+	-fx-background-color: -mfx-primary;
+	-fx-border-color: -mfx-primary;
 	-fx-text-fill: white;
 }
 

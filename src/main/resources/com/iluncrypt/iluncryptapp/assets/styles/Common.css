@@ -25,6 +25,22 @@
 	-fx-text-fill: -mfx-text-he;
 }
 
+/* Top bar background */
+.top-bar {
+	-fx-background-color: -mfx-light;
+	-fx-padding: 10; /* Internal padding for spacing */
+	-fx-background-radius: 10;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+}
+
+/* Title inside the top bar */
+.top-bar-title {
+	-fx-font-size: 24px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333; /* Dark gray text */
+}
+
+
 .header-label .text {
 	-fx-font-smoothing-type: lcd;
 }
@@ -46,4 +62,44 @@
 	-fx-background-color: white;
 	-fx-background-radius: 10;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+}
+
+.middle-controls {
+	-fx-background-color: -mfx-light;
+	-fx-padding: 15;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.2, 0, 2);
+	-fx-background-radius: 8;
+}
+
+/* Labels for Plain Text and Cipher Text */
+.text-label {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333; /* Dark gray */
+}
+
+.icon-box {
+	-fx-border-color: transparent;
+	-fx-border-width: 1px;
+	-fx-border-radius: 5px;
+	-fx-alignment: center;
+	-fx-background-color: -mfx-light;
+}
+
+.icon-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-cursor: hand;
+}
+
+.icon-button:hover {
+	-fx-background-color: -mfx-light-attention;
+}
+
+.no-border-textfield {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-font-size: 14px;
+	-fx-alignment: center;
+	-fx-text-alignment: center;
 }
