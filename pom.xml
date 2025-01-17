@@ -33,6 +33,15 @@
             <version>11.17.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.scilab.forge/jlatexmath -->
+        <dependency>
+            <groupId>org.scilab.forge</groupId>
+            <artifactId>jlatexmath</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+
+
+
         <!-- https://mvnrepository.com/artifact/fr.brouillard.oss/cssfx -->
         <dependency>
             <groupId>fr.brouillard.oss</groupId>

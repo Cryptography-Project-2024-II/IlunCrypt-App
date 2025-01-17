@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" alignment="CENTER" style="-fx-padding: 20.0;"
+      stylesheets="@../assets/styles/Buttons.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsDialogController"
+>
+
+<MFXButton text="Affine" styleClass="outline-button" onAction="#handleAffineCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Multiplicative" styleClass="outline-button" onAction="#handleMultiplicativeCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Caesar (Shift)" styleClass="outline-button" onAction="#handleShiftCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Hill" styleClass="outline-button" onAction="#handleHillCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Permutation" styleClass="outline-button" onAction="#handlePermutationCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Substitution" styleClass="outline-button" onAction="#handleSubstitutionCipher" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Vigenère" styleClass="outline-button" onAction="#handleVigenereCipher" prefWidth="200.0" prefHeight="40.0" />
+
+</VBox>
+

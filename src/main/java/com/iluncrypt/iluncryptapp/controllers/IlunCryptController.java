@@ -134,15 +134,6 @@ public class IlunCryptController implements Initializable {
     }
 
     /**
-     * Retrieves the primary stage of the application.
-     *
-     * @return The main Stage object.
-     */
-    public Stage getStage() {
-        return stage;
-    }
-
-    /**
      * Setup the views loader and navigation system.
      */
     private void initializeLoader() {
@@ -187,13 +178,13 @@ public class IlunCryptController implements Initializable {
     private void registerViews() {
         loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Encrypt/Decrypt")).setDefaultRoot(true).get());
         loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("MULTIPLICATIVE-CIPHER", ResourcesLoader.loadURL("views/multiplicative-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("SHIFT-CIPHER", ResourcesLoader.loadURL("views/shift-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("HILL-CIPHER", ResourcesLoader.loadURL("views/hill-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("PERMUTATION-CIPHER", ResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("SUBSTITUTION-CIPHER", ResourcesLoader.loadURL("views/substitution-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("VIGENERE-CIPHER", ResourcesLoader.loadURL("views/vigenere-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new AffineCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("MULTIPLICATIVE-CIPHER", ResourcesLoader.loadURL("views/multiplicative-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new MultiplicativeCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SHIFT-CIPHER", ResourcesLoader.loadURL("views/shift-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new ShiftCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("HILL-CIPHER", ResourcesLoader.loadURL("views/hill-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("PERMUTATION-CIPHER", ResourcesLoader.loadURL("views/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SUBSTITUTION-CIPHER", ResourcesLoader.loadURL("views/substitution-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("VIGENERE-CIPHER", ResourcesLoader.loadURL("views/vigenere-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
 
 
     }

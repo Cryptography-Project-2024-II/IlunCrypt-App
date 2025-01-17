@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.AffineCipherDescriptionController"
+          style="-fx-padding: 15;">
+
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+
+        <VBox spacing="10" alignment="TOP_LEFT"
+              maxWidth="Infinity" maxHeight="Infinity"
+              style="-fx-padding: 10;">
+
+            <!-- Title -->
+            <Label text="Affine Cipher" maxWidth="Infinity"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+
+            <!-- General Explanation -->
+            <TextFlow maxWidth="Infinity">
+                <Text text="The Affine Cipher is a monoalphabetic substitution cipher that transforms each letter into a numeric equivalent, applies a linear function, and maps it back to a character."
+                      style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+            </TextFlow>
+
+            <!-- Encryption Formula (Inline) -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Encryption Formula:" maxWidth="Infinity"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #222;" />
+                <ImageView fx:id="encryptionFormula" fitWidth="200" preserveRatio="true" />
+            </HBox>
+
+            <!-- Decryption Formula (Inline) -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Decryption Formula:" maxWidth="Infinity"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #222;" />
+                <ImageView fx:id="decryptionFormula" fitWidth="200" preserveRatio="true" />
+            </HBox>
+
+            <!-- Example -->
+            <Label text="Example: Encrypting 'HELLO' with a=5, b=8" maxWidth="Infinity"
+                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #222;" />
+            <TextFlow maxWidth="Infinity">
+                <Text text="Using the formula, each letter is transformed as follows:"
+                      style="-fx-font-size: 12px; -fx-text-fill: #444;" />
+            </TextFlow>
+            <ImageView fx:id="exampleImage" fitWidth="350" preserveRatio="true" />
+
+            <!-- Cryptanalysis Methods -->
+            <Label text="Cryptanalysis Methods:" maxWidth="Infinity"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #222; -fx-padding: 8 0 4 0;" />
+            <TextFlow maxWidth="Infinity">
+                <!-- Frequency Analysis -->
+                <Text text="• " style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="Frequency Analysis: " style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="Since the Affine Cipher is a monoalphabetic cipher, letter frequencies remain unchanged, making it vulnerable to statistical attacks."
+                      style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+
+
+                <!-- Known Plaintext Attack -->
+                <Text text="• " style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="Known Plaintext Attack: " style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="If an attacker has access to a plaintext-ciphertext pair, they can solve for 'a' and 'b' using simultaneous equations."
+                      style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+
+
+                <!-- Brute Force -->
+                <Text text="• " style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="Brute Force: " style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #444;" />
+                <Text text="Since 'a' must be coprime with the alphabet size (26), there are limited possible keys, making brute force feasible."
+                      style="-fx-font-size: 13px; -fx-text-fill: #444;" />
+            </TextFlow>
+
+
+            <!-- Advantages and Disadvantages -->
+            <Label text="Pros and Cons of the Affine Cipher:" maxWidth="Infinity"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #222; -fx-padding: 8 0 4 0;" />
+
+            <!-- Pros -->
+            <HBox spacing="5">
+                <MFXFontIcon description="fas-circle-check" size="14" style="-fx-fill: #008000;"/>
+                <TextFlow>
+                    <Text text="Simple to implement and understand."
+                          style="-fx-font-size: 13px; -fx-text-fill: #008000;" />
+                </TextFlow>
+            </HBox>
+
+            <HBox spacing="5">
+                <MFXFontIcon description="fas-circle-check" size="14" style="-fx-fill: #008000;"/>
+                <TextFlow>
+                    <Text text="Resistant to simple substitution decryption without additional cryptanalysis techniques."
+                          style="-fx-font-size: 13px; -fx-text-fill: #008000;" />
+                </TextFlow>
+            </HBox>
+
+            <!-- Cons -->
+            <HBox spacing="5">
+                <MFXFontIcon description="fas-circle-xmark" size="14" style="-fx-fill: #FF0000;"/>
+                <TextFlow>
+                    <Text text="Vulnerable to frequency analysis due to letter distributions remaining unchanged."
+                          style="-fx-font-size: 13px; -fx-text-fill: #FF0000;" />
+                </TextFlow>
+            </HBox>
+
+            <HBox spacing="5">
+                <MFXFontIcon description="fas-circle-xmark" size="14" style="-fx-fill: #FF0000;"/>
+                <TextFlow>
+                    <Text text="The number of valid keys is relatively small, making brute-force attacks possible."
+                          style="-fx-font-size: 13px; -fx-text-fill: #FF0000;" />
+                </TextFlow>
+            </HBox>
+
+        </VBox>
+    </StackPane>
+</GridPane>

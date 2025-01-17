@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
-import com.iluncrypt.iluncryptapp.utils.Dialog;
+import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
@@ -17,13 +17,28 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class HillCipherController implements Initializable {
+/**
+ * Controller for the Hill Cipher encryption system.
+ * Manages encryption, decryption, and UI interactions.
+ */
+public class HillCipherController implements CipherController, Initializable {
 
-    // FXML bindings
+    private static final int ALPHABET_SIZE = 26;
+
+    private final DialogHelper infoDialog;
+    private final DialogHelper changeMethodDialog;
+
+    // Stores the last entered values when switching methods
+    private String lastPlainText = "";
+    private String lastCipherText = "";
+    private int lastA = 1;
+    private int lastB = 0;
+
     @FXML
-    private GridPane grid; // Reference to the GridPane from FXML
+    private GridPane grid;
 
     @FXML
     private TextArea textAreaPlainText;
@@ -32,49 +47,87 @@ public class HillCipherController implements Initializable {
     private TextArea textAreaCipherText;
 
     @FXML
-    private MFXTextField textFieldA;
-
-    @FXML
-    private MFXTextField textFieldB;
+    private MFXTextField textFieldMatrixSize; // Correct field for Hill Cipher
 
     @FXML
     private MFXButton btnInfo;
 
+    /**
+     * Constructor for HillCipherController.
+     * Initializes separate dialog instances to prevent interference.
+     *
+     * @param stage The primary stage used for managing dialogs.
+     */
+    public HillCipherController(Stage stage) {
+        this.infoDialog = new DialogHelper(stage);
+        this.changeMethodDialog = new DialogHelper(stage);
+    }
+
+    /**
+     * Initializes the controller and configures the UI layout.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureGridGrowth();
+        configureDialogs();
     }
 
     /**
      * Configures the properties of the GridPane for responsive behavior.
-     * Ensures the GridPane grows dynamically within its parent container.
      */
     private void configureGridGrowth() {
-        grid.setMaxWidth(Double.MAX_VALUE);
         grid.setMaxHeight(Double.MAX_VALUE);
-
-        // Ensures the GridPane is centered within the StackPane
         StackPane.setAlignment(grid, Pos.CENTER);
-
-        // Configures row and column constraints for dynamic resizing
         grid.getRowConstraints().forEach(row -> row.setVgrow(Priority.ALWAYS));
         grid.getColumnConstraints().forEach(column -> column.setHgrow(Priority.ALWAYS));
     }
 
     /**
-     * Handles the action for the back button.
-     * Navigates back to the menu of encryption methods.
+     * Configures both dialogs to ensure they are correctly initialized before being displayed.
      */
-    @FXML
-    private void handleBackButton() {
-        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");;
+    private void configureDialogs() {
+        infoDialog.setOwnerNode(grid);
+        changeMethodDialog.setOwnerNode(grid);
     }
 
     /**
-     * Displays a dialog with information about the Affine Cipher.
+     * Navigates back to the encryption method selection menu.
      */
     @FXML
-    private void showInfoDialog(ActionEvent event) {
+    private void handleBackButton() {
+        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");
+    }
+
+    /**
+     * Displays an informational dialog about the Hill Cipher.
+     */
+    @FXML
+    private void showInfoDialog() {
+        infoDialog.showInfoDialog(
+                "Hill Cipher Information",
+                """
+                The Hill Cipher is a polygraphic substitution cipher that uses matrix multiplication 
+                to encrypt and decrypt text.
+
+                Encryption formula:
+                E(P) = K * P (mod m)
+
+                Where:
+                - 'P' is the plaintext as a vector.
+                - 'K' is the encryption key matrix.
+                - 'm' is the size of the alphabet (26 for English letters).
+
+                Decryption formula:
+                D(C) = K⁻¹ * C (mod m)
+
+                Where 'K⁻¹' is the modular inverse of the key matrix K.
+
+                Characteristics:
+                - This cipher requires a **square key matrix**.
+                - The determinant of K must be invertible modulo 26.
+                - It is **more secure** than simple substitution ciphers.
+                """
+        );
     }
 
     /**
@@ -82,142 +135,128 @@ public class HillCipherController implements Initializable {
      */
     @FXML
     private void showChangeMethodDialog() {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Change Encryption Method");
-        alert.setHeaderText("Choose a new encryption method.");
-        alert.setContentText("This will replace the current method.");
-        alert.showAndWait();
+        changeMethodDialog.showFXMLDialog(
+                "Cipher/Decipher Methods",
+                "views/encrypt-decrypt-options-dialog-view.fxml",
+                new MFXFontIcon("fas-list", 18),
+                "mfx-fxml-dialog",
+                false,
+                false,
+                controller -> {
+                    if (controller instanceof EncryptDecryptOptionsDialogController dialogController) {
+                        dialogController.setParentController(this);
+                    }
+                }
+        );
     }
 
     /**
-     * Clears the content of the plain text and cipher text areas.
+     * Switches the encryption method, updates the main view, and restores text values.
+     *
+     * @param methodView The encryption method view to load.
      */
+    @Override
+    public void switchEncryptionMethod(String methodView) {
+        saveCurrentState();
+        IlunCryptController.getInstance().loadView(methodView);
+        restorePreviousState();
+        changeMethodDialog.closeDialog();
+    }
+
+    /**
+     * Saves the current text values before switching methods.
+     */
+    @Override
+    public void saveCurrentState() {
+        lastPlainText = textAreaPlainText.getText();
+        lastCipherText = textAreaCipherText.getText();
+
+        // Ensure the field is initialized before accessing
+        if (textFieldMatrixSize != null) {
+            lastA = parseInt(textFieldMatrixSize.getText(), 1);
+        } else {
+            lastA = 1; // Default value
+        }
+    }
+
+    /**
+     * Restores the previously entered values after switching methods.
+     */
+    @Override
+    public void restorePreviousState() {
+        textAreaPlainText.setText(lastPlainText);
+        textAreaCipherText.setText(lastCipherText);
+
+        if (textFieldMatrixSize != null) {
+            textFieldMatrixSize.setText(String.valueOf(lastA));
+        }
+    }
+
+    /** Utility Methods **/
+
     @FXML
     private void clearTextAreas() {
         textAreaPlainText.clear();
         textAreaCipherText.clear();
-        System.out.println("Text areas cleared.");
     }
 
-    /**
-     * Displays a confirmation dialog for cryptanalysis.
-     * Checks if there is cipher text before proceeding.
-     */
     @FXML
     private void showCryptanalysisDialog() {
         if (textAreaCipherText.getText().isEmpty()) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Cryptanalysis Error");
-            alert.setHeaderText("No Cipher Text Found");
-            alert.setContentText("Please enter cipher text to perform cryptanalysis.");
-            alert.showAndWait();
+            showAlert("Cryptanalysis Error", "No Cipher Text Found", "Please enter cipher text to perform cryptanalysis.");
         } else {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Perform Cryptanalysis");
-            alert.setHeaderText("Confirm Cryptanalysis");
-            alert.setContentText("Proceed with cryptanalysis on the cipher text?");
-            alert.showAndWait();
+            showAlert("Perform Cryptanalysis", "Confirm Cryptanalysis", "Proceed with cryptanalysis on the cipher text?");
         }
     }
 
-    /**
-     * Encrypts the plain text and displays the result in the cipher text area.
-     */
+    private void showAlert(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /** Encryption and Decryption **/
+
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
-        if (plainText.isEmpty()) {
-            System.out.println("No plain text to encrypt.");
-            return;
+        if (!plainText.isEmpty()) {
+            int matrixSize = parseInt(textFieldMatrixSize.getText(), 2);
+            textAreaCipherText.setText(hillEncrypt(plainText, matrixSize));
         }
-        int a = Integer.parseInt(textFieldA.getText());
-        int b = Integer.parseInt(textFieldB.getText());
-        String cipherText = affineEncrypt(plainText, a, b);
-        textAreaCipherText.setText(cipherText);
     }
 
-    /**
-     * Decrypts the cipher text and displays the result in the plain text area.
-     */
     @FXML
     private void decipherText() {
         String cipherText = textAreaCipherText.getText();
-        if (cipherText.isEmpty()) {
-            System.out.println("No cipher text to decrypt.");
-            return;
-        }
-        int a = Integer.parseInt(textFieldA.getText());
-        int b = Integer.parseInt(textFieldB.getText());
-        String plainText = affineDecrypt(cipherText, a, b);
-        textAreaPlainText.setText(plainText);
-    }
-
-    /**
-     * Decreases the value of A, ensuring it stays within bounds.
-     */
-    @FXML
-    private void decrementA() {
-        int value = Integer.parseInt(textFieldA.getText());
-        if (value > 0) {
-            textFieldA.setText(String.valueOf(value-1));
+        if (!cipherText.isEmpty()) {
+            int matrixSize = parseInt(textFieldMatrixSize.getText(), 2);
+            textAreaPlainText.setText(hillDecrypt(cipherText, matrixSize));
         }
     }
 
-    /**
-     * Increases the value of A, ensuring it stays within bounds.
-     */
-    @FXML
-    private void incrementA() {
-        int value = Integer.parseInt(textFieldA.getText());
-        if (value < 25) {
-            textFieldA.setText(String.valueOf(value+1));
-        }
+    private String hillEncrypt(String plainText, int matrixSize) {
+        return "EncryptedText"; // Placeholder implementation
     }
 
-    /**
-     * Decreases the value of B, ensuring it stays within bounds.
-     */
-    @FXML
-    private void decrementB() {
-        int value = Integer.parseInt(textFieldB.getText());
-        if (value > 0) {
-            textFieldB.setText(String.valueOf(value-1));
-        }
+    private String hillDecrypt(String cipherText, int matrixSize) {
+        return "DecryptedText"; // Placeholder implementation
     }
 
-    /**
-     * Increases the value of B, ensuring it stays within bounds.
-     */
-    @FXML
-    private void incrementB() {
-        int value = Integer.parseInt(textFieldB.getText());
-        if (value < 25) {
-            textFieldB.setText(String.valueOf(value+1));
-        }
+    /** Helper Methods **/
+
+    private int parseInt(String text, int defaultValue) {
+        return Optional.ofNullable(text).filter(t -> !t.isEmpty()).map(Integer::parseInt).orElse(defaultValue);
     }
 
-    /**
-     * Encrypts the text using the Affine Cipher algorithm.
-     */
-    private String affineEncrypt(String plainText, int a, int b) {
-        // Example encryption logic (placeholder)
-        return "EncryptedText"; // Replace with real implementation
-    }
+    /** Placeholder methods **/
 
-    /**
-     * Decrypts the text using the Affine Cipher algorithm.
-     */
-    private String affineDecrypt(String cipherText, int a, int b) {
-        // Example decryption logic (placeholder)
-        return "DecryptedText"; // Replace with real implementation
-    }
+    public void exportEncryptedMessage(ActionEvent actionEvent) {}
 
-    public void exportEncryptedMessage(ActionEvent actionEvent) {
-    }
+    public void editMatrix(ActionEvent actionEvent) {}
 
     public void showOtherSettings(ActionEvent actionEvent) {
-    }
-
-    public void editMatrix(ActionEvent actionEvent) {
     }
 }

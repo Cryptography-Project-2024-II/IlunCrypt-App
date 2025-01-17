@@ -18,7 +18,7 @@
         stylesheets="@../assets/styles/Buttons.css"
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsController">
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.CryptanalysisOptionsController">
 
    <!-- Define column constraints for responsive design -->
    <columnConstraints>
@@ -58,8 +58,6 @@
       </VBox>
 
       <!-- Dynamic Content Section -->
-      <StackPane fx:id="dynamicContent" styleClass="dynamic-container" prefWidth="400.0" prefHeight="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 10;">
-         <Label fx:id="contentLabel" text="Hover over a method to see details." wrapText="true" style="-fx-text-alignment: left; -fx-alignment: top-left;" StackPane.alignment="TOP_LEFT" />
-      </StackPane>
+      <StackPane fx:id="dynamicContent" styleClass="dynamic-container" prefWidth="400.0" prefHeight="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 10;"/>
    </HBox>
 </GridPane>

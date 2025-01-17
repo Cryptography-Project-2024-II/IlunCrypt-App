@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
-import com.iluncrypt.iluncryptapp.utils.Dialog;
+import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
@@ -10,20 +10,31 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class VigenereCipherController implements Initializable {
+/**
+ * Controller for the Vigenère Cipher encryption system.
+ * This class manages encryption, decryption, and UI interactions for the Vigenère Cipher.
+ */
+public class VigenereCipherController implements CipherController, Initializable {
 
-    // FXML bindings
+    private final DialogHelper infoDialog;
+    private final DialogHelper changeMethodDialog;
+
+    // Stores the last entered values when switching methods
+    private String lastPlainText = "";
+    private String lastCipherText = "";
+    private String lastKey = "";
+
     @FXML
-    private GridPane grid; // Reference to the GridPane from FXML
+    private GridPane grid;
 
     @FXML
     private TextArea textAreaPlainText;
@@ -32,49 +43,80 @@ public class VigenereCipherController implements Initializable {
     private TextArea textAreaCipherText;
 
     @FXML
-    private MFXTextField textFieldA;
-
-    @FXML
-    private MFXTextField textFieldB;
+    private MFXTextField textFieldKey;
 
     @FXML
     private MFXButton btnInfo;
 
+    /**
+     * Constructor for VigenereCipherController.
+     * Initializes separate dialog instances to prevent interference.
+     *
+     * @param stage The primary stage used for managing dialogs.
+     */
+    public VigenereCipherController(Stage stage) {
+        this.infoDialog = new DialogHelper(stage);
+        this.changeMethodDialog = new DialogHelper(stage);
+    }
+
+    /**
+     * Initializes the controller and configures the UI layout.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureGridGrowth();
+        configureDialogs();
     }
 
     /**
      * Configures the properties of the GridPane for responsive behavior.
-     * Ensures the GridPane grows dynamically within its parent container.
      */
     private void configureGridGrowth() {
-        grid.setMaxWidth(Double.MAX_VALUE);
         grid.setMaxHeight(Double.MAX_VALUE);
-
-        // Ensures the GridPane is centered within the StackPane
         StackPane.setAlignment(grid, Pos.CENTER);
-
-        // Configures row and column constraints for dynamic resizing
         grid.getRowConstraints().forEach(row -> row.setVgrow(Priority.ALWAYS));
         grid.getColumnConstraints().forEach(column -> column.setHgrow(Priority.ALWAYS));
     }
 
     /**
-     * Handles the action for the back button.
-     * Navigates back to the menu of encryption methods.
+     * Configures both dialogs to ensure they are correctly initialized before being displayed.
      */
-    @FXML
-    private void handleBackButton() {
-        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");;
+    private void configureDialogs() {
+        infoDialog.setOwnerNode(grid);
+        changeMethodDialog.setOwnerNode(grid);
     }
 
     /**
-     * Displays a dialog with information about the Affine Cipher.
+     * Navigates back to the encryption method selection menu.
      */
     @FXML
-    private void showInfoDialog(ActionEvent event) {
+    private void handleBackButton() {
+        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");
+    }
+
+    /**
+     * Displays an informational dialog about the Vigenère Cipher.
+     */
+    @FXML
+    private void showInfoDialog() {
+        infoDialog.showInfoDialog(
+                "Vigenère Cipher Information",
+                """
+                The Vigenère Cipher is a polyalphabetic substitution cipher that uses a keyword 
+                to shift letters in the plaintext.
+
+                Characteristics:
+                - Uses a repeating key to determine the shift for each letter.
+                - More secure than monoalphabetic ciphers but vulnerable to frequency analysis.
+
+                Example:
+                - Plaintext: ATTACKATDAWN
+                - Key: LEMON
+                - Ciphertext: LXFOPVEFRNHR
+
+                The Vigenère cipher is commonly broken using Kasiski examination or frequency analysis.
+                """
+        );
     }
 
     /**
@@ -82,141 +124,123 @@ public class VigenereCipherController implements Initializable {
      */
     @FXML
     private void showChangeMethodDialog() {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Change Encryption Method");
-        alert.setHeaderText("Choose a new encryption method.");
-        alert.setContentText("This will replace the current method.");
-        alert.showAndWait();
+        changeMethodDialog.showFXMLDialog(
+                "Cipher/Decipher Methods",
+                "views/encrypt-decrypt-options-dialog-view.fxml",
+                new MFXFontIcon("fas-list", 18),
+                "mfx-fxml-dialog",
+                false,
+                false,
+                controller -> {
+                    if (controller instanceof EncryptDecryptOptionsDialogController dialogController) {
+                        dialogController.setParentController(this);
+                    }
+                }
+        );
     }
 
     /**
-     * Clears the content of the plain text and cipher text areas.
+     * Switches the encryption method, updates the main view, and restores text values.
+     *
+     * @param methodView The encryption method view to load.
      */
+    @Override
+    public void switchEncryptionMethod(String methodView) {
+        saveCurrentState();
+        IlunCryptController.getInstance().loadView(methodView);
+        restorePreviousState();
+        changeMethodDialog.closeDialog();
+    }
+
+    /**
+     * Saves the current text values before switching methods.
+     */
+    @Override
+    public void saveCurrentState() {
+        lastPlainText = textAreaPlainText.getText();
+        lastCipherText = textAreaCipherText.getText();
+
+        if (textFieldKey != null) {
+            lastKey = textFieldKey.getText();
+        }
+    }
+
+    /**
+     * Restores the previously entered values after switching methods.
+     */
+    @Override
+    public void restorePreviousState() {
+        textAreaPlainText.setText(lastPlainText);
+        textAreaCipherText.setText(lastCipherText);
+
+        if (textFieldKey != null) {
+            textFieldKey.setText(lastKey);
+        }
+    }
+
+    /** Utility Methods **/
+
     @FXML
     private void clearTextAreas() {
         textAreaPlainText.clear();
         textAreaCipherText.clear();
-        System.out.println("Text areas cleared.");
     }
 
-    /**
-     * Displays a confirmation dialog for cryptanalysis.
-     * Checks if there is cipher text before proceeding.
-     */
     @FXML
     private void showCryptanalysisDialog() {
         if (textAreaCipherText.getText().isEmpty()) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Cryptanalysis Error");
-            alert.setHeaderText("No Cipher Text Found");
-            alert.setContentText("Please enter cipher text to perform cryptanalysis.");
-            alert.showAndWait();
+            showAlert("Cryptanalysis Error", "No Cipher Text Found", "Please enter cipher text to perform cryptanalysis.");
         } else {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Perform Cryptanalysis");
-            alert.setHeaderText("Confirm Cryptanalysis");
-            alert.setContentText("Proceed with cryptanalysis on the cipher text?");
-            alert.showAndWait();
+            showAlert("Perform Cryptanalysis", "Confirm Cryptanalysis", "Proceed with cryptanalysis on the cipher text?");
         }
     }
 
-    /**
-     * Encrypts the plain text and displays the result in the cipher text area.
-     */
+    private void showAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /** Encryption and Decryption **/
+
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
-        if (plainText.isEmpty()) {
-            System.out.println("No plain text to encrypt.");
-            return;
+        if (!plainText.isEmpty()) {
+            String key = textFieldKey.getText();
+            textAreaCipherText.setText(vigenereEncrypt(plainText, key));
         }
-        int a = Integer.parseInt(textFieldA.getText());
-        int b = Integer.parseInt(textFieldB.getText());
-        String cipherText = affineEncrypt(plainText, a, b);
-        textAreaCipherText.setText(cipherText);
     }
 
-    /**
-     * Decrypts the cipher text and displays the result in the plain text area.
-     */
     @FXML
     private void decipherText() {
         String cipherText = textAreaCipherText.getText();
-        if (cipherText.isEmpty()) {
-            System.out.println("No cipher text to decrypt.");
-            return;
+        if (!cipherText.isEmpty()) {
+            String key = textFieldKey.getText();
+            textAreaPlainText.setText(vigenereDecrypt(cipherText, key));
         }
-        int a = Integer.parseInt(textFieldA.getText());
-        int b = Integer.parseInt(textFieldB.getText());
-        String plainText = affineDecrypt(cipherText, a, b);
-        textAreaPlainText.setText(plainText);
     }
 
-    /**
-     * Decreases the value of A, ensuring it stays within bounds.
-     */
+    private String vigenereEncrypt(String plainText, String key) {
+        return "EncryptedText"; // Placeholder implementation
+    }
+
+    private String vigenereDecrypt(String cipherText, String key) {
+        return "DecryptedText"; // Placeholder implementation
+    }
+
+    /** Increment/Decrement Controls **/
+
     @FXML
-    private void decrementA() {
-        int value = Integer.parseInt(textFieldA.getText());
-        if (value > 0) {
-            textFieldA.setText(String.valueOf(value-1));
-        }
+    private void editVigenereKey(ActionEvent actionEvent) {
+        System.out.println("Editing Vigenère key...");
     }
 
-    /**
-     * Increases the value of A, ensuring it stays within bounds.
-     */
-    @FXML
-    private void incrementA() {
-        int value = Integer.parseInt(textFieldA.getText());
-        if (value < 25) {
-            textFieldA.setText(String.valueOf(value+1));
-        }
-    }
+    /** Placeholder methods **/
 
-    /**
-     * Decreases the value of B, ensuring it stays within bounds.
-     */
-    @FXML
-    private void decrementB() {
-        int value = Integer.parseInt(textFieldB.getText());
-        if (value > 0) {
-            textFieldB.setText(String.valueOf(value-1));
-        }
-    }
+    public void exportEncryptedMessage(ActionEvent actionEvent) {}
 
-    /**
-     * Increases the value of B, ensuring it stays within bounds.
-     */
-    @FXML
-    private void incrementB() {
-        int value = Integer.parseInt(textFieldB.getText());
-        if (value < 25) {
-            textFieldB.setText(String.valueOf(value+1));
-        }
-    }
-
-    /**
-     * Encrypts the text using the Affine Cipher algorithm.
-     */
-    private String affineEncrypt(String plainText, int a, int b) {
-        // Example encryption logic (placeholder)
-        return "EncryptedText"; // Replace with real implementation
-    }
-
-    /**
-     * Decrypts the text using the Affine Cipher algorithm.
-     */
-    private String affineDecrypt(String cipherText, int a, int b) {
-        // Example decryption logic (placeholder)
-        return "DecryptedText"; // Replace with real implementation
-    }
-
-    public void exportEncryptedMessage(ActionEvent actionEvent) {
-        System.out.println("Exporting encrypted message...");
-    }
-
-    public void showOtherSettings(ActionEvent actionEvent) {
-        System.out.println("Opening other settings...");
-    }
+    public void showOtherSettings(ActionEvent actionEvent) {}
 }
