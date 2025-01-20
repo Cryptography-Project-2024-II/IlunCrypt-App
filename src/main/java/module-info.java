@@ -8,5 +8,7 @@ module com.iluncrypt.iluncryptapp {
 
     opens com.iluncrypt.iluncryptapp to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers to javafx.fxml;
-    opens com.iluncrypt.iluncryptapp.utils to com.google.gson;    exports com.iluncrypt.iluncryptapp;
+    opens com.iluncrypt.iluncryptapp.models.enums to com.google.gson;
+    opens com.iluncrypt.iluncryptapp.utils to com.google.gson;
+    exports com.iluncrypt.iluncryptapp;
 }

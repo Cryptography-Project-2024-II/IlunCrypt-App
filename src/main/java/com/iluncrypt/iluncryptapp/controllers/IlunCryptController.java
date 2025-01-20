@@ -1,6 +1,9 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
+import com.iluncrypt.iluncryptapp.models.enums.Language;
+import com.iluncrypt.iluncryptapp.utils.ConfigManager;
+import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
@@ -10,6 +13,7 @@ import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -48,6 +52,8 @@ public class IlunCryptController implements Initializable {
     private final ToggleGroup toggleGroup;
     private double xOffset = 0;
     private double yOffset = 0;
+
+    private final DialogHelper dialog;
 
     private static final int TOP_INTERACTION_AREA = 50;
 
@@ -101,6 +107,7 @@ public class IlunCryptController implements Initializable {
         this.toggleGroup = new ToggleGroup();
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
         instance = this;
+        this.dialog = new DialogHelper(stage);
     }
 
     /**
@@ -115,17 +122,24 @@ public class IlunCryptController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.bundle = LanguageManager.getInstance().getBundle();
+        dialog.setOwnerNode(contentPane);
         initializeUIComponents();
         registerViews();
         initializeLoader();
+        Platform.runLater(() -> {
+            Language savedLanguage = ConfigManager.getApplicationLanguage();
+            languageComboBox.setValue(null);
+            languageComboBox.requestLayout();
+            languageComboBox.setValue(savedLanguage.getDisplayName());
+        });
     }
 
     /**
      * Initialize UI components and listeners.
      */
     private void initializeUIComponents() {
-        setupThemeToggle();
         setupLanguageComboBox();
+        setupThemeToggle();
         enableTopBorderDrag();
         setupTooltips();
         setupLogo();
@@ -411,19 +425,31 @@ public class IlunCryptController implements Initializable {
      * Setup the language selection combo box.
      */
     private void setupLanguageComboBox() {
-        languageComboBox.getItems().addAll("English", "Español", "Français", "Português");
+        for (Language lang : Language.values()) {
+            languageComboBox.getItems().add(lang.getDisplayName());
+        }
+
+        // 🔹 Seleccionar idioma guardado
+        Language savedLanguage = ConfigManager.getApplicationLanguage();
+        languageComboBox.setValue(savedLanguage.getDisplayName());
+
         languageComboBox.setOnAction(event -> {
             String selected = languageComboBox.getValue();
-            if (selected.equals("Español")) setLanguage("es");
-            if (selected.equals("Français")) setLanguage("fr");
-            if (selected.equals("Português")) setLanguage("pt");
-            if (selected.equals("English")) setLanguage("en");
+            Language newLanguage = Language.fromDisplayName(selected);
+            setLanguage(newLanguage);
         });
     }
 
-    private void setLanguage(String lang) {
-        LanguageManager.getInstance().setLanguage(lang);
+    /**
+     * Changes the application language and updates the configuration.
+     *
+     * @param language The new application language (enum).
+     */
+    private void setLanguage(Language language) {
+        if (ConfigManager.getApplicationLanguage() == language) return;
+        LanguageManager.getInstance().setLanguage(language.getCode());
         this.bundle = LanguageManager.getInstance().getBundle();
+        ConfigManager.setApplicationLanguage(language);
     }
 
     private void adjustContentPaneAnchors(double width, double height) {
@@ -438,4 +464,29 @@ public class IlunCryptController implements Initializable {
         AnchorPane.setBottomAnchor(contentPane, bottomAnchor);
     }
 
+    @FXML
+    public void openManageAlphabetsDialog() {
+        dialog.enableDynamicSize(0.6, 0.6); // Enable dynamic size (60% of the main window)
+        dialog.showFXMLDialog(
+                "Manage Alphabets",
+                "views/manage-alphabet-view.fxml",
+                new MFXFontIcon("fas-gear", 18),
+                "mfx-dialog",
+                false,
+                false,
+                null
+        );
+    }
+
+    public void importIlunMessage(ActionEvent actionEvent) {
+        dialog.showFXMLDialog(
+                "Select an Ilun file",
+                "views/import-ilun-dialog-view.fxml",
+                new MFXFontIcon("fas-gear", 18),
+                "mfx-dialog",
+                false,
+                false,
+                null
+        );
+    }
 }

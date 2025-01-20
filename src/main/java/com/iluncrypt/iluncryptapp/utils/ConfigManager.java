@@ -2,20 +2,22 @@ package com.iluncrypt.iluncryptapp.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
-import com.iluncrypt.iluncryptapp.models.enums.AlphabetPreset;
-import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
-import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
-import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
+import com.iluncrypt.iluncryptapp.models.enums.*;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,33 +35,68 @@ public class ConfigManager {
      * @return A CipherMethodConfig object with the appropriate settings.
      */
     public static CipherMethodConfig loadCipherMethodConfig(String cipherMethodName) {
-        try {
-            if (Files.exists(Paths.get(CONFIG_FILE))) {
-                FileReader reader = new FileReader(CONFIG_FILE);
-                Type type = new TypeToken<Map<String, Map<String, CipherMethodConfigJson>>>() {}.getType();
-                Map<String, Map<String, CipherMethodConfigJson>> configData = GSON.fromJson(reader, type);
-                reader.close();
+        Path configPath = Paths.get(CONFIG_FILE);
 
-                if (configData != null && configData.containsKey("methodciphersettings") &&
-                        configData.get("methodciphersettings").containsKey(cipherMethodName)) {
-
-                    CipherMethodConfigJson jsonConfig = configData.get("methodciphersettings").get(cipherMethodName);
-
-                    return new CipherMethodConfig(
-                            getAlphabetByName(jsonConfig.plaintextAlphabet),
-                            getAlphabetByName(jsonConfig.ciphertextAlphabet),
-                            getAlphabetByName(jsonConfig.keyAlphabet),
-                            jsonConfig.caseHandling,
-                            jsonConfig.unknownCharHandling,
-                            jsonConfig.whitespaceHandling
-                    );
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error loading cipher method configuration: " + e.getMessage());
+        // Si el archivo no existe, devolver configuración por defecto
+        if (!Files.exists(configPath)) {
+            return getDefaultCipherConfig();
         }
 
-        // Default values if no config.json exists or if the method is missing
+        try (FileReader reader = new FileReader(CONFIG_FILE)) {
+            // Leer el contenido del archivo
+            String jsonContent = Files.readString(configPath).trim();
+
+            // Si el archivo está vacío, devolver valores por defecto
+            if (jsonContent.isEmpty()) {
+                System.err.println("Advertencia: config.json está vacío.");
+                return getDefaultCipherConfig();
+            }
+
+            // Intentar parsear el JSON a un mapa genérico
+            Map<String, Object> rawConfig = GSON.fromJson(jsonContent, new TypeToken<Map<String, Object>>() {}.getType());
+
+            // Si el JSON no contiene "methodciphersettings", devolver valores por defecto
+            if (rawConfig == null || !rawConfig.containsKey("methodciphersettings")) {
+                System.err.println("Advertencia: 'methodciphersettings' no encontrado en config.json.");
+                return getDefaultCipherConfig();
+            }
+
+            // Convertir solo la parte relevante a su tipo esperado
+            Type methodConfigType = new TypeToken<Map<String, CipherMethodConfigJson>>() {}.getType();
+            Map<String, CipherMethodConfigJson> methodSettings = GSON.fromJson(GSON.toJson(rawConfig.get("methodciphersettings")), methodConfigType);
+
+            // Si la clave no existe para el método buscado, devolver valores por defecto
+            if (methodSettings == null || !methodSettings.containsKey(cipherMethodName)) {
+                System.err.println("Advertencia: Configuración para " + cipherMethodName + " no encontrada.");
+                return getDefaultCipherConfig();
+            }
+
+            // Obtener la configuración del método de cifrado
+            CipherMethodConfigJson jsonConfig = methodSettings.get(cipherMethodName);
+
+            return new CipherMethodConfig(
+                    getAlphabetByName(jsonConfig.plaintextAlphabet),
+                    getAlphabetByName(jsonConfig.ciphertextAlphabet),
+                    getAlphabetByName(jsonConfig.keyAlphabet),
+                    jsonConfig.caseHandling,
+                    jsonConfig.unknownCharHandling,
+                    jsonConfig.whitespaceHandling
+            );
+
+        } catch (IOException | JsonSyntaxException e) {
+            System.err.println("Error al cargar la configuración de cifrado: " + e.getMessage());
+        }
+
+        // Si hubo un error, devolver valores por defecto
+        return getDefaultCipherConfig();
+    }
+
+
+
+    /**
+     * Devuelve la configuración por defecto para los métodos de cifrado.
+     */
+    private static CipherMethodConfig getDefaultCipherConfig() {
         return new CipherMethodConfig(
                 AlphabetPreset.getAlphabetByName("A-Z"),
                 AlphabetPreset.getAlphabetByName("A-Z"),
@@ -69,6 +106,7 @@ public class ConfigManager {
                 WhitespaceHandling.REMOVE
         );
     }
+
 
     /**
      * Saves the configuration for a given cipher method.
@@ -148,6 +186,38 @@ public class ConfigManager {
         return null;
     }
 
+    public static List<Alphabet> getAllAlphabets() {
+        List<Alphabet> allAlphabets = new ArrayList<>();
+
+        // Agregar los alfabetos predefinidos
+        allAlphabets.addAll(AlphabetPreset.getPredefinedAlphabets());
+
+        // Agregar los alfabetos personalizados si existen en config.json
+        Path configPath = Paths.get(CONFIG_FILE);
+        if (Files.exists(configPath)) {
+            try (FileReader reader = new FileReader(CONFIG_FILE)) {
+                Type type = new TypeToken<Map<String, Object>>() {}.getType();
+                Map<String, Object> configData = GSON.fromJson(reader, type);
+
+                if (configData != null && configData.containsKey("customAlphabets")) {
+                    Type customAlphabetType = new TypeToken<Map<String, String>>() {}.getType();
+                    Map<String, String> customAlphabets = GSON.fromJson(GSON.toJson(configData.get("customAlphabets")), customAlphabetType);
+
+                    for (String alphabetName : customAlphabets.keySet()) {
+                        Alphabet customAlphabet = loadCustomAlphabet(alphabetName);
+                        if (customAlphabet != null) {
+                            allAlphabets.add(customAlphabet);
+                        }
+                    }
+                }
+            } catch (IOException | JsonSyntaxException e) {
+                System.err.println("Error loading custom alphabets: " + e.getMessage());
+            }
+        }
+
+        return allAlphabets;
+    }
+
     /**
      * Saves a custom alphabet to a JSON file and registers it in the config.
      *
@@ -181,6 +251,73 @@ public class ConfigManager {
             System.err.println("Error saving custom alphabet: " + e.getMessage());
         }
     }
+
+    /**
+     * Retrieves the currently set application language from config.json.
+     * Defaults to ENGLISH if the setting is missing.
+     *
+     * @return The application language as a Language enum.
+     */
+    public static Language getApplicationLanguage() {
+        try {
+            if (Files.exists(Paths.get(CONFIG_FILE))) {
+                FileReader reader = new FileReader(CONFIG_FILE);
+                Type type = new TypeToken<Map<String, Object>>() {}.getType();
+                Map<String, Object> configData = GSON.fromJson(reader, type);
+                reader.close();
+
+                if (configData != null && configData.containsKey("applicationLanguage")) {
+                    return Language.fromDisplayName(configData.get("applicationLanguage").toString());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading application language: " + e.getMessage());
+        }
+
+        return Language.ENGLISH; // Default language
+    }
+
+    /**
+     * Sets or removes the application language in config.json.
+     * If the language is ENGLISH, the key is removed from the config file.
+     * If no other settings exist, the file is deleted.
+     *
+     * @param language The new application language as a Language enum.
+     */
+    public static void setApplicationLanguage(Language language) {
+        try {
+            Map<String, Object> configData = new HashMap<>();
+
+            // 🔹 Cargar el archivo de configuración si existe
+            if (Files.exists(Paths.get(CONFIG_FILE))) {
+                FileReader reader = new FileReader(CONFIG_FILE);
+                Type type = new TypeToken<Map<String, Object>>() {}.getType();
+                configData = GSON.fromJson(reader, type);
+                reader.close();
+            }
+
+            // 🔹 Si el idioma es inglés (por defecto), eliminar la clave
+            if (language == Language.ENGLISH) {
+                configData.remove("applicationLanguage");
+            } else {
+                configData.put("applicationLanguage", language.getDisplayName());
+            }
+
+            // 🔹 Si después de eliminar la clave el archivo queda vacío, eliminarlo
+            if (configData.isEmpty()) {
+                Files.deleteIfExists(Paths.get(CONFIG_FILE));
+            } else {
+                // 🔹 Si todavía hay configuraciones, escribir el archivo actualizado
+                FileWriter writer = new FileWriter(CONFIG_FILE);
+                GSON.toJson(configData, writer);
+                writer.close();
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error saving application language: " + e.getMessage());
+        }
+    }
+
 
     /**
      * Internal class to store cipher method configuration in JSON format.

@@ -391,4 +391,16 @@ public class AffineCipherController implements CipherController, Initializable {
 
     public void showCryptanalysisDialog(ActionEvent actionEvent) {
     }
+
+    public void importPlainText(ActionEvent actionEvent) {
+    }
+
+    public void copyPlainText(ActionEvent actionEvent) {
+    }
+
+    public void importCipherText(ActionEvent actionEvent) {
+    }
+
+    public void copyCipherText(ActionEvent actionEvent) {
+    }
 }

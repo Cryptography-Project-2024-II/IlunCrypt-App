@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<GridPane
+        fx:id="grid"
+        hgap="10.0"
+        vgap="15.0"
+        styleClass="dialog-pane"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.ImportIlunDialogController">
+
+    <!-- Column Constraints -->
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <!-- Title -->
+    <Label text="Import .Ilun File"
+           styleClass="dialog-title"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0" />
+
+    <!-- File Selection -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <MFXButton fx:id="btnSelectFile" text="Select File" styleClass="outline-button" onAction="#handleSelectFile">
+            <graphic>
+                <MFXFontIcon description="fas-folder-open" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXTextField fx:id="textFieldFilePath" promptText="No file selected" editable="false" prefWidth="300.0" />
+    </HBox>
+
+    <!-- File Preview -->
+    <Label text="File Preview:" styleClass="dialog-label" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <TextArea fx:id="textAreaPreview"
+              wrapText="true"
+              editable="false"
+              promptText="File content preview..."
+              prefRowCount="5"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="3">
+        <GridPane.margin>
+            <Insets top="5.0" />
+        </GridPane.margin>
+    </TextArea>
+
+    <!-- Buttons -->
+    <HBox spacing="10.0" alignment="CENTER_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="4">
+        <MFXButton fx:id="btnCancel" text="Cancel" styleClass="outline-button-red" onAction="#handleCancel" />
+        <MFXButton fx:id="btnImport" text="Import" styleClass="outline-button-green" onAction="#handleImport" />
+    </HBox>
+</GridPane>

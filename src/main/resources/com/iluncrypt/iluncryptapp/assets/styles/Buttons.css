@@ -46,6 +46,13 @@
 	-fx-text-fill: -mfx-secondary;
 }
 
+.styled-combo-light {
+	-fx-background-color: white;
+	-fx-border-color: white;
+	-fx-border-radius: 3;
+	-fx-text-fill: -mfx-secondary;
+}
+
 
 .outline-button {
 	-fx-background-color: transparent;
@@ -53,6 +60,24 @@
 	-fx-border-radius: 3;
 
 	-fx-text-fill: -mfx-secondary;
+}
+
+.outline-button:hover,focused{
+	-fx-background-color: -mfx-secondary;
+	-fx-text-fill: white;
+}
+
+.outline-button-light{
+	-fx-background-color: white;
+	-fx-border-color: white;
+	-fx-border-radius: 3;
+	-fx-text-fill: -mfx-secondary ;
+}
+
+.outline-button-light:hover,focused{
+	-fx-background-color: -mfx-secondary;
+	-fx-text-fill: white;
+	-fx-border-color: -mfx-secondary;
 }
 
 .outline-button-green {
@@ -88,10 +113,7 @@
 	-fx-fill: -mfx-light; /* Matches the hover text color */
 }
 
-.outline-button:hover,focused{
-	-fx-background-color: -mfx-secondary;
-	-fx-text-fill: white;
-}
+
 
 /* Default icon color matches the button text */
 .button-icon {

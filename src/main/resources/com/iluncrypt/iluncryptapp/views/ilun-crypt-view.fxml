@@ -9,6 +9,7 @@
 
 <?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
 <AnchorPane fx:id="rootPane" prefHeight="720.0" prefWidth="1280.0" styleClass="rootPane" stylesheets="@../assets/styles/IlunCryptStyle.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.iluncrypt.iluncryptapp.controllers.IlunCryptController">
@@ -23,6 +24,7 @@
         <MFXFontIcon fx:id="maximizeIcon" description="fas-circle-chevron-up" size="20.0" styleClass="maximize-icon"/>
         <MFXFontIcon fx:id="closeIcon" description="fas-circle-xmark" size="20.0" styleClass="close-icon"/>
     </HBox>
+
     <VBox layoutX="227.0" layoutY="51.0" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0"
           AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
@@ -34,7 +36,7 @@
             </graphic>
         </Label>
         <VBox spacing="10.0" alignment="CENTER">
-            <Label styleClass="menu-label" text="Tools Panel">
+            <Label fx:id="toolsPanelLabel" styleClass="menu-label" text="%label.toolsPanel">
                 <VBox.margin>
                     <Insets left="5.0" top="40.0"/>
                 </VBox.margin>
@@ -54,30 +56,58 @@
                   styleClass="navbar"/>
         </MFXScrollPane>
 
-        <!-- Controles adicionales en la parte inferior -->
-        <VBox spacing="15.0" alignment="CENTER_LEFT">
-            <VBox.margin>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
-            </VBox.margin>
+        <!-- Contenedor con borde y título para Application Tools -->
+        <StackPane alignment="TOP_CENTER">
+            <VBox styleClass="bordered-section" spacing="10.0" alignment="CENTER">
+                <MFXButton fx:id="manageAlphabetsButton" text="%button.manageAlphabets" styleClass="outline-button-light" maxWidth="Infinity" onAction="#openManageAlphabetsDialog">
+                    <graphic>
+                        <MFXFontIcon description="fas-font" size="16.0" styleClass = "button-icon"/>
+                    </graphic>
 
-            <!-- Botón de cambio de tema -->
-            <VBox spacing="10.0" alignment="CENTER">
-                <Label text="Theme:" styleClass="menu-label"/>
-                <MFXToggleButton fx:id="themeToggle" text="Light Theme" />
+                </MFXButton>
+
+                <MFXButton fx:id="importEncryptedMessageButton" text="%button.importEncryptedMessage" styleClass="outline-button-light" maxWidth="Infinity" maxHeight="Infinity" onAction="#importIlunMessage">
+                    <graphic>
+                        <MFXFontIcon description="fas-file-import" size="16.0" styleClass = "button-icon"/>
+                    </graphic>
+                </MFXButton>
             </VBox>
 
-            <!-- ComboBox de selección de idioma -->
-            <VBox spacing="10.0" alignment="CENTER">
-                <Label text="Language:" styleClass="menu-label"/>
-                <MFXComboBox fx:id="languageComboBox" floatingText="Select Language" maxWidth="Infinity" styleClass="centered-combobox">
+            <Label text="%label.utilityPanel" styleClass="section-title"/>
+            <VBox.margin>
+                <Insets  top="15.0" left="20.0" right="20.0"/>
+            </VBox.margin>
+        </StackPane>
+
+        <!-- Contenedor con borde y título para Theme -->
+        <StackPane alignment="TOP_CENTER">
+            <VBox styleClass="bordered-section" spacing="10.0" alignment="CENTER">
+                <MFXToggleButton fx:id="themeToggle" text="%theme.light" />
+            </VBox>
+
+            <Label text="%label.theme" styleClass="section-title"/>
+            <VBox.margin>
+                <Insets  top="15.0" left="20.0" right="20.0"/>
+            </VBox.margin>
+        </StackPane>
+
+        <!-- Contenedor con borde y título para Language -->
+        <StackPane alignment="TOP_CENTER">
+            <VBox styleClass="bordered-section" spacing="10.0" alignment="CENTER">
+                <MFXComboBox fx:id="languageComboBox" floatMode="DISABLED" maxWidth="Infinity" styleClass="styled-combo-light">
                     <VBox.margin>
-                        <Insets top="5.0" left="15.0" right="15.0" bottom="5.0"/>
+                        <Insets top="5.0" left="20.0" right="20.0" bottom="5.0"/>
                     </VBox.margin>
                 </MFXComboBox>
             </VBox>
 
+            <Label text="%label.language" styleClass="section-title"/>
+            <VBox.margin>
+                <Insets  top="15.0" left="20.0" right="20.0"/>
+            </VBox.margin>
+        </StackPane>
 
-        </VBox>
+
 
 
 

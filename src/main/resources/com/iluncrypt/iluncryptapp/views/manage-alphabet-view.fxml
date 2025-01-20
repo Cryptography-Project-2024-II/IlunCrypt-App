@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+
+<VBox spacing="15" xmlns="http://javafx.com/javafx/17.0.6"
+      stylesheets="@../assets/styles/Buttons.css"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iluncrypt.iluncryptapp.controllers.ManageAlphabetController">
+
+    <HBox spacing="15" VBox.vgrow="ALWAYS">
+        <!-- Sección Izquierda: Tabla de alfabetos -->
+        <VBox spacing="18" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Selected:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblSelectedMethod" text="None" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0078D7;"/>
+            </HBox>
+
+            <MFXTableView fx:id="tableAlphabets" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+                <tableColumns>
+                    <MFXTableColumn text="Name" fx:id="colName" minWidth="150" maxWidth="Infinity"/>
+                    <MFXTableColumn text="Description" fx:id="colDescription" minWidth="200" maxWidth="Infinity"/>
+                    <MFXTableColumn text="Size" fx:id="colSize" minWidth="80" maxWidth="120"/>
+                </tableColumns>
+            </MFXTableView>
+        </VBox>
+
+        <!-- Separador Vertical -->
+        <Separator orientation="VERTICAL" VBox.vgrow="ALWAYS"/>
+
+        <!-- Sección Derecha: Detalles del alfabeto seleccionado -->
+        <VBox spacing="10" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <MFXButton fx:id="btnCopyClipboard" styleClass="icon-button" text="" onMouseClicked="#copyToClipboard">
+                    <graphic><MFXFontIcon description="fas-copy" size="18"/></graphic>
+                </MFXButton>
+                <Label text="Alphabet Details" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <MFXTableView fx:id="tableAlphabetDetails" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+                <tableColumns>
+                    <MFXTableColumn text="Symbol" fx:id="colSymbol" minWidth="150" maxWidth="Infinity"/>
+                    <MFXTableColumn text="Numeric Assignment" fx:id="colNumericAssignment" minWidth="200" maxWidth="Infinity"/>
+                </tableColumns>
+            </MFXTableView>
+        </VBox>
+    </HBox>
+
+    <!-- Espaciador para empujar los botones hacia la parte inferior -->
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- Botones para añadir y editar alfabetos -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <MFXButton text="Add Alphabet" fx:id="btnAddAlphabet" styleClass="outline-button" onMouseClicked="#addAlphabet"/>
+        <MFXButton text="Edit Alphabet" fx:id="btnEditAlphabet" styleClass="outline-button-green" onMouseClicked="#editAlphabet"/>
+    </HBox>
+</VBox>

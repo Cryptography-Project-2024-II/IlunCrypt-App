@@ -1,5 +1,6 @@
 package com.iluncrypt.iluncryptapp;
 
+import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import fr.brouillard.oss.cssfx.CSSFX;
 
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
@@ -34,6 +35,7 @@ public class IlunCrypt extends Application {
                 .setGlobal();
 
         FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL("views/ilun-crypt-view.fxml"));
+        loader.setResources(LanguageManager.getInstance().getBundle());
         loader.setControllerFactory(c -> new IlunCryptController(stage));
 
         Parent root = loader.load();

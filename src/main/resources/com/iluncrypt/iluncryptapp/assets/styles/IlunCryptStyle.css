@@ -18,6 +18,7 @@
 
 @import '../fonts/Fonts.css';
 @import 'MFXColors.css';
+@import 'Buttons.css';
 
 /**************************************************
  * Root
@@ -138,4 +139,23 @@
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .mfx-icon-wrapper .mfx-font-icon {
 	-mfx-color: -mfx-primary;
+}
+
+.bordered-section {
+	-fx-border-color: white;
+	-fx-border-width: 1.5px;
+	-fx-border-style: solid;
+	-fx-background-color: transparent; /* Fondo completamente transparente */
+	-fx-padding: 15px;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+}
+
+.section-title {
+	-fx-background-color: -mfx-primary;
+	-fx-padding: 0 10px;
+	-fx-font-weight: bold;
+	-fx-translate-y: -12px;
+	-fx-text-fill: white;
+	-fx-border-color: transparent;
 }
