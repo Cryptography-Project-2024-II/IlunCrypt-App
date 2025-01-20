@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
+import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
@@ -113,7 +114,7 @@ public class IlunCryptController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        this.bundle = resourceBundle != null ? resourceBundle : ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", Locale.ENGLISH);
+        this.bundle = LanguageManager.getInstance().getBundle();
         initializeUIComponents();
         registerViews();
         initializeLoader();
@@ -421,7 +422,8 @@ public class IlunCryptController implements Initializable {
     }
 
     private void setLanguage(String lang) {
-        bundle = ResourceBundle.getBundle("com.iluncrypt.iluncryptapp.locales.messages", new Locale(lang));
+        LanguageManager.getInstance().setLanguage(lang);
+        this.bundle = LanguageManager.getInstance().getBundle();
     }
 
     private void adjustContentPaneAnchors(double width, double height) {

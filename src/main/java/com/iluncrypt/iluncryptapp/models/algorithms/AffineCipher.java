@@ -4,6 +4,7 @@ import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.Cryptosystem;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.models.keys.AffineKey;
 import com.iluncrypt.iluncryptapp.models.keys.Key;
 
@@ -22,8 +23,8 @@ public class AffineCipher extends Cryptosystem {
      * @throws IllegalArgumentException If the sizes of the plaintext and ciphertext alphabets do not match.
      */
     public AffineCipher(Alphabet plaintextAlphabet, Alphabet ciphertextAlphabet,
-                        CaseHandling caseHandling, UnknownCharHandling unknownCharHandling) {
-        super(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling);
+                        CaseHandling caseHandling, UnknownCharHandling unknownCharHandling, WhitespaceHandling whitespaceHandling) {
+        super(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling, whitespaceHandling);
 
         if (plaintextAlphabet.size() != ciphertextAlphabet.size()) {
             throw new IllegalArgumentException("Plaintext and ciphertext alphabets must have the same size.");
@@ -50,6 +51,12 @@ public class AffineCipher extends Cryptosystem {
 
         StringBuilder encrypted = new StringBuilder();
         for (char c : plaintext.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                if (whitespaceHandling == WhitespaceHandling.PRESERVE) {
+                    encrypted.append(c);
+                }
+                continue;
+            }
             int index = plaintextAlphabet.getIndex(c);
             int encryptedIndex = (a * index + b) % alphabetSize;
             encrypted.append(ciphertextAlphabet.getChar(encryptedIndex));
@@ -78,6 +85,12 @@ public class AffineCipher extends Cryptosystem {
 
         StringBuilder decrypted = new StringBuilder();
         for (char c : ciphertext.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                if (whitespaceHandling == WhitespaceHandling.PRESERVE) {
+                    decrypted.append(c);
+                }
+                continue;
+            }
             int index = ciphertextAlphabet.getIndex(c);
             int decryptedIndex = (modInverse * (index - b + alphabetSize)) % alphabetSize;
             decrypted.append(plaintextAlphabet.getChar(decryptedIndex));

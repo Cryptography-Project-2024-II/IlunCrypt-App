@@ -3,6 +3,7 @@ package com.iluncrypt.iluncryptapp.models;
 import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 
 /**
  * Represents the configuration settings for a specific cipher method.
@@ -13,6 +14,7 @@ public class CipherMethodConfig {
     private Alphabet keyAlphabet;
     private CaseHandling caseHandling;
     private UnknownCharHandling unknownCharHandling;
+    private WhitespaceHandling whitespaceHandling;
 
     /**
      * Constructor for CipherMethodConfig.
@@ -22,15 +24,18 @@ public class CipherMethodConfig {
      * @param keyAlphabet The alphabet used for keys.
      * @param caseHandling How case is handled (e.g., IGNORE, STRICT).
      * @param unknownCharHandling How unknown characters are handled (e.g., REMOVE, IGNORE).
+     * @param whitespaceHandling How whitespace is handled (e.g., PRESERVE, REMOVE).
      */
     public CipherMethodConfig(Alphabet plaintextAlphabet, Alphabet ciphertextAlphabet,
                               Alphabet keyAlphabet, CaseHandling caseHandling,
-                              UnknownCharHandling unknownCharHandling) {
+                              UnknownCharHandling unknownCharHandling,
+                              WhitespaceHandling whitespaceHandling) {
         this.plaintextAlphabet = plaintextAlphabet;
         this.ciphertextAlphabet = ciphertextAlphabet;
         this.keyAlphabet = keyAlphabet;
         this.caseHandling = caseHandling;
         this.unknownCharHandling = unknownCharHandling;
+        this.whitespaceHandling = whitespaceHandling;
     }
 
     public Alphabet getPlaintextAlphabet() {
@@ -53,6 +58,10 @@ public class CipherMethodConfig {
         return unknownCharHandling;
     }
 
+    public WhitespaceHandling getWhitespaceHandling() {
+        return whitespaceHandling;
+    }
+
     public void setPlaintextAlphabet(Alphabet plaintextAlphabet) {
         this.plaintextAlphabet = plaintextAlphabet;
     }
@@ -73,6 +82,10 @@ public class CipherMethodConfig {
         this.unknownCharHandling = unknownCharHandling;
     }
 
+    public void setWhitespaceHandling(WhitespaceHandling whitespaceHandling) {
+        this.whitespaceHandling = whitespaceHandling;
+    }
+
     @Override
     public String toString() {
         return "CipherMethodConfig{" +
@@ -81,6 +94,7 @@ public class CipherMethodConfig {
                 ", keyAlphabet=" + keyAlphabet.getName() +
                 ", caseHandling=" + caseHandling +
                 ", unknownCharHandling=" + unknownCharHandling +
+                ", whitespaceHandling=" + whitespaceHandling +
                 '}';
     }
 }

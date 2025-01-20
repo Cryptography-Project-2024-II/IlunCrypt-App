@@ -2,17 +2,19 @@ package com.iluncrypt.iluncryptapp.models;
 
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.models.keys.Key;
 
 /**
  * Abstract class representing a generic cryptographic system.
- * Provides common configuration settings for handling uppercase letters and unknown characters.
+ * Provides common configuration settings for handling uppercase letters, unknown characters and whitespac.
  */
 public abstract class Cryptosystem {
     protected Alphabet plaintextAlphabet;
     protected Alphabet ciphertextAlphabet;
     protected CaseHandling caseHandling;
     protected UnknownCharHandling unknownCharHandling;
+    protected WhitespaceHandling whitespaceHandling;
 
     /**
      * Constructs a Cryptosystem with specified alphabets and handling configurations.
@@ -21,13 +23,16 @@ public abstract class Cryptosystem {
      * @param ciphertextAlphabet  The alphabet used for ciphertext.
      * @param caseHandling        The case handling strategy.
      * @param unknownCharHandling The unknown character handling strategy.
+     * @param whitespaceHandling  The whitespace handling strategy.
      */
     public Cryptosystem(Alphabet plaintextAlphabet, Alphabet ciphertextAlphabet,
-                        CaseHandling caseHandling, UnknownCharHandling unknownCharHandling) {
+                        CaseHandling caseHandling, UnknownCharHandling unknownCharHandling,
+                        WhitespaceHandling whitespaceHandling) {
         this.plaintextAlphabet = plaintextAlphabet;
         this.ciphertextAlphabet = ciphertextAlphabet;
         this.caseHandling = caseHandling;
         this.unknownCharHandling = unknownCharHandling;
+        this.whitespaceHandling = whitespaceHandling;
     }
 
     /**
@@ -102,6 +107,14 @@ public abstract class Cryptosystem {
                 case STRICT:
                     // No changes needed; keep original case
                     break;
+            }
+
+            // Apply whitespace handling rules
+            if (Character.isWhitespace(processedChar)) {
+                if (whitespaceHandling == WhitespaceHandling.PRESERVE) {
+                    normalized.append(c);
+                }
+                continue;
             }
 
             // Apply unknown character handling rules

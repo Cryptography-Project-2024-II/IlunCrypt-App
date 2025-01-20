@@ -8,6 +8,7 @@ import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
 import com.iluncrypt.iluncryptapp.models.enums.AlphabetPreset;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,7 +50,8 @@ public class ConfigManager {
                             getAlphabetByName(jsonConfig.ciphertextAlphabet),
                             getAlphabetByName(jsonConfig.keyAlphabet),
                             jsonConfig.caseHandling,
-                            jsonConfig.unknownCharHandling
+                            jsonConfig.unknownCharHandling,
+                            jsonConfig.whitespaceHandling
                     );
                 }
             }
@@ -63,7 +65,8 @@ public class ConfigManager {
                 AlphabetPreset.getAlphabetByName("A-Z"),
                 AlphabetPreset.getAlphabetByName("A-Z"),
                 CaseHandling.IGNORE,
-                UnknownCharHandling.REMOVE
+                UnknownCharHandling.REMOVE,
+                WhitespaceHandling.REMOVE
         );
     }
 
@@ -188,6 +191,7 @@ public class ConfigManager {
         private String keyAlphabet;
         private CaseHandling caseHandling;
         private UnknownCharHandling unknownCharHandling;
+        private WhitespaceHandling whitespaceHandling;
 
         CipherMethodConfigJson(CipherMethodConfig config) {
             this.plaintextAlphabet = config.getPlaintextAlphabet().getName();
@@ -195,6 +199,7 @@ public class ConfigManager {
             this.keyAlphabet = config.getKeyAlphabet().getName();
             this.caseHandling = config.getCaseHandling();
             this.unknownCharHandling = config.getUnknownCharHandling();
+            this.whitespaceHandling = config.getWhitespaceHandling();
         }
     }
 }

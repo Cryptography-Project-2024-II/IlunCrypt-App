@@ -17,9 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -147,7 +145,8 @@ public class DialogHelper {
                 throw new IllegalStateException("DialogHelper is not initialized yet.");
             }
 
-            FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL(fxmlPath));
+            ResourceBundle bundle = LanguageManager.getInstance().getBundle();
+            FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL(fxmlPath), bundle);
 
             // Si se proporciona un factory, se usa para inyectar el controlador
             if (controllerFactory != null) {

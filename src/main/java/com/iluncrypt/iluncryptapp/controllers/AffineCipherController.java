@@ -5,6 +5,7 @@ import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
 import com.iluncrypt.iluncryptapp.models.algorithms.AffineCipher;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.models.keys.AffineKey;
 import com.iluncrypt.iluncryptapp.utils.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
@@ -37,6 +38,7 @@ public class AffineCipherController implements CipherController, Initializable {
     private Alphabet keyAlphabet;
     private CaseHandling caseHandling;
     private UnknownCharHandling unknownCharHandling;
+    private WhitespaceHandling whitespaceHandling;
     private int alphabetSize;
     private CipherMethodConfig config;
 
@@ -116,6 +118,7 @@ public class AffineCipherController implements CipherController, Initializable {
         config.setKeyAlphabet(keyAlphabet);
         caseHandling = config.getCaseHandling();
         unknownCharHandling = config.getUnknownCharHandling();
+        whitespaceHandling = config.getWhitespaceHandling();
 
         if (caseHandling == null || unknownCharHandling == null) {
             throw new IllegalArgumentException("Handling settings must be valid and cannot be null.");
@@ -196,6 +199,11 @@ public class AffineCipherController implements CipherController, Initializable {
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
+        closeOptionsDialog();
+    }
+
+    @Override
+    public void closeOptionsDialog() {
         changeMethodDialog.closeDialog();
     }
 
@@ -243,7 +251,8 @@ public class AffineCipherController implements CipherController, Initializable {
             int b = parseInt(textFieldB.getText());
             try {
                 AffineKey key = new AffineKey(a, b, this.keyAlphabet);
-                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling);
+                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet,
+                                                caseHandling, unknownCharHandling, whitespaceHandling);
                 textAreaCipherText.setText(affineCipher.encrypt(plainText, key));
             } catch (IllegalArgumentException e) {
                 errorDialog.showInfoDialog("Encryption Error", e.getMessage());
@@ -262,7 +271,8 @@ public class AffineCipherController implements CipherController, Initializable {
             int b = parseInt(textFieldB.getText());
             try {
                 AffineKey key = new AffineKey(a, b, this.keyAlphabet);
-                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling);
+                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet,
+                                                caseHandling, unknownCharHandling, whitespaceHandling);
                 textAreaPlainText.setText(affineCipher.decrypt(cipherText, key));
             } catch (IllegalArgumentException e) {
                 errorDialog.showInfoDialog("Decryption Error", e.getMessage());
@@ -363,7 +373,9 @@ public class AffineCipherController implements CipherController, Initializable {
                 "mfx-dialog",
                 false,
                 false,
-                null
+                controller -> {
+                        controller.setParentController(this);
+                    }
         );
     }
 

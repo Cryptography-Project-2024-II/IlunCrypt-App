@@ -149,6 +149,11 @@ public class PermutationCipherController implements CipherController, Initializa
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
+        closeOptionsDialog();
+    }
+
+    @Override
+    public void closeOptionsDialog() {
         changeMethodDialog.closeDialog();
     }
 

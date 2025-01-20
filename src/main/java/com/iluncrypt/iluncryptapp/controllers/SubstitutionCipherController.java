@@ -149,6 +149,11 @@ public class SubstitutionCipherController implements CipherController, Initializ
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
+        closeOptionsDialog();
+    }
+
+    @Override
+    public void closeOptionsDialog() {
         changeMethodDialog.closeDialog();
     }
 

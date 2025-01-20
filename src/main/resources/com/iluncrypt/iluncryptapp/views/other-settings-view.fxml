@@ -4,8 +4,6 @@
 <?import javafx.scene.layout.*?>
 <?import io.github.palexdev.materialfx.controls.*?>
 <?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/17.0.6"
            stylesheets="@../assets/styles/Buttons.css"
@@ -13,26 +11,27 @@
            fx:controller="com.iluncrypt.iluncryptapp.controllers.OtherSettingsController">
 
     <VBox spacing="15">
-        <!-- Opción para caracteres no contemplados -->
+        <!-- Character Handling Settings Section -->
         <GridPane hgap="10" vgap="5">
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT"/>
                 <ColumnConstraints hgrow="ALWAYS"/>
             </columnConstraints>
 
-            <Label text="What to do with characters not in the alphabet?" GridPane.columnIndex="0"/>
-            <MFXComboBox fx:id="comboUnknownChars" GridPane.columnIndex="1" floatMode="DISABLED" styleClass="styled-combo">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Ignore"/>
-                        <String fx:value="Replace with ?"/>
-                        <String fx:value="Remove"/>
-                    </FXCollections>
-                </items>
-            </MFXComboBox>
+            <!-- Case Sensitivity Handling -->
+            <Label text="How to handle uppercase and lowercase letters?" GridPane.columnIndex="0"/>
+            <MFXComboBox fx:id="comboCaseHandling" GridPane.columnIndex="1" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- Handling of Unknown Characters -->
+            <Label text="How to handle characters outside the alphabet?" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <MFXComboBox fx:id="comboUnknownChars" GridPane.columnIndex="1" GridPane.rowIndex="1" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- Handling of Whitespace -->
+            <Label text="How to handle spaces and whitespace characters?" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <MFXComboBox fx:id="comboWhitespaceHandling" GridPane.columnIndex="1" GridPane.rowIndex="2" floatMode="DISABLED" styleClass="styled-combo"/>
         </GridPane>
 
-        <!-- Sección para cambiar alfabetos -->
+        <!-- Alphabet Selection Section -->
         <GridPane hgap="10" vgap="10">
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" minWidth="150"/>
@@ -40,7 +39,7 @@
                 <ColumnConstraints halignment="RIGHT"/>
             </columnConstraints>
 
-            <!-- Plaintext Alphabet -->
+            <!-- Plaintext Alphabet Selection -->
             <Label text="Plaintext Alphabet" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <Label fx:id="lblPlainAlphabet" text="Default" style="-fx-border-color: #ccc; -fx-border-radius: 10; -fx-padding: 5px; -fx-min-width: 220px;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
             <HBox spacing="5" GridPane.rowIndex="0" GridPane.columnIndex="2">
@@ -49,7 +48,7 @@
                 </MFXButton>
             </HBox>
 
-            <!-- Ciphertext Alphabet -->
+            <!-- Ciphertext Alphabet Selection -->
             <Label text="Ciphertext Alphabet" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <Label fx:id="lblCipherAlphabet" text="Default" style="-fx-border-color: #ccc; -fx-border-radius: 10; -fx-padding: 5px; -fx-min-width: 220px;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
             <HBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="2">
@@ -58,7 +57,7 @@
                 </MFXButton>
             </HBox>
 
-            <!-- Key Alphabet -->
+            <!-- Key Alphabet Selection -->
             <Label text="Key Alphabet" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <Label fx:id="lblKeyAlphabet" text="Default" style="-fx-border-color: #ccc; -fx-border-radius: 10; -fx-padding: 5px; -fx-min-width: 220px;" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
             <HBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="2">
@@ -68,12 +67,12 @@
             </HBox>
         </GridPane>
 
-        <!-- Contenedor de botones alineados a la derecha -->
+        <!-- Button Section (Aligned to the Right) -->
         <HBox alignment="BOTTOM_RIGHT" spacing="10">
             <Region HBox.hgrow="ALWAYS"/> <!-- Empuja los botones a la derecha -->
             <MFXButton fx:id="btnSaveAsDefault" text="Save as Default" styleClass="outline-button-green"/>
             <MFXButton fx:id="btnSave" text="Save" styleClass="outline-button"/>
-            <MFXButton fx:id="btnCancel" text="Cancel" styleClass="outline-button-red"/>
+            <MFXButton fx:id="btnCancel" text="Cancel" styleClass="outline-button-red" onAction="#closeDialog"/>
         </HBox>
 
     </VBox>

@@ -167,6 +167,11 @@ public class MultiplicativeCipherController implements CipherController, Initial
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
+        closeOptionsDialog();
+    }
+
+    @Override
+    public void closeOptionsDialog() {
         changeMethodDialog.closeDialog();
     }
 

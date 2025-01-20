@@ -22,4 +22,6 @@ public interface CipherController {
      * @param methodView The encryption method view to load.
      */
     void switchEncryptionMethod(String methodView);
+
+    void closeOptionsDialog();
 }

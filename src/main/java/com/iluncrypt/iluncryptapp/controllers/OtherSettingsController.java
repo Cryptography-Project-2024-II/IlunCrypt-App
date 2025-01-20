@@ -1,12 +1,15 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
+import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
-import com.iluncrypt.iluncryptapp.utils.ConfigManager;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -14,6 +17,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 /**
  * Controller for managing additional settings for the Affine Cipher.
@@ -32,7 +37,13 @@ public class OtherSettingsController implements Initializable {
     private Label lblKeyAlphabet;
 
     @FXML
+    private MFXComboBox<String> comboCaseHandling;
+
+    @FXML
     private MFXComboBox<String> comboUnknownChars;
+
+    @FXML
+    private MFXComboBox<String> comboWhitespaceHandling;
 
     @FXML
     private MFXButton btnChangePlainAlphabet;
@@ -51,6 +62,14 @@ public class OtherSettingsController implements Initializable {
     private final Stage stage;
     private final CipherMethodConfig config;
 
+    private CipherController parentController;
+
+    private ResourceBundle bundle;
+
+    private final Map<String, CaseHandling> caseHandlingMap = new HashMap<>();
+    private final Map<String, UnknownCharHandling> unknownCharHandlingMap = new HashMap<>();
+    private final Map<String, WhitespaceHandling> whitespaceHandlingMap = new HashMap<>();
+
     /**
      * Constructor that initializes the controller with a specific cipher method configuration.
      *
@@ -63,14 +82,64 @@ public class OtherSettingsController implements Initializable {
         this.config = config;
     }
 
+    public void setParentController(CipherController parentController) {
+        this.parentController = parentController;
+    }
+
     /**
      * Initializes the controller and loads current settings.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.dialogHelper.setOwnerNode(rootPane);
-        loadAlphabets();
-        loadUnknownCharHandling();
+        this.bundle = LanguageManager.getInstance().getBundle();
+        Platform.runLater(() -> {
+            loadCaseHandlingOptions();
+            loadUnknownCharHandlingOptions();
+            loadWhitespaceHandlingOptions();
+            loadAlphabets();
+        });
+    }
+
+    private void loadCaseHandlingOptions() {
+        for (CaseHandling handling : CaseHandling.values()) {
+            String localizedText = bundle.getString("caseHandling." + handling.name());
+            caseHandlingMap.put(localizedText, handling);
+            comboCaseHandling.getItems().add(localizedText);
+        }
+        comboCaseHandling.setValue(bundle.getString("caseHandling." + config.getCaseHandling().name()));
+    }
+
+    private void loadUnknownCharHandlingOptions() {
+        for (UnknownCharHandling handling : UnknownCharHandling.values()) {
+            String localizedText = bundle.getString("unknownCharHandling." + handling.name());
+            unknownCharHandlingMap.put(localizedText, handling);
+            comboUnknownChars.getItems().add(localizedText);
+        }
+        comboUnknownChars.setValue(bundle.getString("unknownCharHandling." + config.getUnknownCharHandling().name()));
+    }
+
+    private void loadWhitespaceHandlingOptions() {
+        for (WhitespaceHandling handling : WhitespaceHandling.values()) {
+            String localizedText = bundle.getString("whitespaceHandling." + handling.name());
+            whitespaceHandlingMap.put(localizedText, handling);
+            comboWhitespaceHandling.getItems().add(localizedText);
+        }
+        comboWhitespaceHandling.setValue(bundle.getString("whitespaceHandling." + config.getWhitespaceHandling().name()));
+    }
+
+    /**
+     * Devuelve el valor seleccionado en el ComboBox mapeado a su respectivo Enum.
+     */
+    public CaseHandling getSelectedCaseHandling() {
+        return caseHandlingMap.get(comboCaseHandling.getValue());
+    }
+
+    public UnknownCharHandling getSelectedUnknownCharHandling() {
+        return unknownCharHandlingMap.get(comboUnknownChars.getValue());
+    }
+
+    public WhitespaceHandling getSelectedWhitespaceHandling() {
+        return whitespaceHandlingMap.get(comboWhitespaceHandling.getValue());
     }
 
     /**
@@ -80,14 +149,6 @@ public class OtherSettingsController implements Initializable {
         lblPlainAlphabet.setText(config.getPlaintextAlphabet().getName());
         lblCipherAlphabet.setText(config.getCiphertextAlphabet().getName());
         lblKeyAlphabet.setText(config.getKeyAlphabet().getName());
-    }
-
-    /**
-     * Loads the unknown character handling setting and sets the combo box value.
-     */
-    private void loadUnknownCharHandling() {
-        UnknownCharHandling handling = config.getUnknownCharHandling();
-        comboUnknownChars.setValue(handling.toString());
     }
 
     /**
@@ -126,8 +187,11 @@ public class OtherSettingsController implements Initializable {
     /**
      * Closes the settings dialog.
      */
+    @FXML
     private void closeDialog() {
-        dialogHelper.closeDialog();
+        if (parentController != null) {
+            parentController.closeOptionsDialog();
+        }
     }
 
     /**
