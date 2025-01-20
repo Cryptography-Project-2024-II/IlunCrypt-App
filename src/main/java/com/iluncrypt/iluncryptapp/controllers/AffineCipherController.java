@@ -9,6 +9,7 @@ import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.models.keys.AffineKey;
 import com.iluncrypt.iluncryptapp.utils.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.event.ActionEvent;
@@ -157,14 +158,20 @@ public class AffineCipherController implements CipherController, Initializable {
      */
     @FXML
     private void showInfoDialog() {
+        infoDialog.enableDynamicSize(0.6, 0.6); // Enable dynamic size (60% of the main window)
+
         infoDialog.showFXMLDialog(
                 "Affine Cipher Information",
-                "views/affine-cipher-description-view.fxml",
+                "views/container-dialog-view.fxml",  // Load the container
+                ContainerDialogController::new,
                 new MFXFontIcon("fas-circle-info", 18),
-                "mfx-fxml-dialog",
+                "mfx-dialog",
                 false,
                 false,
-                null
+                controller -> {
+                        ResourceBundle bundle = LanguageManager.getInstance().getBundle();
+                        controller.loadContent("views/affine-cipher-description-view.fxml", bundle); // Load the description view inside the container
+                }
         );
     }
 

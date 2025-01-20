@@ -1,7 +1,6 @@
 package com.iluncrypt.iluncryptapp.utils;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
-import com.iluncrypt.iluncryptapp.controllers.OtherSettingsController;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
@@ -27,6 +26,10 @@ public class DialogHelper {
     private Pane ownerNode;
     private MFXGenericDialog dialogContent;
     private MFXStageDialog dialog;
+
+    private boolean isDynamicSizeEnabled = false;
+    private double widthPercentage = 0.6;  // Default: 60% of main window width
+    private double heightPercentage = 0.6; // Default: 60% of main window height
 
     public DialogHelper(Stage stage) {
         this.stage = stage;
@@ -54,6 +57,19 @@ public class DialogHelper {
                     .setScrimOwner(true)
                     .get();
         });
+    }
+
+    /**
+     * Enables dynamic sizing for dialogs based on the main window size.
+     * This must be called before opening a dialog for it to take effect.
+     *
+     * @param widthPercentage  The percentage of the main window width.
+     * @param heightPercentage The percentage of the main window height.
+     */
+    public void enableDynamicSize(double widthPercentage, double heightPercentage) {
+        this.isDynamicSizeEnabled = true;
+        this.widthPercentage = Math.max(0.3, Math.min(widthPercentage, 0.8));  // Clamp between 30% and 80%
+        this.heightPercentage = Math.max(0.3, Math.min(heightPercentage, 0.8));
     }
 
     /**
@@ -145,6 +161,10 @@ public class DialogHelper {
                 throw new IllegalStateException("DialogHelper is not initialized yet.");
             }
 
+            if (isDynamicSizeEnabled) {
+                adjustDialogSize(); // Apply dynamic size if enabled
+            }
+
             ResourceBundle bundle = LanguageManager.getInstance().getBundle();
             FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL(fxmlPath), bundle);
 
@@ -183,7 +203,28 @@ public class DialogHelper {
         });
     }
 
+    /**
+     * Adjusts the dialog size dynamically based on the main window size.
+     * Only applies if dynamic sizing has been enabled.
+     */
+    private void adjustDialogSize() {
+        double windowWidth = stage.getWidth();
+        double windowHeight = stage.getHeight();
 
+        double dialogWidth = windowWidth * widthPercentage;
+        double dialogHeight = windowHeight * heightPercentage;
+
+        double minWidth = 400, minHeight = 300;
+        double maxWidth = 800, maxHeight = 600;
+
+        double finalWidth = Math.max(minWidth, Math.min(dialogWidth, maxWidth));
+        double finalHeight = Math.max(minHeight, Math.min(dialogHeight, maxHeight));
+
+        dialog.setWidth(finalWidth);
+        dialog.setHeight(finalHeight);
+        dialog.setMaxWidth(maxWidth);
+        dialog.setMaxHeight(maxHeight);
+    }
 
 
     /**
