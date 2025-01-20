@@ -258,5 +258,6 @@ public class HillCipherController implements CipherController, Initializable {
     public void editMatrix(ActionEvent actionEvent) {}
 
     public void showOtherSettings(ActionEvent actionEvent) {
+
     }
 }

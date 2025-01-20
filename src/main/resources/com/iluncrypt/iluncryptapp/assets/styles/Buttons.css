@@ -39,6 +39,14 @@
 	-fx-text-fill: white
 }
 
+.styled-combo {
+	-fx-background-color: transparent;
+	-fx-border-color: -mfx-secondary;
+	-fx-border-radius: 3;
+	-fx-text-fill: -mfx-secondary;
+}
+
+
 .outline-button {
 	-fx-background-color: transparent;
 	-fx-border-color: -mfx-secondary;

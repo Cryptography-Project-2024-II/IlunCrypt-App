@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.utils;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
+import com.iluncrypt.iluncryptapp.controllers.OtherSettingsController;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
@@ -20,6 +21,7 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class DialogHelper {
 
@@ -131,28 +133,32 @@ public class DialogHelper {
         });
     }
 
-    /**
-     * Displays a dialog with an FXML file as the body content and allows controller injection.
-     *
-     * @param title         The title of the dialog.
-     * @param fxmlPath      The path to the FXML file to load.
-     * @param icon          The icon to display in the dialog header.
-     * @param styleClass    The CSS style class for the dialog.
-     * @param movable       Whether the dialog can be dragged.
-     * @param actions       Whether to include default close actions.
-     * @param controllerConsumer A consumer to process the loaded controller.
-     */
     public <T> void showFXMLDialog(String title, String fxmlPath, MFXFontIcon icon, String styleClass, boolean movable, boolean actions, Consumer<T> controllerConsumer) {
+        loadAndShowDialog(title, fxmlPath, null, icon, styleClass, movable, actions, controllerConsumer);
+    }
+
+    public <T> void showFXMLDialog(String title, String fxmlPath, Supplier<T> controllerFactory, MFXFontIcon icon, String styleClass, boolean movable, boolean actions, Consumer<T> controllerConsumer) {
+        loadAndShowDialog(title, fxmlPath, controllerFactory, icon, styleClass, movable, actions, controllerConsumer);
+    }
+
+    private <T> void loadAndShowDialog(String title, String fxmlPath, Supplier<T> controllerFactory, MFXFontIcon icon, String styleClass, boolean movable, boolean actions, Consumer<T> controllerConsumer) {
         Platform.runLater(() -> {
             if (dialogContent == null || dialog == null) {
                 throw new IllegalStateException("DialogHelper is not initialized yet.");
             }
 
             FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL(fxmlPath));
+
+            // Si se proporciona un factory, se usa para inyectar el controlador
+            if (controllerFactory != null) {
+                loader.setControllerFactory(param -> controllerFactory.get());
+            }
+
             Node customContent;
             try {
                 customContent = loader.load();
                 T controller = loader.getController();
+
                 if (controllerConsumer != null && controller != null) {
                     controllerConsumer.accept(controller);
                 }
@@ -165,6 +171,8 @@ public class DialogHelper {
             dialogContent.setHeaderIcon(icon);
             dialogContent.getStyleClass().add(styleClass);
             dialogContent.clearActions();
+            dialogContent.setShowMinimize(false);
+            dialogContent.setShowAlwaysOnTop(false);
             if (actions) {
                 dialogContent.addActions(
                         createAction(new MFXButton("Close"), event -> dialog.close())
@@ -175,6 +183,9 @@ public class DialogHelper {
             dialog.showDialog();
         });
     }
+
+
+
 
     /**
      * Provides access to the MFXGenericDialog for external modifications.

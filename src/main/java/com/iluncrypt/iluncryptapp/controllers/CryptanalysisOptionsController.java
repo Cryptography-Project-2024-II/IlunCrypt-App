@@ -13,5 +13,6 @@ public class CryptanalysisOptionsController {
     }
 
     public void handleFrequency(ActionEvent actionEvent) {
+
     }
 }

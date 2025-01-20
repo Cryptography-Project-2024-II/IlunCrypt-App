@@ -94,10 +94,10 @@ public abstract class Cryptosystem {
             // Apply case handling rules
             switch (caseHandling) {
                 case IGNORE:
-                    processedChar = Character.toLowerCase(c);
+                    processedChar = Character.toUpperCase(c);
                     break;
                 case PRESERVE:
-                    processedChar = (alphabet.isValidChar(Character.toLowerCase(c))) ? c : Character.toLowerCase(c);
+                    // No changes, but it's needed to review
                     break;
                 case STRICT:
                     // No changes needed; keep original case

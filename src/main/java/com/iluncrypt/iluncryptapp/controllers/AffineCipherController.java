@@ -1,15 +1,19 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import com.iluncrypt.iluncryptapp.models.Alphabet;
+import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.AffineCipher;
+import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
+import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.keys.AffineKey;
+import com.iluncrypt.iluncryptapp.utils.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
-import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -17,19 +21,30 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * Controller for the Affine Cipher encryption system.
- * This class manages encryption, decryption, and UI interactions for the Affine Cipher.
+ * Manages UI interactions, and related settings.
  */
 public class AffineCipherController implements CipherController, Initializable {
 
-    private static final int ALPHABET_SIZE = 26;
+    // Alphabets and configurations
+    private Alphabet plaintextAlphabet;
+    private Alphabet ciphertextAlphabet;
+    private Alphabet keyAlphabet;
+    private CaseHandling caseHandling;
+    private UnknownCharHandling unknownCharHandling;
+    private int alphabetSize;
+    private CipherMethodConfig config;
 
+    // Dialog helpers
     private final DialogHelper infoDialog;
     private final DialogHelper changeMethodDialog;
+    private final DialogHelper errorDialog;
+    private final Stage stage;
 
     // Stores the last entered values when switching methods
     private String lastPlainText = "";
@@ -52,31 +67,63 @@ public class AffineCipherController implements CipherController, Initializable {
     @FXML
     private MFXTextField textFieldB;
 
-    @FXML
-    private MFXButton btnInfo;
-
     /**
      * Constructor for AffineCipherController.
-     * Initializes separate dialog instances to prevent interference.
+     * Initializes dialog instances and sets up the main stage reference.
      *
      * @param stage The primary stage used for managing dialogs.
      */
     public AffineCipherController(Stage stage) {
+        this.stage = stage;
         this.infoDialog = new DialogHelper(stage);
         this.changeMethodDialog = new DialogHelper(stage);
+        this.errorDialog = new DialogHelper(stage);
+        this.config = ConfigManager.loadCipherMethodConfig("AFFINE-CIPHER");
     }
 
+
     /**
-     * Initializes the controller and configures the UI layout.
+     * Initializes the controller and configures UI layout and dialogs.
+     *
+     * @param location The location used to resolve relative paths for the root object.
+     * @param resources The resources used to localize the root object.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureGridGrowth();
         configureDialogs();
+        loadConfig();
     }
 
     /**
-     * Configures the properties of the GridPane for responsive behavior.
+     * Loads the Affine Cipher configuration from the configuration file.
+     * Ensures alphabets and settings are valid and consistent.
+     */
+    private void loadConfig() {
+        plaintextAlphabet = config.getPlaintextAlphabet();
+        ciphertextAlphabet = config.getCiphertextAlphabet();
+
+        if (plaintextAlphabet == null || ciphertextAlphabet == null) {
+            throw new IllegalArgumentException("Both alphabets must be valid and cannot be null.");
+        }
+
+        if (plaintextAlphabet.size() != ciphertextAlphabet.size()) {
+            throw new IllegalArgumentException("Both alphabets must have the same size.");
+        }
+
+        alphabetSize = plaintextAlphabet.size();
+        keyAlphabet = Alphabet.generateZAlphabet(alphabetSize);
+        config.setKeyAlphabet(keyAlphabet);
+        caseHandling = config.getCaseHandling();
+        unknownCharHandling = config.getUnknownCharHandling();
+
+        if (caseHandling == null || unknownCharHandling == null) {
+            throw new IllegalArgumentException("Handling settings must be valid and cannot be null.");
+        }
+    }
+
+    /**
+     * Configures the properties of the GridPane to support responsive layout.
      */
     private void configureGridGrowth() {
         grid.setMaxHeight(Double.MAX_VALUE);
@@ -86,11 +133,12 @@ public class AffineCipherController implements CipherController, Initializable {
     }
 
     /**
-     * Configures both dialogs to ensure they are correctly initialized before being displayed.
+     * Configures dialog instances for consistent usage throughout the application.
      */
     private void configureDialogs() {
         infoDialog.setOwnerNode(grid);
         changeMethodDialog.setOwnerNode(grid);
+        errorDialog.setOwnerNode(grid);
     }
 
     /**
@@ -106,46 +154,19 @@ public class AffineCipherController implements CipherController, Initializable {
      */
     @FXML
     private void showInfoDialog() {
-        /*infoDialog.showInfoDialog(
-                "Affine Cipher",
-                """
-                The Affine Cipher is a type of substitution cipher that uses a mathematical function 
-                to encrypt and decrypt text.
-    
-                Encryption formula:
-                E(x) = (a * x + b) mod m
-    
-                Where:
-                - 'x' is the position of the plaintext letter in the alphabet (starting from 0).
-                - 'a' and 'b' are keys used for encryption.
-                - 'm' is the size of the alphabet (e.g., 26 for English letters).
-    
-                Decryption formula:
-                D(x) = a_inv * (x - b) mod m
-    
-                Where 'a_inv' is the modular multiplicative inverse of 'a' modulo 'm'.
-    
-                Important Notes:
-                - The key 'a' must be coprime with 'm' for the cipher to work correctly.
-                - This cipher is vulnerable to frequency analysis if the ciphertext is long enough.
-                """
-        );*/
-
-            infoDialog.showFXMLDialog(
-                    "Affine Cipher Information", // Dialog title
-                    "views/affine-cipher-description-view.fxml", // Path to the FXML file
-                    new MFXFontIcon("fas-info-circle", 18), // Icon
-                    "mfx-fxml-dialog", // Custom style class for the dialog
-                    false, // Not blocking
-                    false,controller -> {
-                    }
-
-            );
-
+        infoDialog.showFXMLDialog(
+                "Affine Cipher Information",
+                "views/affine-cipher-description-view.fxml",
+                new MFXFontIcon("fas-circle-info", 18),
+                "mfx-fxml-dialog",
+                false,
+                false,
+                null
+        );
     }
 
     /**
-     * Displays a dialog to change the encryption method.
+     * Displays a dialog for changing the encryption method.
      */
     @FXML
     private void showChangeMethodDialog() {
@@ -169,6 +190,7 @@ public class AffineCipherController implements CipherController, Initializable {
      *
      * @param methodView The encryption method view to load.
      */
+
     @Override
     public void switchEncryptionMethod(String methodView) {
         saveCurrentState();
@@ -178,18 +200,18 @@ public class AffineCipherController implements CipherController, Initializable {
     }
 
     /**
-     * Saves the current text values before switching methods.
+     * Saves the current text and key values before switching methods.
      */
     @Override
     public void saveCurrentState() {
         lastPlainText = textAreaPlainText.getText();
         lastCipherText = textAreaCipherText.getText();
-        lastA = parseInt(textFieldA.getText(), 1);
-        lastB = parseInt(textFieldB.getText(), 0);
+        lastA = parseInt(textFieldA.getText());
+        lastB = parseInt(textFieldB.getText());
     }
 
     /**
-     * Restores the previously entered values after switching methods.
+     * Restores the saved text and key values after switching methods.
      */
     @Override
     public void restorePreviousState() {
@@ -199,95 +221,155 @@ public class AffineCipherController implements CipherController, Initializable {
         textFieldB.setText(String.valueOf(lastB));
     }
 
-    /** Utility Methods **/
-
+    /**
+     * Clears the text areas for plaintext and ciphertext.
+     */
     @FXML
     private void clearTextAreas() {
         textAreaPlainText.clear();
         textAreaCipherText.clear();
     }
 
-    @FXML
-    private void showCryptanalysisDialog() {
-        if (textAreaCipherText.getText().isEmpty()) {
-            showAlert("Cryptanalysis Error", "No Cipher Text Found", "Please enter cipher text to perform cryptanalysis.");
-        } else {
-            showAlert("Perform Cryptanalysis", "Confirm Cryptanalysis", "Proceed with cryptanalysis on the cipher text?");
-        }
-    }
-
-    private void showAlert(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
     /** Encryption and Decryption **/
 
+    /**
+     * Encrypts the plaintext using the Affine Cipher and displays the ciphertext.
+     */
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
         if (!plainText.isEmpty()) {
-            int a = parseInt(textFieldA.getText(), 1);
-            int b = parseInt(textFieldB.getText(), 0);
-            textAreaCipherText.setText(affineEncrypt(plainText, a, b));
+            int a = parseInt(textFieldA.getText());
+            int b = parseInt(textFieldB.getText());
+            try {
+                AffineKey key = new AffineKey(a, b, this.keyAlphabet);
+                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling);
+                textAreaCipherText.setText(affineCipher.encrypt(plainText, key));
+            } catch (IllegalArgumentException e) {
+                errorDialog.showInfoDialog("Encryption Error", e.getMessage());
+            }
         }
     }
 
+    /**
+     * Decrypts the ciphertext using the Affine Cipher and displays the plaintext.
+     */
     @FXML
     private void decipherText() {
         String cipherText = textAreaCipherText.getText();
         if (!cipherText.isEmpty()) {
-            int a = parseInt(textFieldA.getText(), 1);
-            int b = parseInt(textFieldB.getText(), 0);
-            textAreaPlainText.setText(affineDecrypt(cipherText, a, b));
+            int a = parseInt(textFieldA.getText());
+            int b = parseInt(textFieldB.getText());
+            try {
+                AffineKey key = new AffineKey(a, b, this.keyAlphabet);
+                AffineCipher affineCipher = new AffineCipher(plaintextAlphabet, ciphertextAlphabet, caseHandling, unknownCharHandling);
+                textAreaPlainText.setText(affineCipher.decrypt(cipherText, key));
+            } catch (IllegalArgumentException e) {
+                errorDialog.showInfoDialog("Decryption Error", e.getMessage());
+            }
         }
     }
 
-    private String affineEncrypt(String plainText, int a, int b) {
-        return "EncryptedText"; // Placeholder implementation
-    }
 
-    private String affineDecrypt(String cipherText, int a, int b) {
-        return "DecryptedText"; // Placeholder implementation
-    }
 
     /** Increment/Decrement Controls **/
 
+    /**
+     * Decrements the value in textFieldA to the next coprime value with the alphabet size.
+     * This method ensures that the updated value is within the valid range and is coprime
+     * to the alphabet size.
+     */
     @FXML
     private void decrementA() {
-        updateValue(textFieldA, -1, 0, ALPHABET_SIZE - 1);
+        updateCoprimeValue(textFieldA, -1, 0, this.alphabetSize - 1);
     }
 
+    /**
+     * Increments the value in textFieldA to the next coprime value with the alphabet size.
+     * This method ensures that the updated value is within the valid range and is coprime
+     * to the alphabet size.
+     */
     @FXML
     private void incrementA() {
-        updateValue(textFieldA, 1, 0, ALPHABET_SIZE - 1);
+        updateCoprimeValue(textFieldA, 1, 0, this.alphabetSize - 1);
     }
 
+    /**
+     * Decrements the value in textFieldB by 1 while keeping the value within the valid range.
+     */
     @FXML
     private void decrementB() {
-        updateValue(textFieldB, -1, 0, ALPHABET_SIZE - 1);
+        updateValue(textFieldB, -1, 0, this.alphabetSize - 1);
     }
 
+    /**
+     * Increments the value in textFieldB by 1 while keeping the value within the valid range.
+     */
     @FXML
     private void incrementB() {
-        updateValue(textFieldB, 1, 0, ALPHABET_SIZE - 1);
+        updateValue(textFieldB, 1, 0, this.alphabetSize - 1);
     }
 
+    /**
+     * Updates the value of the given text field by applying the specified delta.
+     * Ensures that the resulting value remains within the specified range.
+     *
+     * @param textField the text field to update
+     * @param delta the value to add (or subtract) from the current value
+     * @param min the minimum allowable value
+     * @param max the maximum allowable value
+     * @throws NumberFormatException if the text in the field is not a valid integer
+     */
     private void updateValue(MFXTextField textField, int delta, int min, int max) {
-        int value = parseInt(textField.getText(), min);
-        textField.setText(String.valueOf(Math.max(min, Math.min(value + delta, max))));
+        int value = parseInt(textField.getText());
+        int newValue = (value + delta) % this.alphabetSize;
+        if (newValue < min) newValue = max;
+        textField.setText(String.valueOf(newValue));
     }
 
-    private int parseInt(String text, int defaultValue) {
-        return Optional.ofNullable(text).filter(t -> !t.isEmpty()).map(Integer::parseInt).orElse(defaultValue);
+    /**
+     * Updates the value of the given text field by applying the specified delta
+     * until the new value is coprime with the alphabet size. Ensures that the
+     * resulting value remains within the specified range.
+     *
+     * @param textField the text field to update
+     * @param delta the value to add (or subtract) from the current value
+     * @param min the minimum allowable value
+     * @param max the maximum allowable value
+     * @throws NumberFormatException if the text in the field is not a valid integer
+     */
+    private void updateCoprimeValue(MFXTextField textField, int delta, int min, int max) {
+        int value = parseInt(textField.getText());
+        int newValue = value;
+
+        do {
+            newValue = (newValue + delta) % this.alphabetSize;
+            if (newValue < min) newValue = max; // Ensures the value stays within the range
+        } while (AffineKey.gcd(newValue, this.alphabetSize) != 1);
+
+        textField.setText(String.valueOf(newValue));
     }
 
-    /** Placeholder methods **/
 
-    public void exportEncryptedText(ActionEvent actionEvent) {}
+    /** Additional Settings **/
 
-    public void showOtherSettings(ActionEvent actionEvent) {}
+    @FXML
+    private void showOtherSettings() {
+        changeMethodDialog.showFXMLDialog(
+                "Other Settings (Affine Cipher)",
+                "views/other-settings-view.fxml",
+                () -> new OtherSettingsController(this.stage, this.config),
+                new MFXFontIcon("fas-gear", 18),
+                "mfx-dialog",
+                false,
+                false,
+                null
+        );
+    }
+
+    public void exportEncryptedText(ActionEvent actionEvent) {
+    }
+
+    public void showCryptanalysisDialog(ActionEvent actionEvent) {
+    }
 }

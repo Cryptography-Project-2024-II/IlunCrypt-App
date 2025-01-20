@@ -8,11 +8,11 @@ import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
  * Represents the configuration settings for a specific cipher method.
  */
 public class CipherMethodConfig {
-    private final Alphabet plaintextAlphabet;
-    private final Alphabet ciphertextAlphabet;
-    private final Alphabet keyAlphabet;
-    private final CaseHandling caseHandling;
-    private final UnknownCharHandling unknownCharHandling;
+    private Alphabet plaintextAlphabet;
+    private Alphabet ciphertextAlphabet;
+    private Alphabet keyAlphabet;
+    private CaseHandling caseHandling;
+    private UnknownCharHandling unknownCharHandling;
 
     /**
      * Constructor for CipherMethodConfig.
@@ -51,6 +51,26 @@ public class CipherMethodConfig {
 
     public UnknownCharHandling getUnknownCharHandling() {
         return unknownCharHandling;
+    }
+
+    public void setPlaintextAlphabet(Alphabet plaintextAlphabet) {
+        this.plaintextAlphabet = plaintextAlphabet;
+    }
+
+    public void setCiphertextAlphabet(Alphabet ciphertextAlphabet) {
+        this.ciphertextAlphabet = ciphertextAlphabet;
+    }
+
+    public void setKeyAlphabet(Alphabet keyAlphabet) {
+        this.keyAlphabet = keyAlphabet;
+    }
+
+    public void setCaseHandling(CaseHandling caseHandling) {
+        this.caseHandling = caseHandling;
+    }
+
+    public void setUnknownCharHandling(UnknownCharHandling unknownCharHandling) {
+        this.unknownCharHandling = unknownCharHandling;
     }
 
     @Override

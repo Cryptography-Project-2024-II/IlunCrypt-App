@@ -1,4 +1,6 @@
-package com.iluncrypt.iluncryptapp.models;
+package com.iluncrypt.iluncryptapp.models.enums;
+
+import com.iluncrypt.iluncryptapp.models.Alphabet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
