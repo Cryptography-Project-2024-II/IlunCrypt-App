@@ -402,5 +402,6 @@ public class AffineCipherController implements CipherController, Initializable {
     }
 
     public void copyCipherText(ActionEvent actionEvent) {
+        
     }
 }
