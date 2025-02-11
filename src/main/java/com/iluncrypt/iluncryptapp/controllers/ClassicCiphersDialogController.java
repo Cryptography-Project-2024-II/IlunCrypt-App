@@ -5,7 +5,7 @@ import javafx.event.ActionEvent;
 /**
  * Controller for handling encryption method selection from the change method dialog.
  */
-public class EncryptDecryptOptionsDialogController {
+public class ClassicCiphersDialogController {
 
     private CipherController parentController; // Generic reference to any cipher controller
 

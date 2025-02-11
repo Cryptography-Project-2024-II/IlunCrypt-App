@@ -2,11 +2,9 @@ package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
 import javafx.animation.PauseTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -16,7 +14,7 @@ import java.io.IOException;
 /**
  * Controller for managing encryption method options and dynamically updating the content view.
  */
-public class EncryptDecryptOptionsController {
+public class ClassicCiphersController {
 
     @FXML
     private StackPane dynamicContent; // StackPane where dynamic content is displayed.
@@ -26,7 +24,7 @@ public class EncryptDecryptOptionsController {
     /**
      * Constructor initializes the delay transition.
      */
-    public EncryptDecryptOptionsController() {
+    public ClassicCiphersController() {
         this.delayTransition = new PauseTransition(Duration.millis(500));
         this.delayTransition.setOnFinished(event -> loadView("views/ed-methods-description-view.fxml"));
     }

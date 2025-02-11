@@ -191,8 +191,9 @@ public class IlunCryptController implements Initializable {
      * Register application views with their respective FXML files.
      */
     private void registerViews() {
-        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/encrypt-decrypt-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Classical Ciphers")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/classic-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Classical Ciphers")).setDefaultRoot(true).get());
         loader.addView(MFXLoaderBean.of("BLOCK-CIPHERS", ResourcesLoader.loadURL("views/block-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Block Ciphers")).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("PUBLIC-KEY-CIPHERS", ResourcesLoader.loadURL("views/public-key-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Public Key Ciphers")).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("IMAGE-CIPHERS", ResourcesLoader.loadURL("views/image-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Image Ciphers")).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("CRIPTOANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptoanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptoanalysis")).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new AffineCipherController(stage)).setDefaultRoot(false).get());

@@ -182,13 +182,13 @@ public class AffineCipherController implements CipherController, Initializable {
     private void showChangeMethodDialog() {
         changeMethodDialog.showFXMLDialog(
                 "Cipher/Decipher Methods",
-                "views/encrypt-decrypt-options-dialog-view.fxml",
+                "views/classic-ciphers-dialog-view.fxml",
                 new MFXFontIcon("fas-list", 18),
                 "mfx-fxml-dialog",
                 false,
                 false,
                 controller -> {
-                    if (controller instanceof EncryptDecryptOptionsDialogController dialogController) {
+                    if (controller instanceof ClassicCiphersDialogController dialogController) {
                         dialogController.setParentController(this);
                     }
                 }

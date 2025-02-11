@@ -19,7 +19,7 @@
         stylesheets="@../assets/styles/Buttons.css"
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.iluncrypt.iluncryptapp.controllers.ImageCiphersController">
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.PublicKeyCiphersController">
 
    <!-- Column constraints for responsiveness -->
    <columnConstraints>
@@ -43,7 +43,7 @@
    <!-- Top Bar Section -->
    <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
       <HBox spacing="10.0" alignment="CENTER">
-         <Label text="Image Ciphers" styleClass="top-bar-title" alignment="CENTER" />
+         <Label text="Public Key Ciphers" styleClass="top-bar-title" alignment="CENTER" />
       </HBox>
    </StackPane>
 
@@ -53,17 +53,17 @@
 
       <!-- Buttons Section (Fixed width, fixed height) -->
       <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;"
-            HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
-            minWidth="250" prefWidth="250" maxWidth="250">
-         <MFXButton text="Hill" styleClass="outline-button" onAction="#handleHillCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverHill" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="Permutation" styleClass="outline-button" onAction="#handlePermutationCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverPermutation" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="AES" styleClass="outline-button" onAction="#handleAESCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverAES" onMouseExited="#handleHoverExited"/>
-      </VBox>
+           HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
+           minWidth="250" prefWidth="250" maxWidth="250">
+        <MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSACipher"
+                   prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited"/>
+        <MFXButton text="Rabin" styleClass="outline-button" onAction="#handleRabinCipher"
+                   prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverRabin" onMouseExited="#handleHoverExited"/>
+        <MFXButton text="ElGamal" styleClass="outline-button" onAction="#handleElGamalCipher"
+                   prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverElGamal" onMouseExited="#handleHoverExited"/>
+     </VBox>
 
-      <!-- Dynamic Content Section (Expands to fill remaining space) -->
+     <!-- Dynamic Content Section (Expands to fill remaining space) -->
       <StackPane fx:id="dynamicContent" styleClass="dynamic-container"
                  GridPane.columnIndex="1" GridPane.rowIndex="1"
                  GridPane.columnSpan="7" GridPane.rowSpan="9"

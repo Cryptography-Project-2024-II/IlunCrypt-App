@@ -7,7 +7,7 @@
       stylesheets="@../assets/styles/Buttons.css"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.iluncrypt.iluncryptapp.controllers.EncryptDecryptOptionsDialogController"
+      fx:controller="com.iluncrypt.iluncryptapp.controllers.ClassicCiphersDialogController"
 >
 
 <MFXButton text="Affine" styleClass="outline-button" onAction="#handleAffineCipher" prefWidth="200.0" prefHeight="40.0" />

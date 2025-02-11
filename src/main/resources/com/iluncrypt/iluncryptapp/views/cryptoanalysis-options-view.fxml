@@ -20,44 +20,57 @@
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.iluncrypt.iluncryptapp.controllers.CryptanalysisOptionsController">
 
-   <!-- Define column constraints for responsive design -->
-   <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" />
-      <ColumnConstraints hgrow="ALWAYS" />
-   </columnConstraints>
+<!-- Column constraints for responsiveness -->
+<columnConstraints>
+   <ColumnConstraints minWidth="250" prefWidth="250" maxWidth="250" hgrow="NEVER"/> <!-- Botones -->
+   <ColumnConstraints minWidth="400" hgrow="ALWAYS"/> <!-- Contenido dinámico -->
+</columnConstraints>
 
-   <!-- Define row constraints -->
-   <rowConstraints>
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="ALWAYS" />
-   </rowConstraints>
+<!-- Row constraints -->
+<rowConstraints>
+   <RowConstraints minHeight="50" vgrow="NEVER"/> <!-- Top Bar -->
+   <RowConstraints vgrow="ALWAYS"/> <!-- Main Content -->
+</rowConstraints>
 
-   <!-- Background Section -->
-   <StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="2" GridPane.rowSpan="2">
+<!-- Background Section -->
+<StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="8" GridPane.rowSpan="10">
+   <GridPane.margin>
+      <Insets top="20.0" bottom="20.0" />
+   </GridPane.margin>
+</StackPane>
+
+<!-- Top Bar Section -->
+<StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
+   <HBox spacing="10.0" alignment="CENTER">
+      <Label text="Public Key Ciphers" styleClass="top-bar-title" alignment="CENTER" />
+   </HBox>
+</StackPane>
+
+<!-- Main Content Section -->
+<HBox spacing="20.0" GridPane.columnSpan="8" GridPane.rowIndex="1"
+      GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+
+   <!-- Buttons Section (Fixed width, fixed height) -->
+   <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;"
+         HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
+         minWidth="250" prefWidth="250" maxWidth="250">
+      <MFXButton text="Index of Coincidence (Friedman)" styleClass="outline-button" onAction="#handleFriedman" prefWidth="200.0" prefHeight="40.0" />
+      <MFXButton text="Brauer Data Analysis" styleClass="outline-button" onAction="#handleBrauer" prefWidth="200.0" prefHeight="40.0" />
+      <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce" prefWidth="200.0" prefHeight="40.0" />
+      <MFXButton text="Frequency Analysis" styleClass="outline-button" onAction="#handleFrequency" prefWidth="200.0" prefHeight="40.0" />
+   </VBox>
+
+   <!-- Dynamic Content Section (Expands to fill remaining space) -->
+   <StackPane fx:id="dynamicContent" styleClass="dynamic-container"
+              GridPane.columnIndex="1" GridPane.rowIndex="1"
+              GridPane.columnSpan="7" GridPane.rowSpan="9"
+              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+              HBox.hgrow="ALWAYS">
       <GridPane.margin>
-         <Insets top="20.0" bottom="20.0" />
+         <Insets left="10" right="10" top="10" bottom="10"/> <!-- Agrega espacio alrededor del StackPane -->
       </GridPane.margin>
    </StackPane>
 
-   <!-- Top Bar Section -->
-   <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="2" GridPane.rowIndex="0">
-      <HBox spacing="10.0" alignment="CENTER">
-         <!-- Centered Title -->
-         <Label text="Cryptoanalysis Methods" styleClass="top-bar-title" alignment="CENTER" />
-      </HBox>
-   </StackPane>
+</HBox>
 
-   <!-- Main Content Section -->
-   <HBox spacing="20.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
-      <!-- Buttons Section -->
-      <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;">
-         <MFXButton text="Index of Coincidence (Friedman)" styleClass="outline-button" onAction="#handleFriedman" prefWidth="200.0" prefHeight="40.0" />
-         <MFXButton text="Brauer Data Analysis" styleClass="outline-button" onAction="#handleBrauer" prefWidth="200.0" prefHeight="40.0" />
-         <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce" prefWidth="200.0" prefHeight="40.0" />
-         <MFXButton text="Frequency Analysis" styleClass="outline-button" onAction="#handleFrequency" prefWidth="200.0" prefHeight="40.0" />
-      </VBox>
-
-      <!-- Dynamic Content Section -->
-      <StackPane fx:id="dynamicContent" styleClass="dynamic-container" prefWidth="400.0" prefHeight="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 10;"/>
-   </HBox>
 </GridPane>
