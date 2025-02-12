@@ -3,7 +3,7 @@ package com.iluncrypt.iluncryptapp.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 
-public class PublicKeyCiphersController {
+public class PublicKeyEncryptionController {
 
     public void handleHoverExited(MouseEvent mouseEvent) {
 
@@ -26,5 +26,11 @@ public class PublicKeyCiphersController {
 
     public void handleHoverElGamal(MouseEvent mouseEvent) {
 
+    }
+
+    public void handleMenezesVanstoneCipher(ActionEvent actionEvent) {
+    }
+
+    public void handleHoverMenezesVanstone(MouseEvent mouseEvent) {
     }
 }

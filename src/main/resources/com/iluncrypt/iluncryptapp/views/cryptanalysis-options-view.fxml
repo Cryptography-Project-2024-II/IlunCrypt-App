@@ -42,7 +42,7 @@
 <!-- Top Bar Section -->
 <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
    <HBox spacing="10.0" alignment="CENTER">
-      <Label text="Public Key Ciphers" styleClass="top-bar-title" alignment="CENTER" />
+      <Label text="Cryptanalysis Methods" styleClass="top-bar-title" alignment="CENTER" />
    </HBox>
 </StackPane>
 

@@ -3,7 +3,7 @@ package com.iluncrypt.iluncryptapp.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 
-public class ImageCiphersController {
+public class ImageEncryptionController {
 
     public void handleHoverExited(MouseEvent mouseEvent) {
     }

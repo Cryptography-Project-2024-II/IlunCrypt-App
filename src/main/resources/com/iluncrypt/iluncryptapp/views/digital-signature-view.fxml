@@ -19,7 +19,7 @@
         stylesheets="@../assets/styles/Buttons.css"
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.iluncrypt.iluncryptapp.controllers.BlockCiphersController">
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.DigitalSignatureController">
 
    <!-- Column constraints for responsiveness -->
    <columnConstraints>
@@ -43,7 +43,7 @@
    <!-- Top Bar Section -->
    <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
       <HBox spacing="10.0" alignment="CENTER">
-         <Label text="Block Ciphers" styleClass="top-bar-title" alignment="CENTER" />
+         <Label text="Digital Signature" styleClass="top-bar-title" alignment="CENTER" />
       </HBox>
    </StackPane>
 
@@ -52,15 +52,13 @@
          GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 
       <!-- Buttons Section (Fixed width, fixed height) -->
-       <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;"
+      <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;"
             HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
             minWidth="250" prefWidth="250" maxWidth="250">
-         <MFXButton text="AES" styleClass="outline-button" onAction="#handleAESCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverAES" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="T-DES" styleClass="outline-button" onAction="#handleTDESCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverTDES" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="S-DES" styleClass="outline-button" onAction="#handleSDESCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverSDES" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSASignature"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="DSA" styleClass="outline-button" onAction="#handleDSASignature"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverDSA" onMouseExited="#handleHoverExited"/>
       </VBox>
 
       <!-- Dynamic Content Section (Expands to fill remaining space) -->

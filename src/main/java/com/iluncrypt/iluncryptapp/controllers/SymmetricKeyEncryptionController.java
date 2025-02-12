@@ -3,7 +3,7 @@ package com.iluncrypt.iluncryptapp.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 
-public class BlockCiphersController {
+public class SymmetricKeyEncryptionController {
 
     public void handleHoverExited(MouseEvent mouseEvent) {
     }
@@ -25,5 +25,11 @@ public class BlockCiphersController {
 
     public void handleHoverSDES(MouseEvent mouseEvent) {
 
+    }
+
+    public void handleDESCipher(ActionEvent actionEvent) {
+    }
+
+    public void handleHoverDES(MouseEvent mouseEvent) {
     }
 }

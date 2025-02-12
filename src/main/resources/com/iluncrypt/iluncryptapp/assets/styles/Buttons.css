@@ -142,3 +142,12 @@
 .link-button .mfx-ripple-generator {
 	-mfx-ripple-color: #D9E9FF;
 }
+
+.group-label {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #444;
+	-fx-padding: 5px 0;
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+}

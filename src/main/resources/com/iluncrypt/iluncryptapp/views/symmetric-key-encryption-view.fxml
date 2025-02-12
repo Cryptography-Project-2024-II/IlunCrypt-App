@@ -19,7 +19,7 @@
         stylesheets="@../assets/styles/Buttons.css"
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.iluncrypt.iluncryptapp.controllers.ClassicCiphersController">
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.SymmetricKeyEncryptionController">
 
    <!-- Column constraints for responsiveness -->
    <columnConstraints>
@@ -43,7 +43,7 @@
    <!-- Top Bar Section -->
    <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
       <HBox spacing="10.0" alignment="CENTER">
-         <Label text="Classical Ciphers" styleClass="top-bar-title" alignment="CENTER" />
+         <Label text="Symmetric-Key Encryption" styleClass="top-bar-title" alignment="CENTER" />
       </HBox>
    </StackPane>
 
@@ -52,41 +52,24 @@
          GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 
       <!-- Buttons Section (Fixed width, fixed height) -->
+
       <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;"
             HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
             minWidth="250" prefWidth="250" maxWidth="250">
 
-         <Label text="Monoalphabetic substitution" styleClass="group-label"
+         <Label text="Block ciphers" styleClass="group-label"
                 alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
                 wrapText="true"/>
-         <MFXButton text="Affine" styleClass="outline-button" onAction="#handleAffineCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverAffine" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="Multiplicative" styleClass="outline-button" onAction="#handleMultiplicativeCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverMultiplicative" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="Caesar (Shift)" styleClass="outline-button" onAction="#handleShiftCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverShift" onMouseExited="#handleHoverExited"/>
-         <MFXButton text="Substitution" styleClass="outline-button" onAction="#handleSubstitutionCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverSubstitution" onMouseExited="#handleHoverExited"/>
 
-         <Label text="Polyalphabetic substitution" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
-         <MFXButton text="Vigenère" styleClass="outline-button" onAction="#handleVigenereCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverVigenere" onMouseExited="#handleHoverExited"/>
-
-         <Label text="Polygraphic substitution" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
-         <MFXButton text="Hill" styleClass="outline-button" onAction="#handleHillCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverHill" onMouseExited="#handleHoverExited"/>
-
-         <Label text="Transposition" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
-         <MFXButton text="Permutation" styleClass="outline-button" onAction="#handlePermutationCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverPermutation" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="AES" styleClass="outline-button" onAction="#handleAESCipher"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverAES" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="DES" styleClass="outline-button" onAction="#handleDESCipher"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverDES" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="T-DES (Triple DES)" styleClass="outline-button" onAction="#handleTDESCipher"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverTDES" onMouseExited="#handleHoverExited"/>
+         <MFXButton text="S-DES (Academic use only)" styleClass="outline-button" onAction="#handleSDESCipher"
+                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverSDES" onMouseExited="#handleHoverExited"/>
       </VBox>
-
 
       <!-- Dynamic Content Section (Expands to fill remaining space) -->
       <StackPane fx:id="dynamicContent" styleClass="dynamic-container"
