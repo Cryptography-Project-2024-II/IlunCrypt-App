@@ -25,7 +25,7 @@
         <MFXFontIcon fx:id="closeIcon" description="fas-circle-xmark" size="20.0" styleClass="close-icon"/>
     </HBox>
 
-    <VBox layoutX="227.0" layoutY="51.0" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0"
+    <VBox fx:id="sidebar" layoutX="227.0" layoutY="51.0" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0"
           AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="10.0" left="10.0" top="60.0"/>

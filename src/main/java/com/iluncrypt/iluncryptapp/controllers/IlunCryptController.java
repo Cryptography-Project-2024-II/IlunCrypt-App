@@ -62,6 +62,9 @@ public class IlunCryptController implements Initializable {
 
     // FXML bindings
     @FXML
+    private VBox sidebar;
+
+    @FXML
     private HBox windowHeader;
 
     @FXML
@@ -144,9 +147,11 @@ public class IlunCryptController implements Initializable {
         setupTooltips();
         setupLogo();
         setupWindowControls();
+        sidebar.prefWidthProperty().bind(rootPane.widthProperty().multiply(0.2));
         rootPane.widthProperty().addListener((observable, oldValue, newValue) -> adjustContentPaneAnchors(newValue.doubleValue(), rootPane.getHeight()));
         rootPane.heightProperty().addListener((observable, oldValue, newValue) -> adjustContentPaneAnchors(rootPane.getWidth(), newValue.doubleValue()));
     }
+
 
     /**
      * Setup the views loader and navigation system.
@@ -457,10 +462,10 @@ public class IlunCryptController implements Initializable {
     }
 
     private void adjustContentPaneAnchors(double width, double height) {
-        double leftAnchor = width * 0.22; // Por ejemplo, 20% del ancho total
-        double rightAnchor = width * 0.05; // Por ejemplo, 5% del ancho total
-        double topAnchor = height * 0.05; // Por ejemplo, 10% de la altura total
-        double bottomAnchor = 0; // Sin ancla inferior
+        double leftAnchor = width * 0.255;
+        double rightAnchor = width * 0.05;
+        double topAnchor = height * 0.05;
+        double bottomAnchor = height * 0.02;
 
         AnchorPane.setLeftAnchor(contentPane, leftAnchor);
         AnchorPane.setRightAnchor(contentPane, rightAnchor);
