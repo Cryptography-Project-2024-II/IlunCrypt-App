@@ -56,6 +56,10 @@
             HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
             minWidth="250" prefWidth="250" maxWidth="250">
 
+         <HBox.margin>
+            <Insets left="20.0"/>
+         </HBox.margin>
+
          <Label text="Monoalphabetic substitution" styleClass="group-label"
                 alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
                 wrapText="true"/>

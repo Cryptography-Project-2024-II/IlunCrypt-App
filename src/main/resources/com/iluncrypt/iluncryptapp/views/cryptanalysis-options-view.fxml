@@ -50,10 +50,17 @@
 <HBox spacing="20.0" GridPane.columnSpan="8" GridPane.rowIndex="1"
       GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 
+
+
    <!-- Buttons Section (Fixed width, fixed height) -->
    <VBox spacing="15.0" alignment="TOP_LEFT" style="-fx-padding: 20.0;"
          HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
          minWidth="250" prefWidth="250" maxWidth="250">
+
+      <HBox.margin>
+         <Insets left="20.0"/>
+      </HBox.margin>
+
       <MFXButton text="Index of Coincidence (Friedman)" styleClass="outline-button" onAction="#handleFriedman" prefWidth="200.0" prefHeight="40.0" />
       <MFXButton text="Brauer Data Analysis" styleClass="outline-button" onAction="#handleBrauer" prefWidth="200.0" prefHeight="40.0" />
       <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce" prefWidth="200.0" prefHeight="40.0" />

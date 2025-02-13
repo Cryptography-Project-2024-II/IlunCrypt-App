@@ -462,9 +462,9 @@ public class IlunCryptController implements Initializable {
     }
 
     private void adjustContentPaneAnchors(double width, double height) {
-        double leftAnchor = width * 0.255;
-        double rightAnchor = width * 0.05;
-        double topAnchor = height * 0.05;
+        double leftAnchor = width * 0.225;
+        double rightAnchor = width * 0.02;
+        double topAnchor = height * 0.06;
         double bottomAnchor = height * 0.02;
 
         AnchorPane.setLeftAnchor(contentPane, leftAnchor);
