@@ -116,3 +116,17 @@
 	-fx-font-family: 'Visby Round CF Demi Bold';
 	-fx-background-color: transparent;
 }
+
+.title {
+	-fx-font-size: 24px;
+	-fx-font-weight: bold;
+}
+
+.body {
+	-fx-font-size: 15px;
+}
+
+.subtitle {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+}

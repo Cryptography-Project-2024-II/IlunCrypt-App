@@ -1,21 +1,18 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import com.iluncrypt.iluncryptapp.utils.LatexImageGenerator;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.scilab.forge.jlatexmath.TeXFormula;
-import org.scilab.forge.jlatexmath.TeXIcon;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import javax.imageio.ImageIO;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller for the Affine Cipher description view.
- * Generates LaTeX images dynamically for mathematical equations.
+ *
+ * This controller manages both the user-friendly general explanation and the detailed technical
+ * description for the Affine Cipher. It utilizes the {@code LatexImageGenerator} utility class to
+ * generate LaTeX-rendered images for the encryption and decryption formulas as well as an example.
+ * A toggle button allows the user to show or hide the detailed description.
  */
 public class AffineCipherDescriptionController {
 
@@ -28,51 +25,48 @@ public class AffineCipherDescriptionController {
     @FXML
     private ImageView exampleImage;
 
-    private static final int FIXED_HEIGHT = 35; // Ajuste menor de altura
+    @FXML
+    private VBox detailedDescriptionContainer;
+
+    @FXML
+    private MFXToggleButton toggleDetailsButton;
 
     /**
-     * Initializes the view by setting LaTeX-rendered images for formulas and examples.
+     * Initializes the Affine Cipher description view.
+     * <br>
+     * This method generates the LaTeX images for the encryption formula, decryption formula, and example,
+     * and it ensures that the detailed description section is hidden by default.
      */
     @FXML
     public void initialize() {
-        encryptionFormula.setImage(createLatexImage("e(x) = (a \\cdot x + b) \\mod m"));
-        decryptionFormula.setImage(createLatexImage("d(x) = a^{-1} \\cdot (C(x) - b) \\mod m"));
-        exampleImage.setImage(createLatexImage("H \\rightarrow e(7) = (5 \\cdot 7 + 8) \\mod 26 = 17 \\rightarrow R"));
+        // Generate LaTeX images using the utility class.
+        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("e(x) = (a \\cdot x + b) \\mod m"));
+        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("d(x) = a^{-1} \\cdot (C(x) - b) \\mod m"));
+        exampleImage.setImage(LatexImageGenerator.createLatexImage("H \\rightarrow e(7) = (5 \\cdot 7 + 8) \\mod 26 = 17 \\rightarrow R"));
+
+        // Hide detailed description section initially.
+        detailedDescriptionContainer.setVisible(false);
+        detailedDescriptionContainer.setManaged(false);
+
+        // Set initial text for the toggle button.
+        toggleDetailsButton.setText("View Detailed Description");
     }
 
     /**
-     * Generates an image containing a LaTeX-rendered mathematical expression.
-     *
-     * @param latex The LaTeX string to render.
-     * @return A JavaFX Image containing the rendered equation.
+     * Toggles the visibility of the detailed technical description section.
+     * <br>
+     * When the toggle button is selected, the detailed description is shown;
+     * when it is deselected, the detailed description is hidden.
      */
-    private Image createLatexImage(String latex) {
-        try {
-            TeXFormula formula = new TeXFormula(latex);
-            TeXIcon icon = formula.createTeXIcon(TeXFormula.SERIF, 22); // Tamaño reducido
-            icon.setInsets(new Insets(3, 3, 3, 3));
-
-            int originalWidth = icon.getIconWidth();
-            int originalHeight = icon.getIconHeight();
-            int newWidth = (int) ((double) originalWidth / originalHeight * FIXED_HEIGHT);
-
-            BufferedImage image = new BufferedImage(newWidth, FIXED_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = image.createGraphics();
-            g2d.setColor(new Color(255, 255, 255, 0));
-            g2d.fillRect(0, 0, newWidth, FIXED_HEIGHT);
-
-            int yOffset = (FIXED_HEIGHT - originalHeight) / 2;
-            icon.paintIcon(new JLabel(), g2d, 5, yOffset);
-            g2d.dispose();
-
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", output);
-            ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-
-            return new Image(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    @FXML
+    private void toggleDetailedDescription() {
+        boolean selected = toggleDetailsButton.isSelected();
+        detailedDescriptionContainer.setVisible(selected);
+        detailedDescriptionContainer.setManaged(selected);
+        if (selected) {
+            toggleDetailsButton.setText("Hide Detailed Description");
+        } else {
+            toggleDetailsButton.setText("View Detailed Description");
         }
     }
 }

@@ -1,18 +1,19 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import com.iluncrypt.iluncryptapp.utils.LatexImageGenerator;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.scilab.forge.jlatexmath.TeXFormula;
-import org.scilab.forge.jlatexmath.TeXIcon;
+import javafx.scene.layout.VBox;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import javax.imageio.ImageIO;
-
+/**
+ * Controller for the Shift (Caesar) Cipher description view.
+ *
+ * This controller manages both the user-friendly general explanation and the detailed technical
+ * description for the Shift Cipher. It utilizes the {@code LatexImageGenerator} utility class to
+ * generate LaTeX-rendered images for the encryption and decryption formulas as well as an example.
+ * A toggle button allows the user to show or hide the detailed description.
+ */
 public class ShiftCipherDescriptionController {
 
     @FXML
@@ -24,49 +25,46 @@ public class ShiftCipherDescriptionController {
     @FXML
     private ImageView exampleImage;
 
-    private static final int FIXED_HEIGHT = 60; // Altura fija para todas las ecuaciones
+    @FXML
+    private VBox detailedDescriptionContainer;
 
     @FXML
+    private MFXToggleButton toggleDetailsButton;
+
+    /**
+     * Initializes the Shift Cipher description view.
+     * This method generates the LaTeX images for the encryption formula, decryption formula, and example,
+     * and it ensures that the detailed description section is hidden by default.
+     */
+    @FXML
     public void initialize() {
-        encryptionFormula.setImage(createLatexImage("C(x) = (ax + b) \\mod m"));
-        decryptionFormula.setImage(createLatexImage("P(x) = a^{-1} (C(x) - b) \\mod m"));
-        exampleImage.setImage(createLatexImage("HELLO \\rightarrow C(7) = (5 \\times 7 + 8) \\mod 26 = 17 \\rightarrow R"));
+        // Generate LaTeX images using the utility class.
+        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("E(x) = (x + k) \\mod m"));
+        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("D(x) = (x - k) \\mod m"));
+        exampleImage.setImage(LatexImageGenerator.createLatexImage("H \\rightarrow E(7) = (7 + 3) \\mod 26 = 10 \\rightarrow K"));
+
+        // Hide detailed description section initially.
+        detailedDescriptionContainer.setVisible(false);
+        detailedDescriptionContainer.setManaged(false);
+
+        // Set initial text for the toggle button.
+        toggleDetailsButton.setText("View Detailed Description");
     }
 
-    private Image createLatexImage(String latex) {
-        try {
-            // Crear la fórmula LaTeX
-            TeXFormula formula = new TeXFormula(latex);
-            TeXIcon icon = formula.createTeXIcon(TeXFormula.SERIF, 40);
-            icon.setInsets(new Insets(5, 5, 5, 5));
-
-            // Obtener el tamaño original del icono
-            int originalWidth = icon.getIconWidth();
-            int originalHeight = icon.getIconHeight();
-
-            // Calcular nuevo ancho manteniendo la proporción
-            int newWidth = (int) ((double) originalWidth / originalHeight * FIXED_HEIGHT);
-
-            // Crear imagen con fondo transparente y tamaño uniforme
-            BufferedImage image = new BufferedImage(newWidth, FIXED_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = image.createGraphics();
-            g2d.setColor(new Color(255, 255, 255, 0));
-            g2d.fillRect(0, 0, newWidth, FIXED_HEIGHT);
-
-            // Dibujar la ecuación alineada a la izquierda
-            int yOffset = (FIXED_HEIGHT - originalHeight) / 2;
-            icon.paintIcon(new JLabel(), g2d, 5, yOffset); // Alineación izquierda
-            g2d.dispose();
-
-            // Convertir BufferedImage a Image de JavaFX
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", output);
-            ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-
-            return new Image(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    /**
+     * Toggles the visibility of the detailed technical description section.
+     * When the toggle button is selected, the detailed description is shown;
+     * when it is deselected, the detailed description is hidden.
+     */
+    @FXML
+    private void toggleDetailedDescription() {
+        boolean selected = toggleDetailsButton.isSelected();
+        detailedDescriptionContainer.setVisible(selected);
+        detailedDescriptionContainer.setManaged(selected);
+        if (selected) {
+            toggleDetailsButton.setText("Hide Detailed Description");
+        } else {
+            toggleDetailsButton.setText("View Detailed Description");
         }
     }
 }
