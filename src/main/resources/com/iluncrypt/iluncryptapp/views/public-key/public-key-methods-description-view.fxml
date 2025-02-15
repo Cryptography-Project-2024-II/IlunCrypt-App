@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../../assets/styles/Common.css" style="-fx-padding: 20;">
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Public-Key Encryption Methods" styleClass="title" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Public-key cryptography, also known as asymmetric cryptography, is a system that uses pairs of keys: a public key, which can be shared, and a private key, which must be kept secret. It enables secure communication and authentication without requiring prior key exchange." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Key Categories:" styleClass="subtitle" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Integer Factorization Problem:" underline="true" styleClass="body" />
+        <Text text=" Methods such as RSA rely on the difficulty of factoring large numbers into their prime components." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Quadratic Residue Problem:" underline="true" styleClass="body" />
+        <Text text=" Cryptosystems such as Rabin encryption rely on the hardness of determining square roots modulo a composite number." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Discrete Logarithm Problem:" underline="true" styleClass="body" />
+        <Text text=" Techniques like ElGamal rely on the difficulty of solving discrete logarithms." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Some of the public-key encryption techniques covered include:" styleClass="subtitle" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• RSA" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Rabin" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• ElGamal" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Menezes-Vanstone" styleClass="body" />
+    </TextFlow>
+
+</VBox>

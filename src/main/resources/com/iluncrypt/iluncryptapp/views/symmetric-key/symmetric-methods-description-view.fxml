@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../../assets/styles/Common.css" style="-fx-padding: 20;">
+
+    <!-- Title -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Symmetric-Key Encryption Methods" styleClass="title" />
+    </TextFlow>
+
+    <!-- General Description -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Symmetric encryption uses the same key for both encryption and decryption, ensuring fast and efficient data protection. It is widely used for secure communication, file encryption, and cryptographic protocols." styleClass="body" />
+    </TextFlow>
+
+    <!-- Classification -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Symmetric encryption methods are usually classified into block ciphers and stream ciphers. Here we will only discuss some block cipher methods." styleClass="subtitle" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Block Ciphers:" underline="true" styleClass="body" />
+        <Text text=" Encrypt fixed-size blocks of plaintext using multiple rounds of mathematical transformations." styleClass="body" />
+    </TextFlow>
+
+    <!-- Methods -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Some of the symmetric-key encryption techniques covered include:" styleClass="subtitle" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• AES (Advanced Encryption Standard)" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• DES (Data Encryption Standard)" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Triple DES (T-DES)" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Simplified DES (S-DES)" styleClass="body" />
+    </TextFlow>
+
+</VBox>

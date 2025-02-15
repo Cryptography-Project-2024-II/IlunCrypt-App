@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.menezesvanstone.MenezesVanstoneEncryptionDescriptionController"
+          stylesheets="@../../../assets/styles/Common.css"
+          style="-fx-padding: 15;">
+
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+        <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 10;">
+
+            <!-- Title -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Menezes‑Vanstone Cryptosystem" styleClass="title" />
+            </TextFlow>
+
+            <!-- General Explanation (Friendly) -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="The Menezes‑Vanstone cryptosystem is an elliptic curve-based encryption scheme that offers high security with relatively small key sizes. It is known for its efficiency and robust security, making it a modern alternative to traditional asymmetric algorithms. " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" only if the elliptic curve parameters are poorly chosen." styleClass="body" />
+            </TextFlow>
+
+            <!-- Pros and Cons -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Pros:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- High security with smaller keys." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Cons:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Complex parameter selection and implementation." styleClass="body" />
+            </TextFlow>
+
+            <!-- Toggle Button for Detailed Description -->
+            <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
+
+            <!-- Detailed Description Section (Initially Hidden) -->
+            <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Detailed Description:" styleClass="subtitle" />
+                </TextFlow>
+                <!-- Encryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Encryption:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
+                <!-- Decryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Decryption:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
+                <!-- Example -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Example: Encrypting 'HELLO' using Menezes‑Vanstone" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="exampleImage" preserveRatio="true" />
+
+                <!-- Cryptanalysis Methods -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Vulnerable if curve parameters are weak or implementation flaws exist." styleClass="body" />
+                </TextFlow>
+
+                <!-- Additional Technical Details -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Additional Technical Details:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="The Menezes‑Vanstone cryptosystem uses elliptic curve operations to perform encryption and decryption, offering high security with smaller keys. Its security depends on the elliptic curve discrete logarithm problem. However, its complexity demands careful parameter selection and implementation to avoid vulnerabilities." styleClass="body" />
+                </TextFlow>
+            </VBox>
+        </VBox>
+    </StackPane>
+</GridPane>

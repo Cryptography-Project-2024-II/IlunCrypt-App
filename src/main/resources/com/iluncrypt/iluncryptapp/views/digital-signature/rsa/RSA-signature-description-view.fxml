@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.rsa.RSAEncryptionDescriptionController"
+          stylesheets="@../../../assets/styles/Common.css"
+          style="-fx-padding: 15;">
+
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+        <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 10;">
+
+            <!-- Title -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="RSA (Rivest‑Shamir‑Adleman)" styleClass="title" />
+            </TextFlow>
+
+            <!-- General Explanation (Friendly) -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="RSA is an asymmetric encryption algorithm that uses a pair of keys (public and private) to securely encrypt and decrypt messages. Its security is based on the difficulty of factoring large composite numbers. " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" if key sizes are too small, and must be used with sufficiently large parameters." styleClass="body" />
+            </TextFlow>
+
+            <!-- Pros and Cons -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Pros:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Widely adopted and proven secure with large key sizes." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Cons:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Computationally intensive and vulnerable if keys are too small." styleClass="body" />
+            </TextFlow>
+
+            <!-- Toggle Button for Detailed Description -->
+            <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
+
+            <!-- Detailed Description Section (Initially Hidden) -->
+            <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Detailed Description:" styleClass="subtitle" />
+                </TextFlow>
+                <!-- Encryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Encryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
+                <!-- Decryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Decryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
+                <!-- Example -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Example: Encrypting 'HELLO'" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="exampleImage" preserveRatio="true" />
+
+                <!-- Cryptanalysis Methods -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Security relies on the difficulty of factoring; weak keys or small moduli can be attacked." styleClass="body" />
+                </TextFlow>
+
+                <!-- Additional Technical Details -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Additional Technical Details:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="RSA involves key generation, encryption, and decryption steps where the public key (n, e) and private key (n, d) are used. Its security is based on the practical difficulty of factoring the product of two large primes." styleClass="body" />
+                </TextFlow>
+            </VBox>
+        </VBox>
+    </StackPane>
+</GridPane>

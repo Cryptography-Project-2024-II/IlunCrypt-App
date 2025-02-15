@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.classic.vigenere.VigenereCipherDescriptionController"
+          stylesheets="@../../../assets/styles/Common.css"
+          style="-fx-padding: 15;">
+
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+        <VBox spacing="10" alignment="TOP_LEFT" maxWidth="Infinity" maxHeight="Infinity" style="-fx-padding: 10;">
+
+            <!-- Title -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Vigenère Cipher" styleClass="title" />
+            </TextFlow>
+
+            <!-- General Explanation (Friendly) -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="The Vigenère Cipher is a classical encryption method that employs a keyword to generate a series of Caesar ciphers. This polyalphabetic substitution technique was once considered highly secure due to its resistance to simple frequency analysis. However, although it was innovative for its time, " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" and are not used for secure communications in modern applications." styleClass="body" />
+            </TextFlow>
+
+            <!-- Pros and Cons -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Pros:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- More secure than monoalphabetic ciphers if used with a sufficiently long and random key." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Cons:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Vulnerable to Kasiski examination and frequency analysis when the key is short or repeated." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- The repeating nature of the key can be exploited." styleClass="body" />
+            </TextFlow>
+
+            <!-- Toggle Button for Detailed Description -->
+            <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
+
+            <!-- Detailed Description Section (Initially Hidden) -->
+            <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Detailed Description:" styleClass="subtitle" />
+                </TextFlow>
+
+                <!-- Encryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Encryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
+                <!-- Decryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Decryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
+                <!-- Example -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Example: Encrypting 'HELLO' with key 'KEY'" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="exampleImage" preserveRatio="true" />
+
+                <!-- Cryptanalysis Methods -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Kasiski Examination: Repeated sequences in the ciphertext can reveal the key length." styleClass="body" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Frequency Analysis: If the key is short, the distribution of letters may still be exploited." styleClass="body" />
+                </TextFlow>
+
+                <!-- Additional Technical Details -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Additional Technical Details:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="The Vigenère Cipher uses a repeating keyword to determine the shift for each letter. Encryption is performed by adding the numerical values of the plaintext letter and the corresponding key letter modulo 26, while decryption subtracts the key value. Despite its historical reputation for being 'unbreakable', modern cryptanalysis can exploit key repetition and statistical patterns to decipher the message." styleClass="body" />
+                </TextFlow>
+            </VBox>
+        </VBox>
+    </StackPane>
+</GridPane>

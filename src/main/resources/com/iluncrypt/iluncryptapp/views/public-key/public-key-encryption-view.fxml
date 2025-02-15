@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    FXML Layout for the Public-Key Encryption view.
+
+    This layout is based on a GridPane that divides the user interface into three main sections:
+      1. Background Section (covers the entire grid)
+      2. Top Bar Section (contains the title)
+      3. Main Content Section (split into a left panel for cipher buttons and a right panel for dynamic content)
+
+    The right panel is implemented as an MFXScrollPane that fits its content to width and disables horizontal scrolling.
+-->
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        stylesheets="@../../assets/styles/Buttons.css"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.PublicKeyEncryptionController">
+
+   <!-- Define 10 columns with equal percentage width -->
+   <columnConstraints>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+   </columnConstraints>
+
+   <!-- Define two rows:
+        - The first row is for the Top Bar (fixed height)
+        - The second row is for the Main Content (grows as needed)
+   -->
+   <rowConstraints>
+      <RowConstraints minHeight="50" vgrow="NEVER"/>
+      <RowConstraints vgrow="ALWAYS"/>
+   </rowConstraints>
+
+   <!-- Background Section: occupies the entire grid -->
+   <StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="10" GridPane.rowSpan="10">
+      <GridPane.margin>
+         <Insets top="20.0" bottom="20.0"/>
+      </GridPane.margin>
+   </StackPane>
+
+   <!-- Top Bar Section: displays the title -->
+   <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="10" GridPane.rowIndex="0">
+      <HBox spacing="10.0" alignment="CENTER">
+         <Label text="Public-Key Encryption" styleClass="top-bar-title" alignment="CENTER"/>
+      </HBox>
+   </StackPane>
+
+   <!-- Main Content Section: split into two columns (left and right) -->
+   <GridPane GridPane.rowIndex="1" GridPane.columnSpan="10" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <!-- Define two columns:
+           - Left Panel: 25% width (contains cipher buttons)
+           - Right Panel: 75% width (displays dynamic content)
+      -->
+      <columnConstraints>
+         <ColumnConstraints percentWidth="25"/>
+         <ColumnConstraints percentWidth="75"/>
+      </columnConstraints>
+      <!-- Define a single row that grows vertically -->
+      <rowConstraints>
+         <RowConstraints vgrow="ALWAYS"/>
+      </rowConstraints>
+
+      <!-- Left Panel: Cipher buttons and labels -->
+      <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;" GridPane.columnIndex="0" fillWidth="true">
+         <!-- Section Label -->
+         <Label text="Integer Factorization Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
+         <MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSACipher"
+                    prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+
+         <Label text="Quadratic Residue Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
+         <MFXButton text="Rabin" styleClass="outline-button" onAction="#handleRabinCipher"
+                    prefHeight="40.0" onMouseEntered="#handleHoverRabin" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+
+         <Label text="Discrete Logarithm Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
+         <MFXButton text="ElGamal" styleClass="outline-button" onAction="#handleElGamalCipher"
+                    prefHeight="40.0" onMouseEntered="#handleHoverElGamal" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+         <MFXButton text="Menezes-Vanstone" styleClass="outline-button" onAction="#handleMenezesVanstoneCipher"
+                    prefHeight="40.0" onMouseEntered="#handleHoverMenezesVanstone" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+      </VBox>
+
+      <!-- Right Panel: Dynamic content area within an MFXScrollPane -->
+      <MFXScrollPane fx:id="dynamicContent"
+                     fitToWidth="true"
+                     hbarPolicy="NEVER"
+                     GridPane.columnIndex="1">
+         <content>
+            <!-- Container for dynamically loaded content -->
+            <StackPane>
+               <GridPane.margin>
+                  <Insets left="10" right="10" top="10" bottom="10"/>
+               </GridPane.margin>
+            </StackPane>
+         </content>
+      </MFXScrollPane>
+   </GridPane>
+</GridPane>

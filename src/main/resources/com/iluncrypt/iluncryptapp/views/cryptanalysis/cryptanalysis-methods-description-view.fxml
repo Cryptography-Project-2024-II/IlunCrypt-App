@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../../assets/styles/Common.css" style="-fx-padding: 20;">
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Cryptanalysis Methods" styleClass="title" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Cryptanalysis is the study of methods used to break cryptographic systems and recover encrypted information without access to the original key." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Some of the cryptanalysis techniques covered include:" styleClass="subtitle" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Brute Force" styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Frequency Analysis" styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Index of Coincidence (Friedman)" styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Brauer Data Analysis" styleClass="body" />
+    </TextFlow>
+
+</VBox>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.classic.permutation.PermutationCipherDescriptionController"
+          stylesheets="@../../../assets/styles/Common.css"
+          style="-fx-padding: 15;">
+
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+        <VBox spacing="10" alignment="TOP_LEFT" maxWidth="Infinity" maxHeight="Infinity" style="-fx-padding: 10;">
+
+            <!-- Title -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Permutation Cipher" styleClass="title" />
+            </TextFlow>
+
+            <!-- General Explanation (Friendly) -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="The Permutation Cipher is a classical encryption method that rearranges the positions of the characters in the plaintext according to a fixed permutation. It was used before the computer era because of its simplicity, but since it does not alter the letter frequencies, " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" and are not employed for secure communications in modern applications." styleClass="body" />
+            </TextFlow>
+
+            <!-- Pros and Cons -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Pros:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Simple to implement." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Cons:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Does not alter letter frequencies, making it vulnerable to frequency analysis." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Limited diffusion, as only the positions of characters are changed." styleClass="body" />
+            </TextFlow>
+
+            <!-- Toggle Button for Detailed Description -->
+            <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
+
+            <!-- Detailed Description Section (Initially Hidden) -->
+            <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Detailed Description:" styleClass="subtitle" />
+                </TextFlow>
+
+                <!-- Encryption Formula (Conceptual) -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Encryption:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
+                <!-- Decryption Formula (Conceptual) -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Decryption:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
+                <!-- Example -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Example: Encrypting 'HELLO' with permutation [3,1,4,2,5]" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="exampleImage" preserveRatio="true" />
+
+                <!-- Cryptanalysis Methods -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Frequency Analysis: Since the character frequencies remain unchanged, statistical attacks are possible." styleClass="body" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Known Plaintext Attack: With known pairs, the permutation can be deduced." styleClass="body" />
+                </TextFlow>
+
+                <!-- Additional Technical Details -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Additional Technical Details:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="In a permutation cipher, encryption is achieved by rearranging the positions of the plaintext characters according to a fixed permutation. Decryption requires applying the inverse permutation to recover the original message. Although this method can scramble the message, its inability to change letter frequencies makes it susceptible to modern cryptanalysis." styleClass="body" />
+                </TextFlow>
+            </VBox>
+        </VBox>
+    </StackPane>
+</GridPane>

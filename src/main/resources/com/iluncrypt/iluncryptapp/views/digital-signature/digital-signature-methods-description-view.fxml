@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../../assets/styles/Common.css" style="-fx-padding: 20;">
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Digital Signatures" styleClass="title" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Digital signatures provide authentication, integrity, and non-repudiation in digital communications. They use asymmetric cryptography to ensure that messages are signed by a sender and cannot be tampered with." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Key Signature Methods:" styleClass="subtitle" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="RSA Digital Signatures:" underline="true" styleClass="body" />
+        <Text text=" Based on the RSA encryption algorithm, widely used for secure document signing." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="DSA (Digital Signature Algorithm):" underline="true" styleClass="body" />
+        <Text text=" A cryptographic standard designed specifically for digital signatures." styleClass="body" />
+    </TextFlow>
+
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Some digital signature techniques covered include:" styleClass="subtitle" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• RSA Digital Signature" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• DSA" styleClass="body" />
+    </TextFlow>
+
+</VBox>
