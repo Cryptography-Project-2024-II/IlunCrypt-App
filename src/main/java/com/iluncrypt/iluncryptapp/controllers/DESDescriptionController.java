@@ -7,13 +7,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 /**
- * Controller for the Simplified DES (SDES) description view.
+ * Controller for the DES description view.
  *
- * This controller manages both the general explanation and the detailed technical description for SDES.
- * It uses the LatexImageGenerator utility to generate LaTeX-rendered images for the encryption and decryption representations,
- * as well as an example. A toggle button allows the user to show or hide the detailed description.
+ * This controller manages both the user-friendly general explanation and the detailed technical
+ * description for DES. It uses the LatexImageGenerator utility to create LaTeX-rendered images for
+ * the encryption and decryption formulas, as well as an example. A toggle button allows users to
+ * show or hide the detailed description.
  */
-public class SDESDescriptionController {
+public class DESDescriptionController {
 
     @FXML
     private ImageView encryptionFormula;
@@ -31,13 +32,15 @@ public class SDESDescriptionController {
     private MFXToggleButton toggleDetailsButton;
 
     /**
-     * Initializes the SDES description view.
+     * Initializes the DES description view.
+     * Generates the LaTeX images for the encryption and decryption formulas and an example,
+     * and hides the detailed description by default.
      */
     @FXML
     public void initialize() {
-        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("E(P, K) = SDES(P, K)"));
-        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("D(C, K) = SDES^{-1}(C, K)"));
-        exampleImage.setImage(LatexImageGenerator.createLatexImage("HELLO \\rightarrow SDES \\rightarrow Q1W2E3"));
+        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("E(P, K) = DES(P, K)"));
+        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("D(C, K) = DES^{-1}(C, K)"));
+        exampleImage.setImage(LatexImageGenerator.createLatexImage("HELLO \\rightarrow DES \\rightarrow 3F8A2B1C"));
 
         detailedDescriptionContainer.setVisible(false);
         detailedDescriptionContainer.setManaged(false);
@@ -45,7 +48,7 @@ public class SDESDescriptionController {
     }
 
     /**
-     * Toggles the detailed technical description visibility.
+     * Toggles the visibility of the detailed technical description.
      */
     @FXML
     private void toggleDetailedDescription() {

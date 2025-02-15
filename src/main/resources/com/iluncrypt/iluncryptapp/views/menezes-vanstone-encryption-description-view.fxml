@@ -12,37 +12,45 @@
           fx:id="grid"
           xmlns="http://javafx.com/javafx/17"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.iluncrypt.iluncryptapp.controllers.SDESDescriptionController"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.MenezesVanstoneEncryptionDescriptionController"
           stylesheets="@../assets/styles/Common.css"
           style="-fx-padding: 15;">
+
     <!-- Content Container -->
     <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
                GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
                style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
         <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 10;">
+
             <!-- Title -->
             <TextFlow textAlignment="JUSTIFY">
-                <Text text="Simplified DES (SDES)" styleClass="title" />
+                <Text text="Menezes‑Vanstone Cryptosystem" styleClass="title" />
             </TextFlow>
+
             <!-- General Explanation (Friendly) -->
             <TextFlow textAlignment="JUSTIFY">
-                <Text text="SDES is a simplified version of the DES algorithm designed for educational purposes. It uses an 8-bit block and a 10-bit key to demonstrate key concepts such as permutations, substitutions, and key scheduling. While it is not secure for real applications, it provides a clear introduction to symmetric encryption." styleClass="body" />
+                <Text text="The Menezes‑Vanstone cryptosystem is an elliptic curve-based encryption scheme that offers high security with relatively small key sizes. It is known for its efficiency and robust security, making it a modern alternative to traditional asymmetric algorithms. " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" only if the elliptic curve parameters are poorly chosen." styleClass="body" />
             </TextFlow>
+
             <!-- Pros and Cons -->
             <TextFlow textAlignment="JUSTIFY">
                 <Text text="Pros:" styleClass="subtitle" />
             </TextFlow>
             <TextFlow textAlignment="JUSTIFY">
-                <Text text="- Excellent tool for educational purposes." styleClass="body" />
+                <Text text="- High security with smaller keys." styleClass="body" />
             </TextFlow>
             <TextFlow textAlignment="JUSTIFY">
                 <Text text="Cons:" styleClass="subtitle" />
             </TextFlow>
             <TextFlow textAlignment="JUSTIFY">
-                <Text text="- Not secure for real-world applications." styleClass="body" />
+                <Text text="- Complex parameter selection and implementation." styleClass="body" />
             </TextFlow>
+
             <!-- Toggle Button for Detailed Description -->
             <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
+
             <!-- Detailed Description Section (Initially Hidden) -->
             <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
                 <TextFlow textAlignment="JUSTIFY">
@@ -53,29 +61,33 @@
                     <Text text="Encryption:" styleClass="subtitle" />
                 </TextFlow>
                 <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
                 <!-- Decryption Formula -->
                 <TextFlow textAlignment="JUSTIFY">
                     <Text text="Decryption:" styleClass="subtitle" />
                 </TextFlow>
                 <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
                 <!-- Example -->
                 <TextFlow textAlignment="JUSTIFY">
-                    <Text text="Example: Encrypting 'HELLO' using SDES" styleClass="subtitle" />
+                    <Text text="Example: Encrypting 'HELLO' using Menezes‑Vanstone" styleClass="subtitle" />
                 </TextFlow>
                 <ImageView fx:id="exampleImage" preserveRatio="true" />
+
                 <!-- Cryptanalysis Methods -->
                 <TextFlow textAlignment="JUSTIFY">
                     <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
                 </TextFlow>
                 <TextFlow textAlignment="JUSTIFY">
-                    <Text text="• SDES is designed for learning and is not secure against modern cryptanalysis." styleClass="body" />
+                    <Text text="• Vulnerable if curve parameters are weak or implementation flaws exist." styleClass="body" />
                 </TextFlow>
+
                 <!-- Additional Technical Details -->
                 <TextFlow textAlignment="JUSTIFY">
                     <Text text="Additional Technical Details:" styleClass="subtitle" />
                 </TextFlow>
                 <TextFlow textAlignment="JUSTIFY">
-                    <Text text="SDES simplifies the complex operations of DES into fewer rounds and smaller block/key sizes. It demonstrates how substitutions and permutations work, making it a useful pedagogical tool despite its lack of real-world security." styleClass="body" />
+                    <Text text="The Menezes‑Vanstone cryptosystem uses elliptic curve operations to perform encryption and decryption, offering high security with smaller keys. Its security depends on the elliptic curve discrete logarithm problem. However, its complexity demands careful parameter selection and implementation to avoid vulnerabilities." styleClass="body" />
                 </TextFlow>
             </VBox>
         </VBox>

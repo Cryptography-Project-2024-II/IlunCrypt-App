@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../assets/styles/Common.css" style="-fx-padding: 20;">
+
+    <!-- Title -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Symmetric Encryption Methods" styleClass="title" />
+    </TextFlow>
+
+    <!-- General Description Paragraph -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="This section presents the classical encryption techniques, developed before the computer era, that were used throughout history to protect information. They transform messages using mathematical functions or letter substitution to ensure confidentiality. Although they were fundamental in their time, " styleClass="body" />
+        <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+        <Text text=" and are not used for applications requiring high security." styleClass="body" />
+    </TextFlow>
+
+    <!-- Classification and Details -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="The classical encryption methods are divided into various categories according to the technique used:" styleClass="body" />
+    </TextFlow>
+
+    <!-- Classification Details -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Monoalphabetic Substitution:" underline="true" styleClass="body" />
+        <Text text=" Includes techniques such as the Affine, Multiplicative, Caesar (Shift), and Substitution ciphers, where each letter is systematically replaced using specific mathematical functions." styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Polyalphabetic Substitution:" underline="true" styleClass="body" />
+        <Text text=" The Vigenère cipher is the main representative. It is called 'polyalphabetic' because it employs several substitution alphabets during the encryption process, thereby complicating frequency analysis." styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Polygraphic Encryption:" underline="true" styleClass="body" />
+        <Text text=" The Hill cipher belongs to this category, employing matrices to transform blocks of letters rather than individual characters." styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• " styleClass="body" />
+        <Text text="Transposition:" underline="true" styleClass="body" />
+        <Text text=" Techniques such as the Permutation cipher rearrange the order of characters without altering their content, only their position." styleClass="body" />
+    </TextFlow>
+
+    <!-- List of Methods -->
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="Some of the classical encryption techniques covered include:" styleClass="subtitle" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Affine Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Multiplicative Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Caesar Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Substitution Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Vigenère Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Hill Cipher" styleClass="body" />
+    </TextFlow>
+    <TextFlow textAlignment="JUSTIFY">
+        <Text text="• Permutation Cipher" styleClass="body" />
+    </TextFlow>
+
+</VBox>

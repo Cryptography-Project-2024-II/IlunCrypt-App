@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    FXML Layout for the Public-Key Encryption view.
 
+    This layout is based on a GridPane that divides the user interface into three main sections:
+      1. Background Section (covers the entire grid)
+      2. Top Bar Section (contains the title)
+      3. Main Content Section (split into a left panel for cipher buttons and a right panel for dynamic content)
+
+    The right panel is implemented as an MFXScrollPane that fits its content to width and disables horizontal scrolling.
+-->
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -9,7 +19,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Priority?>
 
 <GridPane
         fx:id="grid"
@@ -21,75 +30,89 @@
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.iluncrypt.iluncryptapp.controllers.PublicKeyEncryptionController">
 
-   <!-- Column constraints for responsiveness -->
+   <!-- Define 10 columns with equal percentage width -->
    <columnConstraints>
-      <ColumnConstraints minWidth="250" prefWidth="250" maxWidth="250" hgrow="NEVER"/> <!-- Botones -->
-      <ColumnConstraints minWidth="400" hgrow="ALWAYS"/> <!-- Contenido dinámico -->
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="10"/>
    </columnConstraints>
 
-   <!-- Row constraints -->
+   <!-- Define two rows:
+        - The first row is for the Top Bar (fixed height)
+        - The second row is for the Main Content (grows as needed)
+   -->
    <rowConstraints>
-      <RowConstraints minHeight="50" vgrow="NEVER"/> <!-- Top Bar -->
-      <RowConstraints vgrow="ALWAYS"/> <!-- Main Content -->
+      <RowConstraints minHeight="50" vgrow="NEVER"/>
+      <RowConstraints vgrow="ALWAYS"/>
    </rowConstraints>
 
-   <!-- Background Section -->
-   <StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="8" GridPane.rowSpan="10">
+   <!-- Background Section: occupies the entire grid -->
+   <StackPane styleClass="grid-background" fx:id="backgroundStackPane" GridPane.columnSpan="10" GridPane.rowSpan="10">
       <GridPane.margin>
-         <Insets top="20.0" bottom="20.0" />
+         <Insets top="20.0" bottom="20.0"/>
       </GridPane.margin>
    </StackPane>
 
-   <!-- Top Bar Section -->
-   <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="8" GridPane.rowIndex="0">
+   <!-- Top Bar Section: displays the title -->
+   <StackPane styleClass="top-bar" fx:id="topBar" GridPane.columnSpan="10" GridPane.rowIndex="0">
       <HBox spacing="10.0" alignment="CENTER">
-         <Label text="Public-Key Encryption" styleClass="top-bar-title" alignment="CENTER" />
+         <Label text="Public-Key Encryption" styleClass="top-bar-title" alignment="CENTER"/>
       </HBox>
    </StackPane>
 
-   <!-- Main Content Section -->
-   <HBox spacing="20.0" GridPane.columnSpan="8" GridPane.rowIndex="1"
-         GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+   <!-- Main Content Section: split into two columns (left and right) -->
+   <GridPane GridPane.rowIndex="1" GridPane.columnSpan="10" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <!-- Define two columns:
+           - Left Panel: 25% width (contains cipher buttons)
+           - Right Panel: 75% width (displays dynamic content)
+      -->
+      <columnConstraints>
+         <ColumnConstraints percentWidth="25"/>
+         <ColumnConstraints percentWidth="75"/>
+      </columnConstraints>
+      <!-- Define a single row that grows vertically -->
+      <rowConstraints>
+         <RowConstraints vgrow="ALWAYS"/>
+      </rowConstraints>
 
-      <!-- Buttons Section (Fixed width, fixed height) -->
-      <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;"
-           HBox.hgrow="NEVER" VBox.vgrow="ALWAYS"
-           minWidth="250" prefWidth="250" maxWidth="250">
-
-         <HBox.margin>
-            <Insets left="20.0"/>
-         </HBox.margin>
-
-         <Label text="Integer Factorization Problem" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
+      <!-- Left Panel: Cipher buttons and labels -->
+      <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;" GridPane.columnIndex="0" fillWidth="true">
+         <!-- Section Label -->
+         <Label text="Integer Factorization Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
          <MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSACipher"
-                   prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited"/>
-         <Label text="Quadratic Residue Problem" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
+                    prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+
+         <Label text="Quadratic Residue Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
          <MFXButton text="Rabin" styleClass="outline-button" onAction="#handleRabinCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverRabin" onMouseExited="#handleHoverExited"/>
-         <Label text="Discrete Logarithm Problem" styleClass="group-label"
-                alignment="CENTER" minWidth="250" prefWidth="250" maxWidth="250"
-                wrapText="true"/>
+                    prefHeight="40.0" onMouseEntered="#handleHoverRabin" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+
+         <Label text="Discrete Logarithm Problem" styleClass="group-label" alignment="CENTER" wrapText="true"/>
          <MFXButton text="ElGamal" styleClass="outline-button" onAction="#handleElGamalCipher"
-                   prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverElGamal" onMouseExited="#handleHoverExited"/>
+                    prefHeight="40.0" onMouseEntered="#handleHoverElGamal" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
          <MFXButton text="Menezes-Vanstone" styleClass="outline-button" onAction="#handleMenezesVanstoneCipher"
-                    prefWidth="250" prefHeight="40.0" onMouseEntered="#handleHoverMenezesVanstone" onMouseExited="#handleHoverExited"/>
-     </VBox>
+                    prefHeight="40.0" onMouseEntered="#handleHoverMenezesVanstone" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+      </VBox>
 
-     <!-- Dynamic Content Section (Expands to fill remaining space) -->
-      <StackPane fx:id="dynamicContent" styleClass="dynamic-container"
-                 GridPane.columnIndex="1" GridPane.rowIndex="1"
-                 GridPane.columnSpan="7" GridPane.rowSpan="9"
-                 GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
-                 HBox.hgrow="ALWAYS">
-         <GridPane.margin>
-            <Insets left="10" right="10" top="10" bottom="10"/> <!-- Agrega espacio alrededor del StackPane -->
-         </GridPane.margin>
-      </StackPane>
-
-   </HBox>
-
+      <!-- Right Panel: Dynamic content area within an MFXScrollPane -->
+      <MFXScrollPane fx:id="dynamicContent"
+                     fitToWidth="true"
+                     hbarPolicy="NEVER"
+                     GridPane.columnIndex="1">
+         <content>
+            <!-- Container for dynamically loaded content -->
+            <StackPane>
+               <GridPane.margin>
+                  <Insets left="10" right="10" top="10" bottom="10"/>
+               </GridPane.margin>
+            </StackPane>
+         </content>
+      </MFXScrollPane>
+   </GridPane>
 </GridPane>

@@ -1,29 +1,94 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
-import javafx.event.ActionEvent;
+import com.iluncrypt.iluncryptapp.ResourcesLoader;
+import io.github.palexdev.materialfx.controls.MFXScrollPane;
+import javafx.animation.PauseTransition;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
+import java.io.IOException;
 
 public class ImageEncryptionController {
 
-    public void handleHoverExited(MouseEvent mouseEvent) {
+    @FXML
+    private MFXScrollPane dynamicContent;
+
+    private final PauseTransition delayTransition;
+    private boolean isMouseOverDescription = false;
+
+    public ImageEncryptionController() {
+        delayTransition = new PauseTransition(Duration.millis(500));
+        delayTransition.setOnFinished(event -> {
+            if (!isMouseOverDescription) {
+                loadView("views/image-encryption-methods-description-view.fxml");
+            }
+        });
     }
 
-    public void handleHillCipher(ActionEvent actionEvent) {
+    @FXML
+    public void initialize() {
+        showImageEncryptionDescription();
+        dynamicContent.setOnMouseEntered(e -> {
+            isMouseOverDescription = true;
+            cancelResetDelay();
+        });
+        dynamicContent.setOnMouseExited(e -> {
+            isMouseOverDescription = false;
+            delayTransition.playFromStart();
+        });
     }
 
-    public void handleHoverHill(MouseEvent mouseEvent) {
+    @FXML
+    private void handleAESCipher() { loadMainView("AES-CIPHER"); }
+
+    @FXML
+    private void handleDESCipher() { loadMainView("DES-CIPHER"); }
+
+    @FXML
+    private void handleHillCipher() { loadMainView("HILL-CIPHER"); }
+
+    @FXML
+    private void handlePermutationCipher() { loadMainView("PERMUTATION-CIPHER"); }
+
+    private void loadMainView(String cipherView) {
+        IlunCryptController controller = IlunCryptController.getInstance();
+        controller.loadView(cipherView);
     }
 
-    public void handlePermutationCipher(ActionEvent actionEvent) {
+    @FXML
+    private void handleHoverAES(MouseEvent event) { updateHoverView("views/AES-image-description-view.fxml"); }
+
+    @FXML
+    private void handleHoverDES(MouseEvent event) { updateHoverView("views/DES-image-description-view.fxml"); }
+
+    @FXML
+    private void handleHoverHill(MouseEvent event) { updateHoverView("views/hill-image-cipher-description-view.fxml"); }
+
+    @FXML
+    private void handleHoverPermutation(MouseEvent event) { updateHoverView("views/permutation-image-cipher-description-view.fxml"); }
+
+    @FXML
+    private void handleHoverExited(MouseEvent event) { delayTransition.playFromStart(); }
+
+    private void updateHoverView(String fxmlPath) {
+        cancelResetDelay();
+        loadView(fxmlPath);
     }
 
-    public void handleHoverPermutation(MouseEvent mouseEvent) {
-    }
+    private void cancelResetDelay() { delayTransition.stop(); }
 
-    public void handleAESCipher(ActionEvent actionEvent) {
-    }
+    @FXML
+    private void showImageEncryptionDescription() { loadView("views/image-encryption-methods-description-view.fxml"); }
 
-    public void handleHoverAES(MouseEvent mouseEvent) {
-
+    private void loadView(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ResourcesLoader.loadURL(fxmlPath));
+            Parent view = loader.load();
+            dynamicContent.setContent(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

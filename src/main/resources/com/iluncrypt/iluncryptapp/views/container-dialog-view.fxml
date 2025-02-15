@@ -9,7 +9,7 @@
 
     <!-- Scroll pane that will contain the dynamically loaded content -->
     <MFXScrollPane fx:id="scrollContainer"
-                   fitToWidth="true" fitToHeight="true"
+                   fitToWidth="true"
                    AnchorPane.topAnchor="0.0"
                    AnchorPane.bottomAnchor="0.0"
                    AnchorPane.leftAnchor="0.0"

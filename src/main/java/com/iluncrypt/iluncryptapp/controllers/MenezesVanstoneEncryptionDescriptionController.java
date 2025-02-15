@@ -7,13 +7,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 /**
- * Controller for the Simplified DES (SDES) description view.
+ * Controller for the Menezes‑Vanstone Cryptosystem description view.
  *
- * This controller manages both the general explanation and the detailed technical description for SDES.
- * It uses the LatexImageGenerator utility to generate LaTeX-rendered images for the encryption and decryption representations,
+ * This controller manages both the general explanation and the detailed technical description for the Menezes‑Vanstone cryptosystem.
+ * It utilizes the LatexImageGenerator utility class to generate LaTeX-rendered images for the encryption and decryption representations,
  * as well as an example. A toggle button allows the user to show or hide the detailed description.
  */
-public class SDESDescriptionController {
+public class MenezesVanstoneEncryptionDescriptionController {
 
     @FXML
     private ImageView encryptionFormula;
@@ -31,13 +31,13 @@ public class SDESDescriptionController {
     private MFXToggleButton toggleDetailsButton;
 
     /**
-     * Initializes the SDES description view.
+     * Initializes the Menezes‑Vanstone description view.
      */
     @FXML
     public void initialize() {
-        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("E(P, K) = SDES(P, K)"));
-        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("D(C, K) = SDES^{-1}(C, K)"));
-        exampleImage.setImage(LatexImageGenerator.createLatexImage("HELLO \\rightarrow SDES \\rightarrow Q1W2E3"));
+        encryptionFormula.setImage(LatexImageGenerator.createLatexImage("E(P) = P + H(k)\\cdot G"));
+        decryptionFormula.setImage(LatexImageGenerator.createLatexImage("D(C) = C - H(k)\\cdot G"));
+        exampleImage.setImage(LatexImageGenerator.createLatexImage("HELLO \\rightarrow MV \\rightarrow 7B2F9A1C"));
 
         detailedDescriptionContainer.setVisible(false);
         detailedDescriptionContainer.setManaged(false);

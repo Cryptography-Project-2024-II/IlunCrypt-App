@@ -1,32 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<GridPane alignment="CENTER" hgap="10" vgap="10"
+          fx:id="grid"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.ElGamalEncryptionDescriptionController"
+          stylesheets="@../assets/styles/Common.css"
+          style="-fx-padding: 15;">
 
-<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.iluncrypt.iluncryptapp.controllers.ElGamalCipherDescriptionController"
-      style="-fx-padding: 20;">
+    <!-- Content Container -->
+    <StackPane fx:id="contentContainer" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+               style="-fx-padding: 10; -fx-background-radius: 10; -fx-background-color: white;">
+        <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 10;">
 
-    <!-- Title -->
-    <Label text="Multiplicative Cipher" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: center-left;" />
+            <!-- Title -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="ElGamal Cryptosystem" styleClass="title" />
+            </TextFlow>
 
-    <!-- Explanation -->
-    <Label text="The Affine Cipher is a monoalphabetic substitution cipher where each letter in an alphabet is mapped to its numeric equivalent and transformed using a linear function."
-           wrapText="true"
-           style="-fx-font-size: 16px; -fx-padding: 10; -fx-alignment: center-left;" />
+            <!-- General Explanation (Friendly) -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="ElGamal is an asymmetric encryption algorithm based on the Diffie‑Hellman key exchange. It offers probabilistic encryption, providing semantic security when implemented properly. " styleClass="body" />
+                <Text text="currently these methods are considered vulnerable" underline="true" styleClass="body" />
+                <Text text=" if weak parameters are used, though it remains popular in many applications." styleClass="body" />
+            </TextFlow>
 
-    <!-- Encryption Formula -->
-    <Label text="Encryption Formula:" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center-left;" />
-    <ImageView fx:id="encryptionFormula" fitWidth="400" preserveRatio="true" />
+            <!-- Pros and Cons -->
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Pros:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Probabilistic encryption enhances security." styleClass="body" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="Cons:" styleClass="subtitle" />
+            </TextFlow>
+            <TextFlow textAlignment="JUSTIFY">
+                <Text text="- Larger ciphertext and computational overhead." styleClass="body" />
+            </TextFlow>
 
-    <!-- Decryption Formula -->
-    <Label text="Decryption Formula:" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center-left;" />
-    <ImageView fx:id="decryptionFormula" fitWidth="400" preserveRatio="true" />
+            <!-- Toggle Button for Detailed Description -->
+            <MFXToggleButton fx:id="toggleDetailsButton" text="View Detailed Description" onAction="#toggleDetailedDescription"/>
 
-    <!-- Example -->
-    <Label text="Example: Encrypting 'HELLO' with a=5, b=8" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-alignment: center-left;" />
-    <Label text="Using the formula, each letter is transformed accordingly:" wrapText="true"
-           style="-fx-font-size: 14px; -fx-alignment: center-left;" />
-    <ImageView fx:id="exampleImage" fitWidth="400" preserveRatio="true" />
-</VBox>
+            <!-- Detailed Description Section (Initially Hidden) -->
+            <VBox fx:id="detailedDescriptionContainer" spacing="10" visible="false" managed="false">
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Detailed Description:" styleClass="subtitle" />
+                </TextFlow>
+                <!-- Encryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Encryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="encryptionFormula" preserveRatio="true" />
+
+                <!-- Decryption Formula -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Decryption Formula:" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="decryptionFormula" preserveRatio="true" />
+
+                <!-- Example -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Example: Encrypting 'HELLO' with key 'KEY'" styleClass="subtitle" />
+                </TextFlow>
+                <ImageView fx:id="exampleImage" preserveRatio="true" />
+
+                <!-- Cryptanalysis Methods -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Cryptanalysis Methods:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="• Vulnerable to chosen ciphertext attacks if the randomness is insufficient." styleClass="body" />
+                </TextFlow>
+
+                <!-- Additional Technical Details -->
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="Additional Technical Details:" styleClass="subtitle" />
+                </TextFlow>
+                <TextFlow textAlignment="JUSTIFY">
+                    <Text text="ElGamal encryption generates a pair (g^k, m·y^k mod p) for each message m. Its probabilistic nature prevents direct frequency analysis, but careful parameter selection is crucial to maintain security." styleClass="body" />
+                </TextFlow>
+            </VBox>
+        </VBox>
+    </StackPane>
+</GridPane>
