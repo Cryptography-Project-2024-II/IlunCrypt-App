@@ -85,17 +85,17 @@
       <!-- Left Panel: Cryptanalysis methods -->
       <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;" GridPane.columnIndex="0" fillWidth="true">
          <!-- Section Label -->
-         <Label text="Statistical Analysis" styleClass="group-label" alignment="CENTER" wrapText="true"/>
+         <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce"
+                    prefHeight="40.0" onMouseEntered="#handleHoverBruteForce" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+         <MFXButton text="Frequency Analysis" styleClass="outline-button" onAction="#handleFrequency"
+                    prefHeight="40.0" onMouseEntered="#handleHoverFrequency" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+         <Label text="⸻" styleClass="group-label" alignment="CENTER" wrapText="true"/>
          <MFXButton text="Index of Coincidence (Friedman)" styleClass="outline-button" onAction="#handleFriedman"
                     prefHeight="40.0" onMouseEntered="#handleHoverFriedman" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
          <MFXButton text="Brauer Data Analysis" styleClass="outline-button" onAction="#handleBrauer"
                     prefHeight="40.0" onMouseEntered="#handleHoverBrauer" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
 
-         <Label text="Brute Force Techniques" styleClass="group-label" alignment="CENTER" wrapText="true"/>
-         <MFXButton text="Brute Force" styleClass="outline-button" onAction="#handleBruteForce"
-                    prefHeight="40.0" onMouseEntered="#handleHoverBruteForce" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
-         <MFXButton text="Frequency Analysis" styleClass="outline-button" onAction="#handleFrequency"
-                    prefHeight="40.0" onMouseEntered="#handleHoverFrequency" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+
       </VBox>
 
       <!-- Right Panel: Dynamic content area within an MFXScrollPane -->
