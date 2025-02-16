@@ -7,6 +7,25 @@ import com.iluncrypt.iluncryptapp.controllers.classic.multiplicative.Multiplicat
 import com.iluncrypt.iluncryptapp.controllers.classic.permutation.PermutationCipherController;
 import com.iluncrypt.iluncryptapp.controllers.classic.shift.ShiftCipherController;
 import com.iluncrypt.iluncryptapp.controllers.classic.substitution.SubstitutionCipherController;
+import com.iluncrypt.iluncryptapp.controllers.classic.vigenere.VigenereCipherController;
+import com.iluncrypt.iluncryptapp.controllers.cryptanalysis.brauer.BrauerAnalysisController;
+import com.iluncrypt.iluncryptapp.controllers.cryptanalysis.bruteforce.BruteForceAnalysisController;
+import com.iluncrypt.iluncryptapp.controllers.cryptanalysis.frequency.FrequencyAnalysisController;
+import com.iluncrypt.iluncryptapp.controllers.cryptanalysis.friedman.FriedmanAnalysisController;
+import com.iluncrypt.iluncryptapp.controllers.digitalsignature.dsa.DSASignatureController;
+import com.iluncrypt.iluncryptapp.controllers.digitalsignature.rsa.RSASignatureController;
+import com.iluncrypt.iluncryptapp.controllers.imageencryption.aes.AESImageController;
+import com.iluncrypt.iluncryptapp.controllers.imageencryption.des.DESImageController;
+import com.iluncrypt.iluncryptapp.controllers.imageencryption.hill.HillImageController;
+import com.iluncrypt.iluncryptapp.controllers.imageencryption.permutation.PermutationImageController;
+import com.iluncrypt.iluncryptapp.controllers.publickey.elgamal.ElGamalController;
+import com.iluncrypt.iluncryptapp.controllers.publickey.menezesvanstone.MenezesVanstoneController;
+import com.iluncrypt.iluncryptapp.controllers.publickey.rabin.RabinController;
+import com.iluncrypt.iluncryptapp.controllers.publickey.rsa.RSAController;
+import com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AESController;
+import com.iluncrypt.iluncryptapp.controllers.symmetrickey.des.DESController;
+import com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes.SDESController;
+import com.iluncrypt.iluncryptapp.controllers.symmetrickey.tdes.TDESController;
 import com.iluncrypt.iluncryptapp.models.enums.Language;
 import com.iluncrypt.iluncryptapp.utils.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
@@ -199,7 +218,7 @@ public class IlunCryptController implements Initializable {
      * Register application views with their respective FXML files.
      */
     private void registerViews() {
-        loader.addView(MFXLoaderBean.of("ENCRYPT-DECRYPT-OPTIONS", ResourcesLoader.loadURL("views/classic/classic-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Classical Ciphers")).setDefaultRoot(true).get());
+        loader.addView(MFXLoaderBean.of("CLASSIC-OPTIONS", ResourcesLoader.loadURL("views/classic/classic-ciphers-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Classical Ciphers")).setDefaultRoot(true).get());
         loader.addView(MFXLoaderBean.of("SYMMETRIC-KEY-ENCRYPTION", ResourcesLoader.loadURL("views/symmetric-key/symmetric-key-encryption-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Symmetric-Key Encryption")).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("PUBLIC-KEY-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/public-key-encryption-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Public-Key Encription")).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("IMAGE-ENCRYPTION", ResourcesLoader.loadURL("views/image-encryption/image-encryption-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Image Encryption")).setDefaultRoot(false).get());
@@ -207,41 +226,66 @@ public class IlunCryptController implements Initializable {
         loader.addView(MFXLoaderBean.of("CRIPTANALYSIS-OPTIONS", ResourcesLoader.loadURL("views/cryptanalysis/cryptanalysis-options-view.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Cryptanalysis")).setDefaultRoot(false).get());
 
         // Classic Ciphers
-        loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/classic/affine/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new AffineCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("MULTIPLICATIVE-CIPHER", ResourcesLoader.loadURL("views/classic/multiplicative/multiplicative-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new MultiplicativeCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("SHIFT-CIPHER", ResourcesLoader.loadURL("views/classic/shift/shift-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new ShiftCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("HILL-CIPHER", ResourcesLoader.loadURL("views/classic/hill/hill-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("PERMUTATION-CIPHER", ResourcesLoader.loadURL("views/classic/permutation/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("SUBSTITUTION-CIPHER", ResourcesLoader.loadURL("views/classic/substitution/substitution-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("VIGENERE-CIPHER", ResourcesLoader.loadURL("views/classic/vigenere/vigenere-cipher-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("AFFINE-CIPHER", ResourcesLoader.loadURL("views/classic/affine/affine-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new AffineCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("MULTIPLICATIVE-CIPHER", ResourcesLoader.loadURL("views/classic/multiplicative/multiplicative-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new MultiplicativeCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SHIFT-CIPHER", ResourcesLoader.loadURL("views/classic/shift/shift-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new ShiftCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("HILL-CIPHER", ResourcesLoader.loadURL("views/classic/hill/hill-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("PERMUTATION-CIPHER", ResourcesLoader.loadURL("views/classic/permutation/permutation-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SUBSTITUTION-CIPHER", ResourcesLoader.loadURL("views/classic/substitution/substitution-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("VIGENERE-CIPHER", ResourcesLoader.loadURL("views/classic/vigenere/vigenere-cipher-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new VigenereCipherController(stage)).setDefaultRoot(false).get());
 
         // Symmetric-key Encryption
-        loader.addView(MFXLoaderBean.of("AES", ResourcesLoader.loadURL("views/symmetric-key/aes/aes-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("DES", ResourcesLoader.loadURL("views/symmetric-key/des/des-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("TDES", ResourcesLoader.loadURL("views/symmetric-key/tdes/tdes-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("SDES", ResourcesLoader.loadURL("views/symmetric-key/sdes/sdes-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("AES", ResourcesLoader.loadURL("views/symmetric-key/aes/aes-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new AESController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("DES", ResourcesLoader.loadURL("views/symmetric-key/des/des-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new DESController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("TDES", ResourcesLoader.loadURL("views/symmetric-key/tdes/tdes-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new TDESController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("SDES", ResourcesLoader.loadURL("views/symmetric-key/sdes/sdes-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new SDESController(stage)).setDefaultRoot(false).get());
 
         // Public-key Encryption
-        loader.addView(MFXLoaderBean.of("ELGAMAL-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/elgamal/elgamal-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("MENEZES-VANSTONE-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/menezes-vanstone/menezes-vanstone-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("RABIN-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/rabin/rabin-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("RSA-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/rsa/rsa-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("ELGAMAL-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/elgamal/elgamal-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new ElGamalController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("MENEZES-VANSTONE-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/menezes-vanstone/menezes-vanstone-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new MenezesVanstoneController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("RABIN-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/rabin/rabin-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new RabinController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("RSA-ENCRYPTION", ResourcesLoader.loadURL("views/public-key/rsa/rsa-view.fxml"))
+                .setBeanToNodeMapper(() -> null).setControllerFactory(c -> new RSAController(stage)).setDefaultRoot(false).get());
 
         // Image Encryption
-        loader.addView(MFXLoaderBean.of("AES-IMAGE", ResourcesLoader.loadURL("views/public-key/elgamal/elgamal-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("DES-IMAGE", ResourcesLoader.loadURL("views/public-key/menezes-vanstone/menezes-vanstone-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("HILL-IMAGE", ResourcesLoader.loadURL("views/public-key/rabin/rabin-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("PERMUTATION-IMAGE", ResourcesLoader.loadURL("views/public-key/rsa/rsa-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("AES-IMAGE", ResourcesLoader.loadURL("views/image-encryption/aes/aes-image-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new AESImageController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("DES-IMAGE", ResourcesLoader.loadURL("views/image-encryption/des/des-image-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new DESImageController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("HILL-IMAGE", ResourcesLoader.loadURL("views/image-encryption/hill/hill-image-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new HillImageController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("PERMUTATION-IMAGE", ResourcesLoader.loadURL("views/image-encryption/permutation/permutation-image-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new PermutationImageController(stage)).setDefaultRoot(false).get());
 
         // Digital Signatures
-        loader.addView(MFXLoaderBean.of("DSA-SIGNATURE", ResourcesLoader.loadURL("views/digital-signature/dsa/dsa-signature-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("RSA-SIGNATURE", ResourcesLoader.loadURL("views/digital-signature/rsa/rsa-signature-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("DSA-SIGNATURE", ResourcesLoader.loadURL("views/digital-signature/dsa/dsa-signature-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new DSASignatureController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("RSA-SIGNATURE", ResourcesLoader.loadURL("views/digital-signature/rsa/rsa-signature-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new RSASignatureController(stage)).setDefaultRoot(false).get());
 
         // Cryptanalysis Methods
-        loader.addView(MFXLoaderBean.of("FRIEDMAN-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/friedman/friedman-analysis-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new HillCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("BRAUER-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/brauer/brauer-analysis-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new PermutationCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("BRUTE-FORCE-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/brute-force/brute-force-analysis-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("FREQUENCY-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/frequency/frequency-analysis-view.fxml")).setBeanToNodeMapper(() -> null).setControllerFactory(c -> new SubstitutionCipherController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("FRIEDMAN-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/friedman/friedman-analysis-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new FriedmanAnalysisController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("BRAUER-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/brauer/brauer-analysis-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new BrauerAnalysisController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("BRUTE-FORCE-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/brute-force/brute-force-analysis-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new BruteForceAnalysisController(stage)).setDefaultRoot(false).get());
+        loader.addView(MFXLoaderBean.of("FREQUENCY-ANALYSIS", ResourcesLoader.loadURL("views/cryptanalysis/frequency/frequency-analysis-view.fxml")).setBeanToNodeMapper(() -> null)
+                .setControllerFactory(c -> new FrequencyAnalysisController(stage)).setDefaultRoot(false).get());
     }
 
     /**

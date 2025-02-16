@@ -97,7 +97,7 @@ public class ShiftCipherController implements CipherController, Initializable {
      */
     @FXML
     private void handleBackButton() {
-        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");
+        IlunCryptController.getInstance().loadView("CLASSIC-OPTIONS");
     }
 
     /**

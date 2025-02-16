@@ -93,7 +93,7 @@ public class SubstitutionCipherController implements CipherController, Initializ
      */
     @FXML
     private void handleBackButton() {
-        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");
+        IlunCryptController.getInstance().loadView("CLASSIC-OPTIONS");
     }
 
     /**

@@ -76,7 +76,7 @@ public class SDESController implements CipherController, Initializable {
      */
     @FXML
     private void handleBackButton() {
-        IlunCryptController.getInstance().loadView("ENCRYPT-DECRYPT-OPTIONS");
+        IlunCryptController.getInstance().loadView("SYMMETRIC-KEY-ENCRYPTION");
     }
 
     /**
@@ -193,5 +193,39 @@ public class SDESController implements CipherController, Initializable {
     @Override
     public void closeOptionsDialog() {
         changeMethodDialog.closeDialog();
+    }
+
+    public void importPlainText(ActionEvent actionEvent) {
+    }
+
+    public void copyPlainText(ActionEvent actionEvent) {
+    }
+
+    public void showOtherSettings(ActionEvent actionEvent) {
+    }
+
+    public void exportEncryptedText(ActionEvent actionEvent) {
+    }
+
+    public void showCryptanalysisDialog(ActionEvent actionEvent) {
+    }
+
+    public void decrementA(ActionEvent actionEvent) {
+    }
+
+    public void incrementA(ActionEvent actionEvent) {
+    }
+
+    public void decrementB(ActionEvent actionEvent) {
+    }
+
+    public void incrementB(ActionEvent actionEvent) {
+    }
+
+    public void importCipherText(ActionEvent actionEvent) {
+    }
+
+    public void copyCipherText(ActionEvent actionEvent) {
+
     }
 }

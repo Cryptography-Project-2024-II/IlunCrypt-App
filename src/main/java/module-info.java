@@ -28,14 +28,17 @@ module com.iluncrypt.iluncryptapp {
     opens com.iluncrypt.iluncryptapp.controllers.cryptanalysis.bruteforce to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.cryptanalysis.frequency to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.cryptanalysis.friedman to javafx.fxml;
+    opens com.iluncrypt.iluncryptapp.controllers.digitalsignature.rsa to javafx.fxml;
+    opens com.iluncrypt.iluncryptapp.controllers.digitalsignature.dsa to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.imageencryption.hill to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.imageencryption.permutation to javafx.fxml;
+    opens com.iluncrypt.iluncryptapp.controllers.imageencryption.aes to javafx.fxml;
+    opens com.iluncrypt.iluncryptapp.controllers.imageencryption.des to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.publickey.rsa to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.publickey.elgamal to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.publickey.menezesvanstone to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.publickey.rabin to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes to javafx.fxml;
-    opens com.iluncrypt.iluncryptapp.controllers.imageencryption.aes to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.des to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.tdes to javafx.fxml;
