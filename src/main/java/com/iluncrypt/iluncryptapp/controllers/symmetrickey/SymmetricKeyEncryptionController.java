@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.controllers.symmetrickey;
+package com.iluncrypt.iluncryptapp.controllers.symmetrickey.des;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
@@ -59,16 +59,16 @@ public class SymmetricKeyEncryptionController {
     }
 
     @FXML
-    private void handleHoverAES(MouseEvent event) { updateHoverView("views/symmetric-key/aes/AES-description-view.fxml"); }
+    private void handleHoverAES(MouseEvent event) { updateHoverView("views/symmetric-key/aes/aes-description-view.fxml"); }
 
     @FXML
-    private void handleHoverDES(MouseEvent event) { updateHoverView("views/symmetric-key/des/DES-description-view.fxml"); }
+    private void handleHoverDES(MouseEvent event) { updateHoverView("views/symmetric-key/des/des-description-view.fxml"); }
 
     @FXML
-    private void handleHoverTDES(MouseEvent event) { updateHoverView("views/symmetric-key/tdes/TDES-description-view.fxml"); }
+    private void handleHoverTDES(MouseEvent event) { updateHoverView("views/symmetric-key/tdes/tdes-description-view.fxml"); }
 
     @FXML
-    private void handleHoverSDES(MouseEvent event) { updateHoverView("views/symmetric-key/sdes/SDES-description-view.fxml"); }
+    private void handleHoverSDES(MouseEvent event) { updateHoverView("views/symmetric-key/sdes/sdes-description-view.fxml"); }
 
     @FXML
     private void handleHoverExited(MouseEvent event) { delayTransition.playFromStart(); }
