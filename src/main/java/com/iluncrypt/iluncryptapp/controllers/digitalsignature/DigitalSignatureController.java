@@ -53,10 +53,10 @@ public class DigitalSignatureController {
     }
 
     @FXML
-    private void handleHoverRSA(MouseEvent event) { updateHoverView("views/digital-signature/rsa/RSA-signature-description-view.fxml"); }
+    private void handleHoverRSA(MouseEvent event) { updateHoverView("views/digital-signature/rsa/rsa-signature-description-view.fxml"); }
 
     @FXML
-    private void handleHoverDSA(MouseEvent event) { updateHoverView("views/digital-signature/dsa/DSA-signature-description-view.fxml"); }
+    private void handleHoverDSA(MouseEvent event) { updateHoverView("views/digital-signature/dsa/dsa-signature-description-view.fxml"); }
 
     @FXML
     private void handleHoverExited(MouseEvent event) { delayTransition.playFromStart(); }

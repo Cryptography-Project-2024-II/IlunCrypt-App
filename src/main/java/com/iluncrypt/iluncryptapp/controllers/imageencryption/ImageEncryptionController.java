@@ -42,16 +42,16 @@ public class ImageEncryptionController {
     }
 
     @FXML
-    private void handleAESCipher() { loadMainView("AES-CIPHER"); }
+    private void handleAESCipher() { loadMainView("AES-IMAGE"); }
 
     @FXML
-    private void handleDESCipher() { loadMainView("DES-CIPHER"); }
+    private void handleDESCipher() { loadMainView("DES-IMAGE"); }
 
     @FXML
-    private void handleHillCipher() { loadMainView("HILL-CIPHER"); }
+    private void handleHillCipher() { loadMainView("HILL-IMAGE"); }
 
     @FXML
-    private void handlePermutationCipher() { loadMainView("PERMUTATION-CIPHER"); }
+    private void handlePermutationCipher() { loadMainView("PERMUTATION-IMAGE"); }
 
     private void loadMainView(String cipherView) {
         IlunCryptController controller = IlunCryptController.getInstance();
@@ -59,10 +59,10 @@ public class ImageEncryptionController {
     }
 
     @FXML
-    private void handleHoverAES(MouseEvent event) { updateHoverView("views/image-encryption/aes/AES-image-description-view.fxml"); }
+    private void handleHoverAES(MouseEvent event) { updateHoverView("views/image-encryption/aes/aes-image-description-view.fxml"); }
 
     @FXML
-    private void handleHoverDES(MouseEvent event) { updateHoverView("views/image-encryption/des/DES-image-description-view.fxml"); }
+    private void handleHoverDES(MouseEvent event) { updateHoverView("views/image-encryption/des/des-image-description-view.fxml"); }
 
     @FXML
     private void handleHoverHill(MouseEvent event) { updateHoverView("views/image-encryption/hill/hill-image-cipher-description-view.fxml"); }

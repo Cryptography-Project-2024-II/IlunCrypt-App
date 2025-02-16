@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.rsa.RSAController">
+
+    <Label text="Plain Text" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="1"/>
+
+    <TextArea fx:id="textAreaPlainText" wrapText="true" promptText="Enter clear text here..." GridPane.columnSpan="8" GridPane.rowIndex="2"/>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="3">
+        <Label text="Public Key" styleClass="text-label"/>
+        <MFXTextField fx:id="textFieldPublicKey" promptText="Enter public key"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="4">
+        <Label text="Private Key" styleClass="text-label"/>
+        <MFXTextField fx:id="textFieldPrivateKey" promptText="Enter private key"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="5">
+        <MFXButton text="Encrypt" styleClass="outline-button-green" fx:id="btnCipher" onAction="#cipherText"/>
+        <MFXButton text="Decrypt" styleClass="outline-button-red" fx:id="btnDecipher" onAction="#decipherText"/>
+    </HBox>
+
+    <Label text="Cipher Text" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="6"/>
+
+    <TextArea fx:id="textAreaCipherText" wrapText="true" promptText="Cipher text output..." GridPane.columnSpan="8" GridPane.rowIndex="7"/>
+</GridPane>

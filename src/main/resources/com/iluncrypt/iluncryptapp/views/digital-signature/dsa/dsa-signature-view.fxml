@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.digitalsignature.dsa.DSASignatureController">
+
+    <Label text="Enter Message" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="1"/>
+
+    <TextArea fx:id="textAreaMessage" wrapText="true" promptText="Enter the message to sign..." GridPane.columnSpan="8" GridPane.rowIndex="2"/>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="3">
+        <Label text="Private Key" styleClass="text-label"/>
+        <MFXTextField fx:id="textFieldPrivateKey" promptText="Enter Private Key"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="4">
+        <MFXButton text="Generate Signature" styleClass="outline-button-green" fx:id="btnGenerateSignature"/>
+    </HBox>
+
+    <Label text="Digital Signature" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="5"/>
+
+    <TextArea fx:id="textAreaSignature" wrapText="true" promptText="Generated signature..." GridPane.columnSpan="8" GridPane.rowIndex="6"/>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="7">
+        <Label text="Public Key" styleClass="text-label"/>
+        <MFXTextField fx:id="textFieldPublicKey" promptText="Enter Public Key"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="8">
+        <MFXButton text="Verify Signature" styleClass="outline-button-red" fx:id="btnVerifySignature"/>
+    </HBox>
+</GridPane>

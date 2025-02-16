@@ -12,7 +12,7 @@
           fx:id="grid"
           xmlns="http://javafx.com/javafx/17"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.rsa.RSAEncryptionDescriptionController"
+          fx:controller="com.iluncrypt.iluncryptapp.controllers.digitalsignature.rsa.RSASignatureDescriptionController"
           stylesheets="@../../../assets/styles/Common.css"
           style="-fx-padding: 15;">
 

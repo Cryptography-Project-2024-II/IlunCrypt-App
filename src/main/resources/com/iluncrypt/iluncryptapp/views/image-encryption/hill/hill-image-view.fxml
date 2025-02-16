@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.imageencryption.hill.HillImageController">
+
+    <Label text="Select Image" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="1"/>
+
+    <ImageView fx:id="imageView" fitWidth="300" fitHeight="300" GridPane.columnSpan="8" GridPane.rowIndex="2"/>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="3">
+        <MFXButton text="Load Image" styleClass="outline-button" fx:id="btnLoadImage" onAction="#loadImage"/>
+        <MFXButton text="Save Image" styleClass="outline-button" fx:id="btnSaveImage" onAction="#saveImage"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="4">
+        <Label text="Key Matrix" styleClass="text-label"/>
+        <MFXTextField fx:id="textFieldKeyMatrix" promptText="Enter Key Matrix"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="5">
+        <MFXButton text="Encrypt" styleClass="outline-button-green" fx:id="btnEncrypt" onAction="#encryptImage"/>
+        <MFXButton text="Decrypt" styleClass="outline-button-red" fx:id="btnDecrypt" onAction="#decryptImage"/>
+    </HBox>
+</GridPane>

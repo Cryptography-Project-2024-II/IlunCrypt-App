@@ -42,16 +42,16 @@ public class PublicKeyEncryptionController {
     }
 
     @FXML
-    private void handleRSACipher() { loadMainView("RSA-CIPHER"); }
+    private void handleRSACipher() { loadMainView("RSA-ENCRYPTION"); }
 
     @FXML
-    private void handleRabinCipher() { loadMainView("RABIN-CIPHER"); }
+    private void handleRabinCipher() { loadMainView("RABIN-ENCRYPTION"); }
 
     @FXML
-    private void handleElGamalCipher() { loadMainView("ELGAMAL-CIPHER"); }
+    private void handleElGamalCipher() { loadMainView("ELGAMAL-ENCRYPTION"); }
 
     @FXML
-    private void handleMenezesVanstoneCipher() { loadMainView("MENEZES-VANSTONE-CIPHER"); }
+    private void handleMenezesVanstoneCipher() { loadMainView("MENEZES-VANSTONE-ENCRYPTION"); }
 
     private void loadMainView(String cipherView) {
         IlunCryptController controller = IlunCryptController.getInstance();
@@ -59,7 +59,7 @@ public class PublicKeyEncryptionController {
     }
 
     @FXML
-    private void handleHoverRSA(MouseEvent event) { updateHoverView("views/public-key/rsa/RSA-encryption-description-view.fxml"); }
+    private void handleHoverRSA(MouseEvent event) { updateHoverView("views/public-key/rsa/rsa-encryption-description-view.fxml"); }
 
     @FXML
     private void handleHoverRabin(MouseEvent event) { updateHoverView("views/public-key/rabin/rabin-encryption-description-view.fxml"); }

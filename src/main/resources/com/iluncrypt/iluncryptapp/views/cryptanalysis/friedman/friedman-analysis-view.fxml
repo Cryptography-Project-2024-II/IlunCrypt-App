@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<GridPane
+        fx:id="grid"
+        hgap="20.0"
+        vgap="15.0"
+        styleClass="grid-pane"
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.iluncrypt.iluncryptapp.controllers.cryptanalysis.friedman.FriedmanTestController">
+
+    <Label text="Enter Cipher Text" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="1"/>
+
+    <TextArea fx:id="textAreaCipherText" wrapText="true" promptText="Enter encrypted text..." GridPane.columnSpan="8" GridPane.rowIndex="2"/>
+
+    <HBox spacing="10.0" alignment="CENTER" GridPane.columnSpan="8" GridPane.rowIndex="3">
+        <MFXButton text="Perform Friedman Test" styleClass="outline-button-green" fx:id="btnFriedmanTest"/>
+    </HBox>
+
+    <Label text="Estimated Key Length" styleClass="text-label" GridPane.columnSpan="8" GridPane.rowIndex="4"/>
+
+    <TextArea fx:id="textAreaResults" wrapText="true" promptText="Estimated key length will appear here..." GridPane.columnSpan="8" GridPane.rowIndex="5"/>
+</GridPane>

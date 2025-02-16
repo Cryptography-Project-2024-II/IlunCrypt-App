@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.controllers.symmetrickey.des;
+package com.iluncrypt.iluncryptapp.controllers.symmetrickey;
 
 import com.iluncrypt.iluncryptapp.ResourcesLoader;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
@@ -42,16 +42,16 @@ public class SymmetricKeyEncryptionController {
     }
 
     @FXML
-    private void handleAESCipher() { loadMainView("AES-CIPHER"); }
+    private void handleAESCipher() { loadMainView("AES"); }
 
     @FXML
-    private void handleDESCipher() { loadMainView("DES-CIPHER"); }
+    private void handleDESCipher() { loadMainView("DES"); }
 
     @FXML
-    private void handleTDESCipher() { loadMainView("TDES-CIPHER"); }
+    private void handleTDESCipher() { loadMainView("TDES"); }
 
     @FXML
-    private void handleSDESCipher() { loadMainView("SDES-CIPHER"); }
+    private void handleSDESCipher() { loadMainView("SDES"); }
 
     private void loadMainView(String cipherView) {
         IlunCryptController controller = IlunCryptController.getInstance();
