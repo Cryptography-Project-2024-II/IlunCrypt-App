@@ -1,6 +1,5 @@
 package com.iluncrypt.iluncryptapp.models;
 
-import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
 import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
@@ -8,7 +7,7 @@ import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 /**
  * Represents the configuration settings for a specific cipher method.
  */
-public class CipherMethodConfig {
+public class ClassicCipherConfig extends CryptosystemConfig{
     private Alphabet plaintextAlphabet;
     private Alphabet ciphertextAlphabet;
     private Alphabet keyAlphabet;
@@ -26,10 +25,10 @@ public class CipherMethodConfig {
      * @param unknownCharHandling How unknown characters are handled (e.g., REMOVE, IGNORE).
      * @param whitespaceHandling How whitespace is handled (e.g., PRESERVE, REMOVE).
      */
-    public CipherMethodConfig(Alphabet plaintextAlphabet, Alphabet ciphertextAlphabet,
-                              Alphabet keyAlphabet, CaseHandling caseHandling,
-                              UnknownCharHandling unknownCharHandling,
-                              WhitespaceHandling whitespaceHandling) {
+    public ClassicCipherConfig(Alphabet plaintextAlphabet, Alphabet ciphertextAlphabet,
+                               Alphabet keyAlphabet, CaseHandling caseHandling,
+                               UnknownCharHandling unknownCharHandling,
+                               WhitespaceHandling whitespaceHandling) {
         this.plaintextAlphabet = plaintextAlphabet;
         this.ciphertextAlphabet = ciphertextAlphabet;
         this.keyAlphabet = keyAlphabet;

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.collections.FXCollections?>
+
+<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/17.0.6"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AdvancedOptionsController"
+           stylesheets="@../../../assets/styles/Buttons.css">
+    <VBox spacing="15">
+        <padding>
+            <javafx.geometry.Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        </padding>
+        <!-- Advanced Options Section -->
+        <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT" minWidth="200"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+            </columnConstraints>
+
+            <!-- Operation Mode -->
+            <Label text="Operation Mode:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <MFXComboBox fx:id="comboOperationMode" GridPane.columnIndex="1" GridPane.rowIndex="0" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- Key Size -->
+            <Label text="Key Size:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <MFXComboBox fx:id="comboKeySize" GridPane.columnIndex="1" GridPane.rowIndex="1" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- Padding -->
+            <Label text="Padding:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <MFXComboBox fx:id="comboPadding" GridPane.columnIndex="1" GridPane.rowIndex="2" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- IV Size -->
+            <Label text="IV Size:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <MFXComboBox fx:id="comboIVSize" GridPane.columnIndex="1" GridPane.rowIndex="3" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- GCM Tag Size -->
+            <Label text="GCM Tag Size:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <MFXComboBox fx:id="comboGCMTagSize" GridPane.columnIndex="1" GridPane.rowIndex="4" floatMode="DISABLED" styleClass="styled-combo">
+                <items>
+                    <FXCollections fx:factory="observableArrayList"/>
+                </items>
+            </MFXComboBox>
+
+            <!-- Authentication -->
+            <Label text="Authentication:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <MFXComboBox fx:id="comboAuthentication" GridPane.columnIndex="1" GridPane.rowIndex="5" floatMode="DISABLED" styleClass="styled-combo"/>
+        </GridPane>
+
+        <!-- Button Section (aligned with Reset on the left, and Save options on the right) -->
+        <HBox spacing="10">
+            <!-- Reset button aligned to the left -->
+            <MFXButton fx:id="btnReset" text="Reset Default Values" styleClass="outline-button" onAction="#handleResetConfiguration"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Save options aligned to the right -->
+            <MFXButton fx:id="btnSaveAsDefault" text="Save as Default" styleClass="outline-button-green" onAction="#handleDefaultSave"/>
+            <MFXButton fx:id="btnSave" text="Save" styleClass="outline-button" onAction="#handleSave"/>
+            <MFXButton fx:id="btnCancel" text="Cancel" styleClass="outline-button-red" onAction="#closeDialog"/>
+        </HBox>
+    </VBox>
+</StackPane>

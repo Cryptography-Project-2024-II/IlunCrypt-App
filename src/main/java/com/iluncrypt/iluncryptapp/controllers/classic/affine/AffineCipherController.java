@@ -6,8 +6,9 @@ import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.controllers.OtherSettingsController;
 import com.iluncrypt.iluncryptapp.controllers.classic.ClassicCiphersDialogController;
 import com.iluncrypt.iluncryptapp.models.Alphabet;
-import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
-import com.iluncrypt.iluncryptapp.models.algorithms.AffineCipher;
+import com.iluncrypt.iluncryptapp.models.ClassicCipherConfig;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.classic.AffineCipher;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
 import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
@@ -46,7 +47,7 @@ public class AffineCipherController implements CipherController, Initializable {
     private UnknownCharHandling unknownCharHandling;
     private WhitespaceHandling whitespaceHandling;
     private int alphabetSize;
-    private CipherMethodConfig config;
+    private ClassicCipherConfig config;
 
     // Dialog helpers
     private final DialogHelper infoDialog;
@@ -86,7 +87,7 @@ public class AffineCipherController implements CipherController, Initializable {
         this.infoDialog = new DialogHelper(stage);
         this.changeMethodDialog = new DialogHelper(stage);
         this.errorDialog = new DialogHelper(stage);
-        this.config = ConfigManager.loadCipherMethodConfig("AFFINE-CIPHER");
+        this.config = ConfigManager.loadClassicCipherConfig("AFFINE-CIPHER");
     }
 
 
@@ -175,7 +176,7 @@ public class AffineCipherController implements CipherController, Initializable {
                 false,
                 controller -> {
                         ResourceBundle bundle = LanguageManager.getInstance().getBundle();
-                        controller.loadContent("views/affine-cipher-description-view.fxml", bundle); // Load the description view inside the container
+                        controller.loadContent("views/classic/affine/affine-cipher-description-view.fxml", bundle); // Load the description view inside the container
                 }
         );
     }
@@ -187,7 +188,7 @@ public class AffineCipherController implements CipherController, Initializable {
     private void showChangeMethodDialog() {
         changeMethodDialog.showFXMLDialog(
                 "Cipher/Decipher Methods",
-                "views/classic-ciphers-dialog-view.fxml",
+                "views/classic/classic-ciphers-dialog-view.fxml",
                 new MFXFontIcon("fas-list", 18),
                 "mfx-fxml-dialog",
                 false,
@@ -211,13 +212,19 @@ public class AffineCipherController implements CipherController, Initializable {
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
-        closeOptionsDialog();
+        closeDialog(changeMethodDialog);
     }
 
     @Override
-    public void closeOptionsDialog() {
-        changeMethodDialog.closeDialog();
+    public void closeDialog(DialogHelper dialog) {
+        dialog.closeDialog();
     }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
+    }
+
 
     /**
      * Saves the current text and key values before switching methods.
@@ -380,7 +387,7 @@ public class AffineCipherController implements CipherController, Initializable {
         changeMethodDialog.showFXMLDialog(
                 "Other Settings (Affine Cipher)",
                 "views/other-settings-view.fxml",
-                () -> new OtherSettingsController(this.stage, this.config),
+                () -> new OtherSettingsController(this.stage, this.config, changeMethodDialog),
                 new MFXFontIcon("fas-gear", 18),
                 "mfx-dialog",
                 false,

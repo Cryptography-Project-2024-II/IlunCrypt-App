@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.iluncrypt.iluncryptapp.models.AESConfig;
 import com.iluncrypt.iluncryptapp.models.Alphabet;
-import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
+import com.iluncrypt.iluncryptapp.models.ClassicCipherConfig;
 import com.iluncrypt.iluncryptapp.models.enums.*;
+import com.iluncrypt.iluncryptapp.models.enums.aes.*;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -27,54 +29,73 @@ public class ConfigManager {
     private static final String CONFIG_FILE = "config.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /**
-     * Loads the configuration for a given cipher method.
-     * If the configuration file does not exist, it returns the default values.
-     *
-     * @param cipherMethodName The name of the cipher method.
-     * @return A CipherMethodConfig object with the appropriate settings.
-     */
-    public static CipherMethodConfig loadCipherMethodConfig(String cipherMethodName) {
+    public static AESConfig loadAESConfig() {
         Path configPath = Paths.get(CONFIG_FILE);
 
-        // Si el archivo no existe, devolver configuración por defecto
+        if (!Files.exists(configPath)) {
+            return getDefaultAESConfig();
+        }
+
+        try {
+            String jsonContent = Files.readString(configPath).trim();
+
+            if (jsonContent.isEmpty()) {
+                return getDefaultAESConfig();
+            }
+
+            // Leer el JSON como un mapa genérico
+            Map<String, Object> rawConfig = GSON.fromJson(jsonContent, new TypeToken<Map<String, Object>>() {}.getType());
+
+            if (rawConfig == null || !rawConfig.containsKey("methodciphersettings")) {
+                return getDefaultAESConfig();
+            }
+
+            // Acceder a "methodciphersettings" y luego a "AES"
+            Map<String, Object> methodCipherSettings = (Map<String, Object>) rawConfig.get("methodciphersettings");
+            if (!methodCipherSettings.containsKey("AES")) {
+                return getDefaultAESConfig();
+            }
+
+            AESConfigJson jsonConfig = GSON.fromJson(GSON.toJson(methodCipherSettings.get("AES")), AESConfigJson.class);
+            return jsonConfig.toAESConfig();
+
+        } catch (IOException | JsonSyntaxException e) {
+            System.err.println("Error loading AES configuration: " + e.getMessage());
+        }
+
+        return getDefaultAESConfig();
+    }
+
+
+    public static ClassicCipherConfig loadClassicCipherConfig(String cipherMethodName) {
+        Path configPath = Paths.get(CONFIG_FILE);
+
         if (!Files.exists(configPath)) {
             return getDefaultCipherConfig();
         }
 
         try (FileReader reader = new FileReader(CONFIG_FILE)) {
-            // Leer el contenido del archivo
             String jsonContent = Files.readString(configPath).trim();
 
-            // Si el archivo está vacío, devolver valores por defecto
             if (jsonContent.isEmpty()) {
-                System.err.println("Advertencia: config.json está vacío.");
                 return getDefaultCipherConfig();
             }
 
-            // Intentar parsear el JSON a un mapa genérico
             Map<String, Object> rawConfig = GSON.fromJson(jsonContent, new TypeToken<Map<String, Object>>() {}.getType());
 
-            // Si el JSON no contiene "methodciphersettings", devolver valores por defecto
             if (rawConfig == null || !rawConfig.containsKey("methodciphersettings")) {
-                System.err.println("Advertencia: 'methodciphersettings' no encontrado en config.json.");
                 return getDefaultCipherConfig();
             }
 
-            // Convertir solo la parte relevante a su tipo esperado
             Type methodConfigType = new TypeToken<Map<String, CipherMethodConfigJson>>() {}.getType();
             Map<String, CipherMethodConfigJson> methodSettings = GSON.fromJson(GSON.toJson(rawConfig.get("methodciphersettings")), methodConfigType);
 
-            // Si la clave no existe para el método buscado, devolver valores por defecto
             if (methodSettings == null || !methodSettings.containsKey(cipherMethodName)) {
-                System.err.println("Advertencia: Configuración para " + cipherMethodName + " no encontrada.");
                 return getDefaultCipherConfig();
             }
 
-            // Obtener la configuración del método de cifrado
             CipherMethodConfigJson jsonConfig = methodSettings.get(cipherMethodName);
-
-            return new CipherMethodConfig(
+            return new ClassicCipherConfig(
                     getAlphabetByName(jsonConfig.plaintextAlphabet),
                     getAlphabetByName(jsonConfig.ciphertextAlphabet),
                     getAlphabetByName(jsonConfig.keyAlphabet),
@@ -84,20 +105,35 @@ public class ConfigManager {
             );
 
         } catch (IOException | JsonSyntaxException e) {
-            System.err.println("Error al cargar la configuración de cifrado: " + e.getMessage());
+            System.err.println("Error loading classic cipher configuration: " + e.getMessage());
         }
 
-        // Si hubo un error, devolver valores por defecto
         return getDefaultCipherConfig();
     }
+
+
+
+    public static AESConfig getDefaultAESConfig() {
+        return new AESConfig(
+                KeySize.AES_256,
+                AESMode.GCM,
+                PaddingScheme.NO_PADDING,
+                IVSize.IV_12,
+                GCMTagSize.TAG_128,
+                AuthenticationMethod.NONE,
+                true // Store algorithm by default
+        );
+    }
+
+
 
 
 
     /**
      * Devuelve la configuración por defecto para los métodos de cifrado.
      */
-    private static CipherMethodConfig getDefaultCipherConfig() {
-        return new CipherMethodConfig(
+    private static ClassicCipherConfig getDefaultCipherConfig() {
+        return new ClassicCipherConfig(
                 AlphabetPreset.getAlphabetByName("A-Z"),
                 AlphabetPreset.getAlphabetByName("A-Z"),
                 AlphabetPreset.getAlphabetByName("A-Z"),
@@ -109,40 +145,98 @@ public class ConfigManager {
 
 
     /**
-     * Saves the configuration for a given cipher method.
+     * Saves an AES cipher configuration to the config file.
      *
-     * @param cipherMethodName The name of the cipher method.
-     * @param config The CipherMethodConfig object containing the settings to save.
+     * @param config The AES configuration to save.
      */
-    public static void saveCipherMethodConfig(String cipherMethodName, CipherMethodConfig config) {
-        try {
-            Map<String, Map<String, CipherMethodConfigJson>> configData = new HashMap<>();
+    public static void saveAESConfig(AESConfig config) {
+        Map<String, Map<String, Object>> configData = loadCipherMethodConfig();
 
-            // If the config file exists, read its current content
+        configData.computeIfAbsent("methodciphersettings", k -> new HashMap<>());
+
+        AESConfigJson jsonConfig = new AESConfigJson(config);
+
+        //  Compara si la configuración es igual a la configuración por defecto
+        AESConfigJson defaultConfig = new AESConfigJson(getDefaultAESConfig());
+        if (config.equals(defaultConfig.toAESConfig())) {
+            configData.get("methodciphersettings").remove("AES"); // Elimina "AES" si es igual a la por defecto
+        } else {
+            configData.get("methodciphersettings").put("AES", jsonConfig);
+        }
+
+        //  Si "methodciphersettings" queda vacío, también se elimina
+        if (configData.get("methodciphersettings").isEmpty()) {
+            configData.remove("methodciphersettings");
+        }
+
+        //  Si no quedan configuraciones en el JSON, elimina el archivo
+        if (configData.isEmpty()) {
+            try {
+                Files.deleteIfExists(Paths.get(CONFIG_FILE)); // Elimina el archivo si está vacío
+                return; // No se guarda un archivo vacío
+            } catch (IOException e) {
+                System.err.println("Error deleting empty config file: " + e.getMessage());
+            }
+        }
+
+        //  Guardar la configuración si aún hay datos
+        saveConfigToFile(configData);
+    }
+
+
+    /**
+     * Saves a Classic Cipher configuration to the config file.
+     *
+     * @param cipherMethodName The name of the cipher method (e.g., "Affine", "Caesar").
+     * @param config           The Classic Cipher configuration to save.
+     */
+    public static void saveClassicCipherConfig(String cipherMethodName, ClassicCipherConfig config) {
+        Map<String, Map<String, Object>> configData = loadCipherMethodConfig();
+
+        configData.computeIfAbsent("methodciphersettings", k -> new HashMap<>());
+
+        CipherMethodConfigJson jsonConfig = new CipherMethodConfigJson(config);
+        configData.get("methodciphersettings").put(cipherMethodName, jsonConfig);
+
+        saveConfigToFile(configData);
+    }
+
+    /**
+     * Loads the existing cipher method configuration from the config file.
+     *
+     * @return A map containing the loaded configuration.
+     */
+    private static Map<String, Map<String, Object>> loadCipherMethodConfig() {
+        Map<String, Map<String, Object>> configData = new HashMap<>();
+
+        try {
             if (Files.exists(Paths.get(CONFIG_FILE))) {
                 FileReader reader = new FileReader(CONFIG_FILE);
-                Type type = new TypeToken<Map<String, Map<String, CipherMethodConfigJson>>>() {}.getType();
+                Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
                 configData = GSON.fromJson(reader, type);
                 reader.close();
             }
+        } catch (IOException e) {
+            System.err.println("Error loading cipher method configuration: " + e.getMessage());
+        }
 
-            // Ensure the methodciphersettings section exists
-            configData.computeIfAbsent("methodciphersettings", k -> new HashMap<>());
+        return configData;
+    }
 
-            // Convert CipherMethodConfig to JSON format
-            CipherMethodConfigJson jsonConfig = new CipherMethodConfigJson(config);
-
-            // Store the new configuration
-            configData.get("methodciphersettings").put(cipherMethodName, jsonConfig);
-
-            // Write updated data back to the file
-            FileWriter writer = new FileWriter(CONFIG_FILE);
+    /**
+     * Writes the updated configuration data to the config file.
+     *
+     * @param configData The map containing the updated configuration data.
+     */
+    private static void saveConfigToFile(Map<String, Map<String, Object>> configData) {
+        try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(configData, writer);
-            writer.close();
         } catch (IOException e) {
             System.err.println("Error saving cipher method configuration: " + e.getMessage());
         }
     }
+
+
 
     /**
      * Retrieves an alphabet by name, checking both predefined and custom alphabets.
@@ -330,7 +424,7 @@ public class ConfigManager {
         private UnknownCharHandling unknownCharHandling;
         private WhitespaceHandling whitespaceHandling;
 
-        CipherMethodConfigJson(CipherMethodConfig config) {
+        CipherMethodConfigJson(ClassicCipherConfig config) {
             this.plaintextAlphabet = config.getPlaintextAlphabet().getName();
             this.ciphertextAlphabet = config.getCiphertextAlphabet().getName();
             this.keyAlphabet = config.getKeyAlphabet().getName();
@@ -339,4 +433,41 @@ public class ConfigManager {
             this.whitespaceHandling = config.getWhitespaceHandling();
         }
     }
+
+    /**
+     * Internal class to store AES configuration in JSON format.
+     */
+    private static class AESConfigJson {
+        private int keySize;
+        private AESMode mode;
+        private PaddingScheme paddingScheme;
+        private int ivSize;
+        private int gcmTagSize;
+        private AuthenticationMethod authMethod;
+        private boolean storeAlgorithm;
+
+        AESConfigJson(AESConfig config) {
+            this.keySize = config.getKeySize().getSize();
+            this.mode = config.getMode();
+            this.paddingScheme = config.getPaddingScheme();
+            this.ivSize = config.getIvSize().getSize();
+            this.gcmTagSize = config.getGcmTagSize().getSize();
+            this.authMethod = config.getAuthMethod();
+            this.storeAlgorithm = config.isStoreAlgorithm();
+        }
+
+        AESConfig toAESConfig() {
+            return new AESConfig(
+                    KeySize.fromSize(keySize),
+                    mode,
+                    paddingScheme,
+                    IVSize.fromSize(ivSize),
+                    GCMTagSize.fromSize(gcmTagSize),
+                    authMethod,
+                    storeAlgorithm
+            );
+        }
+    }
+
+
 }

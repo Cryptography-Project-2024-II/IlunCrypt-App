@@ -3,6 +3,7 @@ package com.iluncrypt.iluncryptapp.controllers.classic.hill;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.controllers.classic.ClassicCiphersDialogController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -140,7 +141,7 @@ public class HillCipherController implements CipherController, Initializable {
     private void showChangeMethodDialog() {
         changeMethodDialog.showFXMLDialog(
                 "Cipher/Decipher Methods",
-                "views/classic-ciphers-dialog-view.fxml",
+                "views/classic/classic-ciphers-dialog-view.fxml",
                 new MFXFontIcon("fas-list", 18),
                 "mfx-fxml-dialog",
                 false,
@@ -163,12 +164,17 @@ public class HillCipherController implements CipherController, Initializable {
         saveCurrentState();
         IlunCryptController.getInstance().loadView(methodView);
         restorePreviousState();
-        closeOptionsDialog();
+        closeDialog(changeMethodDialog);
     }
 
     @Override
-    public void closeOptionsDialog() {
-        changeMethodDialog.closeDialog();
+    public void closeDialog(DialogHelper dialog) {
+        dialog.closeDialog();
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
     }
 
     /**

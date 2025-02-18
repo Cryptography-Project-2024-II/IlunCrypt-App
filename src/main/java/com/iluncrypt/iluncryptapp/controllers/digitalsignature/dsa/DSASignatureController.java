@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.controllers.digitalsignature.dsa;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.event.ActionEvent;
@@ -62,7 +63,14 @@ public class DSASignatureController implements CipherController, Initializable {
     public void switchEncryptionMethod(String methodView) {}
 
     @Override
-    public void closeOptionsDialog() {}
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
+    }
 
     public void handleBackButton(ActionEvent actionEvent) {
     }

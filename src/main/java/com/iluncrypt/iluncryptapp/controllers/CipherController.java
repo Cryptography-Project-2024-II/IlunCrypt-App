@@ -1,5 +1,8 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+
 /**
  * Common interface for all cipher controllers.
  * Ensures they can restore previous encryption settings when switching methods.
@@ -23,5 +26,7 @@ public interface CipherController {
      */
     void switchEncryptionMethod(String methodView);
 
-    void closeOptionsDialog();
+    void closeDialog(DialogHelper dialog);
+
+    void setConfig(CryptosystemConfig config);
 }

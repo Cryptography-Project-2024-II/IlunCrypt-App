@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.controllers;
 
-import com.iluncrypt.iluncryptapp.models.CipherMethodConfig;
+import com.iluncrypt.iluncryptapp.models.ClassicCipherConfig;
 import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
 import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
  */
 public class OtherSettingsController implements Initializable {
 
+    private DialogHelper dialog;
     @FXML
     private StackPane rootPane;
 
@@ -60,7 +61,7 @@ public class OtherSettingsController implements Initializable {
 
     private final DialogHelper dialogHelper;
     private final Stage stage;
-    private final CipherMethodConfig config;
+    private final ClassicCipherConfig config;
 
     private CipherController parentController;
 
@@ -76,10 +77,11 @@ public class OtherSettingsController implements Initializable {
      * @param stage The primary application stage.
      * @param config The cipher method configuration.
      */
-    public OtherSettingsController(Stage stage, CipherMethodConfig config) {
+    public OtherSettingsController(Stage stage, ClassicCipherConfig config, DialogHelper dialog) {
         this.stage = stage;
         this.dialogHelper = new DialogHelper(stage);
         this.config = config;
+        this.dialog = dialog;
     }
 
     public void setParentController(CipherController parentController) {
@@ -190,7 +192,7 @@ public class OtherSettingsController implements Initializable {
     @FXML
     private void closeDialog() {
         if (parentController != null) {
-            parentController.closeOptionsDialog();
+            parentController.closeDialog(dialog);
         }
     }
 

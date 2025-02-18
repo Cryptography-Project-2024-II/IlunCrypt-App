@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.models.algorithms;
+package com.iluncrypt.iluncryptapp.models.algorithms.classic;
 
 import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.Cryptosystem;

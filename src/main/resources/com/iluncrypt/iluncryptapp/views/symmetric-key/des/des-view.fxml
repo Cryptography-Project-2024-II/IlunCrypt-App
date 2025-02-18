@@ -13,6 +13,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.scene.layout.Region?>
 
+<?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
 <GridPane
         fx:id="grid"
         hgap="20.0"
@@ -140,77 +141,120 @@
       <HBox spacing="50.0" alignment="CENTER" HBox.hgrow="ALWAYS">
 
          <!-- Leftmost Section: Other Settings and Export -->
-         <VBox spacing="15.0" alignment="CENTER_LEFT">
-            <MFXButton text="Other Settings" styleClass="outline-button" fx:id="btnOtherSettings" onAction="#showOtherSettings" prefWidth="200.0" prefHeight="40.0">
+         <VBox spacing="15.0" alignment="CENTER">
+            <Label fx:id="lblMode" text="Mode: AES-256-GCM" alignment="CENTER" styleClass="text-label" />
+            <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" onAction="#clearAll" prefWidth="200.0" prefHeight="40.0">
+               <graphic>
+                  <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
+               </graphic>
+            </MFXButton>
+            <MFXButton text="Advanced Options" styleClass="outline-button" fx:id="btnAdvancedOptions" onAction="#showAdvancedOptions" prefWidth="200.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Export Encrypted Message" styleClass="outline-button" fx:id="btnExportEncryptedText" onAction="#exportEncryptedText" prefWidth="200.0" prefHeight="40.0">
+            <MFXButton text="Export Encrypted Information" styleClass="outline-button" fx:id="btnExportEncryptedInformation" onAction="#exportEncryptedInformation" prefWidth="200.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-file-export" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
          </VBox>
 
-         <!-- Left Section: Clear All and Cryptanalysis -->
-         <VBox spacing="15.0" alignment="CENTER_LEFT">
-            <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" onAction="#clearTextAreas" prefWidth="200.0" prefHeight="40.0">
-               <graphic>
-                  <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
-               </graphic>
-            </MFXButton>
-            <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="200.0" prefHeight="40.0">
-               <graphic>
-                  <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass = "button-icon"/>
-               </graphic>
-            </MFXButton>
+
+
+         <!-- Center Section: IV and Key -->
+         <VBox spacing="15.0" alignment="CENTER">
+            <HBox alignment="CENTER">
+               <MFXTextField fx:id="textFieldIV"
+                             floatMode="BORDER"
+                             floatingText="Initial Vector (IV)"
+                             promptText="Enter Initial Vector (IV)..."
+                             prefWidth="200.0"/>
+
+               <MFXButton fx:id="btnCopyIV" styleClass="icon-button" text="" >
+                  <graphic>
+                     <MFXFontIcon description="fas-copy" size="16.0"/>
+                  </graphic>
+               </MFXButton>
+            </HBox>
+
+            <MFXCheckbox fx:id="checkGenerateIV" selected="true" text="Generate IV automatically"/>
+
+            <HBox fx:id="buttonContainerIV" alignment="BOTTOM_CENTER" spacing="10">
+               <MFXButton fx:id="btnShuffleIV" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-shuffle" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnUploadIV" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-upload" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDownloadIV" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-download" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDeleteIV" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-trash-can" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+            </HBox>
          </VBox>
 
-         <!-- Center Section: Number Inputs for A and B -->
          <VBox spacing="15.0" alignment="CENTER">
-            <HBox spacing="10.0" alignment="CENTER">
-               <Label text="A:" alignment="CENTER_LEFT" styleClass="text-label" />
-               <HBox spacing="5.0" alignment="CENTER">
-                  <MFXButton text="" styleClass="icon-button" onAction="#decrementA">
-                     <graphic>
-                        <MFXFontIcon description="fas-minus" size="16.0" />
-                     </graphic>
-                  </MFXButton>
-                  <MFXTextField fx:id="textFieldA" promptText="0" text="5" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                  <MFXButton text="" styleClass="icon-button" onAction="#incrementA">
-                     <graphic>
-                        <MFXFontIcon description="fas-plus" size="16.0" />
-                     </graphic>
-                  </MFXButton>
-               </HBox>
+            <HBox alignment="CENTER">
+               <MFXTextField fx:id="textFieldKey"
+                             floatMode="BORDER"
+                             floatingText="Key"
+                             promptText="Enter key..."
+                             prefWidth="200.0"/>
+
+               <MFXButton fx:id="btnCopyKey" styleClass="icon-button" text="" >
+                  <graphic>
+                     <MFXFontIcon description="fas-copy" size="16.0"/>
+                  </graphic>
+               </MFXButton>
             </HBox>
-            <HBox spacing="10.0" alignment="CENTER">
-               <Label text="B:" alignment="CENTER_LEFT" styleClass="text-label" />
-               <HBox spacing="5.0" alignment="CENTER">
-                  <MFXButton text="" styleClass="icon-button" onAction="#decrementB">
-                     <graphic>
-                        <MFXFontIcon description="fas-minus" size="16.0"/>
-                     </graphic>
-                  </MFXButton>
-                  <MFXTextField fx:id="textFieldB" promptText="0" text="8" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                  <MFXButton text="" styleClass="icon-button" onAction="#incrementB">
-                     <graphic>
-                        <MFXFontIcon description="fas-plus" size="16.0" />
-                     </graphic>
-                  </MFXButton>
-               </HBox>
+
+            <MFXCheckbox fx:id="checkGenerateKey" selected="true" text="Generate key automatically"/>
+
+            <HBox fx:id="buttonContainerKey" alignment="BOTTOM_CENTER" spacing="10">
+               <MFXButton fx:id="btnShuffleKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-shuffle" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnUploadKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-upload" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDownloadKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-download" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDeleteKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-trash-can" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
             </HBox>
          </VBox>
+
+
 
          <!-- Right Section: Cipher/Decipher -->
          <VBox spacing="15.0" alignment="CENTER_RIGHT">
-            <MFXButton text="Cipher" styleClass="outline-button-green" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Encrypt" styleClass="outline-button-green" fx:id="btnEncrypt" onAction="#encrypt" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock" size="16.0" styleClass = "button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Decipher" styleClass="outline-button-red" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Decrypt" styleClass="outline-button-red" fx:id="btnDecrypt" onAction="#decrypt" prefWidth="150.0" prefHeight="40.0">
                <graphic>
                   <MFXFontIcon description="fas-lock-open" size="16.0" styleClass = "button-icon"/>
                </graphic>

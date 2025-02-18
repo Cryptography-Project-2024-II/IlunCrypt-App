@@ -2,6 +2,7 @@ package com.iluncrypt.iluncryptapp.controllers.publickey.menezesvanstone;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.event.ActionEvent;
@@ -110,8 +111,13 @@ public class MenezesVanstoneController implements CipherController, Initializabl
     }
 
     @Override
-    public void closeOptionsDialog() {
-        changeMethodDialog.closeDialog();
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
     }
 
     public void showChangeMethodDialog(ActionEvent actionEvent) {

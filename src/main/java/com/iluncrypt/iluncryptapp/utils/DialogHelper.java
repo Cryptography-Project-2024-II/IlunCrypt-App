@@ -86,6 +86,10 @@ public class DialogHelper {
         });
     }
 
+    public MFXStageDialog getDialog() {
+        return dialog;
+    }
+
     /**
      * Displays a basic information dialog with the specified title and content.
      *
@@ -109,6 +113,38 @@ public class DialogHelper {
             dialog.showDialog();
         });
     }
+
+    /**
+     * Displays an alert dialog with a customizable title and message.
+     * If no icon is provided, a default warning icon is used.
+     *
+     * @param title   The title of the alert.
+     * @param message The message to display.
+     * @param icon    (Optional) The icon to show in the header. If null, a default icon is used.
+     */
+    public void showAlertDialog(String title, String message, MFXFontIcon icon) {
+        Platform.runLater(() -> {
+            if (dialogContent == null || dialog == null) {
+                throw new IllegalStateException("DialogHelper is not initialized yet.");
+            }
+
+            // Use default icon if none is provided
+            MFXFontIcon alertIcon = (icon != null) ? icon : new MFXFontIcon("fas-exclamation-triangle", 18);
+
+            dialogContent.setHeaderText(title);
+            dialogContent.setContentText(message);
+            dialogContent.setHeaderIcon(alertIcon);
+            dialogContent.getStyleClass().add("mfx-alert-dialog");
+            dialogContent.clearActions();
+            dialogContent.addActions(
+                    createAction(new MFXButton("OK"), event -> dialog.close())
+            );
+
+            dialog.setDraggable(false);
+            dialog.showDialog();
+        });
+    }
+
 
     /**
      * Displays a custom dialog with user-defined changes, including optional body content.
@@ -243,7 +279,7 @@ public class DialogHelper {
      * @param action The action to associate with the button.
      * @return A Map.Entry containing the button and its action.
      */
-    private Map.Entry<Node, javafx.event.EventHandler<MouseEvent>> createAction(MFXButton button, javafx.event.EventHandler<MouseEvent> action) {
+    public Map.Entry<Node, javafx.event.EventHandler<MouseEvent>> createAction(MFXButton button, javafx.event.EventHandler<MouseEvent> action) {
         button.setOnMouseClicked(action);
         return new AbstractMap.SimpleEntry<>(button, action);
     }

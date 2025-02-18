@@ -2,6 +2,7 @@ package com.iluncrypt.iluncryptapp.controllers.symmetrickey.tdes;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.event.ActionEvent;
@@ -104,8 +105,13 @@ public class TDESController implements CipherController, Initializable {
     }
 
     @Override
-    public void closeOptionsDialog() {
-        changeMethodDialog.closeDialog();
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
     }
 
     public void showChangeMethodDialog(ActionEvent actionEvent) {
@@ -146,5 +152,20 @@ public class TDESController implements CipherController, Initializable {
 
     public void copyCipherText(ActionEvent actionEvent) {
 
+    }
+
+    public void clearAll(ActionEvent actionEvent) {
+    }
+
+    public void showAdvancedOptions(ActionEvent actionEvent) {
+    }
+
+    public void exportEncryptedInformation(ActionEvent actionEvent) {
+    }
+
+    public void encrypt(ActionEvent actionEvent) {
+    }
+
+    public void decrypt(ActionEvent actionEvent) {
     }
 }

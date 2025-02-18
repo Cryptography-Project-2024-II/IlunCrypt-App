@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.controllers.cryptanalysis.bruteforce;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,7 +62,14 @@ public class BruteForceAnalysisController implements CipherController, Initializ
     public void switchEncryptionMethod(String methodView) {}
 
     @Override
-    public void closeOptionsDialog() {}
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
+    }
 
     public void handleBackButton(ActionEvent actionEvent) {
     }

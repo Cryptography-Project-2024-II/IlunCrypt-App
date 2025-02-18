@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.controllers.imageencryption.hill;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.event.ActionEvent;
@@ -76,8 +77,13 @@ public class HillImageController implements CipherController, Initializable {
     }
 
     @Override
-    public void closeOptionsDialog() {
-        // Handle closing options dialog
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
     }
 
     public void handleBackButton(ActionEvent actionEvent) {

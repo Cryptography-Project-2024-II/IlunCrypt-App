@@ -1,6 +1,7 @@
 package com.iluncrypt.iluncryptapp.controllers.cryptanalysis.brauer;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,7 +62,15 @@ public class BrauerAnalysisController implements CipherController, Initializable
     public void switchEncryptionMethod(String methodView) {}
 
     @Override
-    public void closeOptionsDialog() {}
+    public void closeDialog(DialogHelper dialog) {
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
+    }
+
 
     public void handleBackButton(ActionEvent actionEvent) {
     }

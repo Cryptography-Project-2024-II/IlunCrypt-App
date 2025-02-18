@@ -154,55 +154,69 @@
                 </MFXButton>
             </VBox>
 
-            <!-- Left Section: Clear All and Cryptanalysis -->
+            <!-- Left Section: Clear All -->
             <VBox spacing="15.0" alignment="CENTER_LEFT">
                 <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" onAction="#clearTextAreas" prefWidth="200.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
                     </graphic>
                 </MFXButton>
-                <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass = "button-icon"/>
-                    </graphic>
-                </MFXButton>
             </VBox>
 
-            <!-- Center Section: Number Inputs for A and B -->
+            <!-- Center Section: ElGamal Public Key and Private Key -->
             <VBox spacing="15.0" alignment="CENTER">
-                <HBox spacing="10.0" alignment="CENTER">
-                    <Label text="A:" alignment="CENTER_LEFT" styleClass="text-label" />
-                    <HBox spacing="5.0" alignment="CENTER">
-                        <MFXButton text="" styleClass="icon-button" onAction="#decrementA">
-                            <graphic>
-                                <MFXFontIcon description="fas-minus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                        <MFXTextField fx:id="textFieldA" promptText="0" text="5" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                        <MFXButton text="" styleClass="icon-button" onAction="#incrementA">
-                            <graphic>
-                                <MFXFontIcon description="fas-plus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                    </HBox>
+                <HBox alignment="CENTER">
+                    <MFXTextField fx:id="textFieldPublicKey"
+                                  floatMode="BORDER"
+                                  floatingText="Public Key (p, g, h)"
+                                  promptText="Enter Public Key (p, g, h)..."
+                                  prefWidth="300.0"/>
+
+                    <MFXButton fx:id="btnCopyPublicKey" styleClass="icon-button" text="" >
+                        <graphic>
+                            <MFXFontIcon description="fas-copy" size="16.0"/>
+                        </graphic>
+                    </MFXButton>
                 </HBox>
-                <HBox spacing="10.0" alignment="CENTER">
-                    <Label text="B:" alignment="CENTER_LEFT" styleClass="text-label" />
-                    <HBox spacing="5.0" alignment="CENTER">
-                        <MFXButton text="" styleClass="icon-button" onAction="#decrementB">
-                            <graphic>
-                                <MFXFontIcon description="fas-minus" size="16.0"/>
-                            </graphic>
-                        </MFXButton>
-                        <MFXTextField fx:id="textFieldB" promptText="0" text="8" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                        <MFXButton text="" styleClass="icon-button" onAction="#incrementB">
-                            <graphic>
-                                <MFXFontIcon description="fas-plus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                    </HBox>
+
+                <HBox alignment="CENTER">
+                    <MFXTextField fx:id="textFieldPrivateKey"
+                                  floatMode="BORDER"
+                                  floatingText="Private Key (x)"
+                                  promptText="Enter Private Key (x)..."
+                                  prefWidth="300.0"/>
+
+                    <MFXButton fx:id="btnCopyPrivateKey" styleClass="icon-button" text="" >
+                        <graphic>
+                            <MFXFontIcon description="fas-copy" size="16.0"/>
+                        </graphic>
+                    </MFXButton>
+                </HBox>
+
+                <HBox fx:id="buttonContainerKeys" alignment="BOTTOM_CENTER" spacing="10">
+                    <MFXButton fx:id="btnShuffleKeys" text="" styleClass="outline-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-shuffle" size="16.0" styleClass="button-icon"/>
+                        </graphic>
+                    </MFXButton>
+                    <MFXButton fx:id="btnUploadKeys" text="" styleClass="outline-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-upload" size="16.0" styleClass="button-icon"/>
+                        </graphic>
+                    </MFXButton>
+                    <MFXButton fx:id="btnDownloadKeys" text="" styleClass="outline-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-download" size="16.0" styleClass="button-icon"/>
+                        </graphic>
+                    </MFXButton>
+                    <MFXButton fx:id="btnDeleteKeys" text="" styleClass="outline-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-trash-can" size="16.0" styleClass="button-icon"/>
+                        </graphic>
+                    </MFXButton>
                 </HBox>
             </VBox>
+
 
             <!-- Right Section: Cipher/Decipher -->
             <VBox spacing="15.0" alignment="CENTER_RIGHT">
