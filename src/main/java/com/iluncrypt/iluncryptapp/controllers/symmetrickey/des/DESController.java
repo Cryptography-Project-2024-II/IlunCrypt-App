@@ -166,5 +166,6 @@ public class DESController implements CipherController, Initializable {
     }
 
     public void decrypt(ActionEvent actionEvent) {
+
     }
 }

@@ -11,7 +11,7 @@ module com.iluncrypt.iluncryptapp {
     opens com.iluncrypt.iluncryptapp.controllers to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.models.enums to com.google.gson;
     opens com.iluncrypt.iluncryptapp.utils to com.google.gson;
-    exports com.iluncrypt.iluncryptapp.models.enums.aes to com.google.gson;
+    exports com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes to com.google.gson;
 
     exports com.iluncrypt.iluncryptapp;
     opens com.iluncrypt.iluncryptapp.controllers.classic to javafx.fxml;
@@ -44,5 +44,4 @@ module com.iluncrypt.iluncryptapp {
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.des to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes to javafx.fxml;
-    opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.tdes to javafx.fxml;
 }

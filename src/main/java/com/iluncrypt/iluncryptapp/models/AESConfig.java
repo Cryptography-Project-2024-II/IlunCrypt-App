@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.models;
 
-import com.iluncrypt.iluncryptapp.models.enums.aes.*;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes.*;
 
 import java.util.Objects;
 

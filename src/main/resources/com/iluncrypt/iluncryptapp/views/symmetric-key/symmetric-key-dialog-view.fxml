@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" alignment="CENTER" style="-fx-padding: 20.0;"
+      stylesheets="@../../assets/styles/Buttons.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iluncrypt.iluncryptapp.controllers.symmetrickey.SymmetricKeyDialogController"
+>
+
+<MFXButton text="AES" styleClass="outline-button" onAction="#handleAES" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="DES" styleClass="outline-button" onAction="#handleDES" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="S-DES (Academic use only)" styleClass="outline-button" onAction="#handleSDESr" prefWidth="200.0" prefHeight="40.0" />
+
+</VBox>
+

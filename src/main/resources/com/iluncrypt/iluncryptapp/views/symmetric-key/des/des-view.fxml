@@ -178,8 +178,6 @@
                </MFXButton>
             </HBox>
 
-            <MFXCheckbox fx:id="checkGenerateIV" selected="true" text="Generate IV automatically"/>
-
             <HBox fx:id="buttonContainerIV" alignment="BOTTOM_CENTER" spacing="10">
                <MFXButton fx:id="btnShuffleIV" text="" styleClass="outline-button">
                   <graphic>
@@ -218,8 +216,6 @@
                   </graphic>
                </MFXButton>
             </HBox>
-
-            <MFXCheckbox fx:id="checkGenerateKey" selected="true" text="Generate key automatically"/>
 
             <HBox fx:id="buttonContainerKey" alignment="BOTTOM_CENTER" spacing="10">
                <MFXButton fx:id="btnShuffleKey" text="" styleClass="outline-button">

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" alignment="CENTER" style="-fx-padding: 20.0;"
+      stylesheets="@../../assets/styles/Buttons.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iluncrypt.iluncryptapp.controllers.publickey.PublicKeyDialogController"
+>
+
+<MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSA" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Rabin" styleClass="outline-button" onAction="#handleRabin" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="ElGamal" styleClass="outline-button" onAction="#handleElGamal" prefWidth="200.0" prefHeight="40.0" />
+<MFXButton text="Menezes-Vanstone" styleClass="outline-button" onAction="#handleMenezesVanstone" prefWidth="200.0" prefHeight="40.0" />
+
+</VBox>
+

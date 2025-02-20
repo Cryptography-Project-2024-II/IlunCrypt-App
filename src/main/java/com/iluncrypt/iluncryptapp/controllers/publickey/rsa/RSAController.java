@@ -172,5 +172,6 @@ public class RSAController implements CipherController, Initializable {
     }
 
     public void decrypt(ActionEvent actionEvent) {
+
     }
 }

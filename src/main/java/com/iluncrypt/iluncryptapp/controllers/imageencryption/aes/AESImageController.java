@@ -1,9 +1,11 @@
 package com.iluncrypt.iluncryptapp.controllers.imageencryption.aes;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.controllers.classic.ClassicCiphersDialogController;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,6 +21,7 @@ import java.util.ResourceBundle;
  */
 public class AESImageController implements CipherController, Initializable {
 
+    private final DialogHelper changeMethodDialog;
     private final DialogHelper infoDialog;
     private final Stage stage;
 
@@ -34,11 +37,20 @@ public class AESImageController implements CipherController, Initializable {
     public AESImageController(Stage stage) {
         this.stage = stage;
         this.infoDialog = new DialogHelper(stage);
+        this.changeMethodDialog = new DialogHelper(stage);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        configureDialogs();
+    }
+
+    /**
+     * Configures the dialogs.
+     */
+    private void configureDialogs() {
         infoDialog.setOwnerNode(grid);
+        changeMethodDialog.setOwnerNode(grid);
     }
 
     @FXML
@@ -93,6 +105,19 @@ public class AESImageController implements CipherController, Initializable {
     }
 
     public void showChangeMethodDialog(ActionEvent actionEvent) {
+        changeMethodDialog.showFXMLDialog(
+                "Image Encryption Methods",
+                "views/image-encryption/image-encryption-dialog-view.fxml",
+                new MFXFontIcon("fas-list", 18),
+                "mfx-fxml-dialog",
+                false,
+                false,
+                controller -> {
+                    if (controller instanceof ClassicCiphersDialogController dialogController) {
+                        dialogController.setParentController(this);
+                    }
+                }
+        );
     }
 
     public void importPlainText(ActionEvent actionEvent) {

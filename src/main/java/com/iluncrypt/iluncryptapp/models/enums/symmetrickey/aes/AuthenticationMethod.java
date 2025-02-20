@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.models.enums.aes;
+package com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes;
 
 /**
  * Authentication and integrity methods for AES modes without built-in authentication.

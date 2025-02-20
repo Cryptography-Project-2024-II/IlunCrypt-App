@@ -3,7 +3,7 @@ package com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.models.AESConfig;
 import com.iluncrypt.iluncryptapp.utils.ConfigManager;
-import com.iluncrypt.iluncryptapp.models.enums.aes.*;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes.*;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.MFXButton;

@@ -25,7 +25,6 @@ import com.iluncrypt.iluncryptapp.controllers.publickey.rsa.RSAController;
 import com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AESController;
 import com.iluncrypt.iluncryptapp.controllers.symmetrickey.des.DESController;
 import com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes.SDESController;
-import com.iluncrypt.iluncryptapp.controllers.symmetrickey.tdes.TDESController;
 import com.iluncrypt.iluncryptapp.models.enums.Language;
 import com.iluncrypt.iluncryptapp.utils.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
@@ -246,8 +245,6 @@ public class IlunCryptController implements Initializable {
                 .setControllerFactory(c -> new AESController(stage)).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("DES", ResourcesLoader.loadURL("views/symmetric-key/des/des-view.fxml")).setBeanToNodeMapper(() -> null)
                 .setControllerFactory(c -> new DESController(stage)).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("TDES", ResourcesLoader.loadURL("views/symmetric-key/tdes/tdes-view.fxml")).setBeanToNodeMapper(() -> null)
-                .setControllerFactory(c -> new TDESController(stage)).setDefaultRoot(false).get());
         loader.addView(MFXLoaderBean.of("SDES", ResourcesLoader.loadURL("views/symmetric-key/sdes/sdes-view.fxml")).setBeanToNodeMapper(() -> null)
                 .setControllerFactory(c -> new SDESController(stage)).setDefaultRoot(false).get());
 

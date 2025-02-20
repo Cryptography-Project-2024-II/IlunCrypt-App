@@ -8,7 +8,7 @@ import com.iluncrypt.iluncryptapp.models.AESConfig;
 import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.ClassicCipherConfig;
 import com.iluncrypt.iluncryptapp.models.enums.*;
-import com.iluncrypt.iluncryptapp.models.enums.aes.*;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes.*;
 
 import java.io.FileReader;
 import java.io.FileWriter;

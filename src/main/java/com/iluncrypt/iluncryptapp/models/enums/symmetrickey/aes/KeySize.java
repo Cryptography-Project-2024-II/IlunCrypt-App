@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.models.enums.aes;
+package com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes;
 
 /**
  * Enumeration of supported AES key sizes.
