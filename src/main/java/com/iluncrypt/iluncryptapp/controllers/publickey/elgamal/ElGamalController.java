@@ -88,7 +88,6 @@ public class ElGamalController implements CipherController, Initializable {
             String cipherText = ElGamalManager.encryptText(
                     textAreaPlainText.getText(),
                     textFieldPublicKey.getText(),
-                    textFieldPrivateKey.getText(),
                     config
             );
             textAreaCipherText.setText(cipherText);

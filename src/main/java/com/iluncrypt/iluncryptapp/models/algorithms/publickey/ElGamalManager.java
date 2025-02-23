@@ -30,7 +30,7 @@ public class ElGamalManager {
         );
     }
 
-    public static String encryptText(String text, String publicKey, String privateKey, ElGamalConfig config) throws Exception {
+    public static String encryptText(String text, String publicKey, ElGamalConfig config) throws Exception {
         String[] parts = publicKey.split(",");
         validatePublicKey(parts);
 

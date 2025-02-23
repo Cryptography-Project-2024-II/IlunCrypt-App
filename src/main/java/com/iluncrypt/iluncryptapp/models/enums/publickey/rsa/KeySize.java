@@ -1,4 +1,4 @@
-// KeySize.java
+// KeySize
 package com.iluncrypt.iluncryptapp.models.enums.publickey.rsa;
 
 public enum KeySize {

@@ -3,15 +3,23 @@ package com.iluncrypt.iluncryptapp.controllers.publickey.menezesvanstone;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.MenezesVanstoneConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.publickey.MenezesVanstoneManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.math.ec.ECPoint;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,6 +32,7 @@ public class MenezesVanstoneController implements CipherController, Initializabl
     private final DialogHelper changeMethodDialog;
     private final DialogHelper errorDialog;
     private final Stage stage;
+    private MenezesVanstoneConfig config = new MenezesVanstoneConfig();
 
     private String lastPlainText = "";
     private String lastCipherText = "";
@@ -79,14 +88,64 @@ public class MenezesVanstoneController implements CipherController, Initializabl
 
     @FXML
     private void cipherText() {
-        // Implement Menezes-Vanstone encryption logic
+        Platform.runLater(() -> {
+            try {
+                validateAndGenerateKeys();
+                String cipherText = MenezesVanstoneManager.encrypt(
+                        textAreaPlainText.getText(),
+                        textFieldPublicKey.getText(),
+                        config
+                );
+                textAreaCipherText.setText(cipherText);
+            } catch (Exception e) {
+                showError("Encryption Failed", e.getMessage());
+            }
+        });
     }
 
     @FXML
     private void decipherText() {
-        // Implement Menezes-Vanstone decryption logic
+        Platform.runLater(() -> {
+            try {
+                String plainText = MenezesVanstoneManager.decrypt(
+                        textAreaCipherText.getText(),
+                        textFieldPrivateKey.getText(),
+                        config
+                );
+                textAreaPlainText.setText(plainText);
+            } catch (Exception e) {
+                showError("Decryption Failed", e.getMessage());
+            }
+        });
     }
 
+    private void validateAndGenerateKeys() throws Exception {
+        if (textFieldPublicKey.getText().isEmpty() || textFieldPrivateKey.getText().isEmpty()) {
+            MenezesVanstoneManager.KeyPair pair = MenezesVanstoneManager.generateKeyPair(config);
+            textFieldPublicKey.setText(pair.publicKey());
+            textFieldPrivateKey.setText(pair.privateKey());
+        }
+        validateKeyConsistency();
+    }
+
+    private void validateKeyConsistency() throws Exception {
+        BigInteger d = new BigInteger(textFieldPrivateKey.getText(), 16);
+        ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec(config.getKeySize().getCurveName());
+
+        ECPoint expectedQ = spec.getG().multiply(d).normalize();
+        String actualQ = textFieldPublicKey.getText();
+
+        if (!actualQ.equals(MenezesVanstoneManager.bytesToHex(expectedQ.getEncoded(true)))) {
+            throw new Exception("Public/private key mismatch");
+        }
+    }
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     @Override
     public void saveCurrentState() {
         lastPlainText = textAreaPlainText.getText();

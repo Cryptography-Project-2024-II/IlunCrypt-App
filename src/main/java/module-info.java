@@ -6,6 +6,8 @@ module com.iluncrypt.iluncryptapp {
     requires jlatexmath;
     requires java.logging;
     requires com.google.gson;
+    requires org.bouncycastle.provider;
+    requires org.bouncycastle.pkix;
 
     opens com.iluncrypt.iluncryptapp to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers to javafx.fxml;

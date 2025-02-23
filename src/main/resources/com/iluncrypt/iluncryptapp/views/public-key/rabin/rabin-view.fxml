@@ -180,7 +180,7 @@
                 </HBox>
 
                 <HBox alignment="CENTER">
-                    <MFXTextField fx:id="textFieldPrimeFactors"
+                    <MFXTextField fx:id="textFieldPrivateKey"
                                   floatMode="BORDER"
                                   floatingText="Private Key: Prime Factors (p, q)"
                                   promptText="Enter Private Key: Prime Factors (p, q)..."
