@@ -3,15 +3,18 @@ package com.iluncrypt.iluncryptapp.controllers.publickey.elgamal;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.ElGamalConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.publickey.ElGamalManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,6 +27,7 @@ public class ElGamalController implements CipherController, Initializable {
     private final DialogHelper changeMethodDialog;
     private final DialogHelper errorDialog;
     private final Stage stage;
+    private ElGamalConfig config = new ElGamalConfig();
 
     private String lastPlainText = "";
     private String lastCipherText = "";
@@ -79,13 +83,62 @@ public class ElGamalController implements CipherController, Initializable {
     @FXML
     private void cipherText() {
         // Implement ElGamal encryption logic
+        try {
+            validateInputs();
+            String cipherText = ElGamalManager.encryptText(
+                    textAreaPlainText.getText(),
+                    textFieldPublicKey.getText(),
+                    textFieldPrivateKey.getText(),
+                    config
+            );
+            textAreaCipherText.setText(cipherText);
+        } catch (Exception e) {
+            showError("Encryption Error", e.getMessage());
+        }
     }
 
     @FXML
     private void decipherText() {
         // Implement ElGamal decryption logic
+        try {
+            validateInputs();
+            String plainText = ElGamalManager.decryptText(
+                    textAreaCipherText.getText(),
+                    textFieldPublicKey.getText(),
+                    textFieldPrivateKey.getText(),
+                    config
+            );
+            textAreaPlainText.setText(plainText);
+        } catch (Exception e) {
+            showError("Decryption Error", e.getMessage());
+        }
     }
 
+    private void validateInputs() throws Exception {
+        if (textFieldPublicKey.getText().isEmpty()) {
+            ElGamalManager.KeyPair pair = ElGamalManager.generateKeyPair(config);
+            textFieldPublicKey.setText(pair.publicKey);
+            textFieldPrivateKey.setText(pair.privateKey);
+        }
+
+        // Basic format validation
+        if (textFieldPublicKey.getText().split(",").length != 3) {
+            throw new Exception("Invalid public key format. Use: p,g,h");
+        }
+
+        if (textFieldPrivateKey.getText().isEmpty()) {
+            throw new Exception("Private key required for decryption");
+        }
+    }
+    private void showError(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
     @Override
     public void saveCurrentState() {
         lastPlainText = textAreaPlainText.getText();
