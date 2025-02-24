@@ -186,6 +186,28 @@ public class BrauerAnalysisController implements CipherController, Initializable
     }
 
     private void importText() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Import Text File");
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new javafx.stage.FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        java.io.File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            try {
+                String content = java.nio.file.Files.readString(
+                        file.toPath(),
+                        java.nio.charset.StandardCharsets.UTF_8
+                );
+
+                textAreaText.setText(content);
+
+            } catch (java.io.IOException ex) {
+                ex.printStackTrace();
+                infoDialog.showInfoDialog("Error reading file: ", ex.getMessage());
+            }
+        }
     }
 
     private void showChangeMethodDialog() {
