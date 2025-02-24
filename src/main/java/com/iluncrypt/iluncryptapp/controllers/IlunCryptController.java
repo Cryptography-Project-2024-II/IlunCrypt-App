@@ -26,7 +26,7 @@ import com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AESController;
 import com.iluncrypt.iluncryptapp.controllers.symmetrickey.des.DESController;
 import com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes.SDESController;
 import com.iluncrypt.iluncryptapp.models.enums.Language;
-import com.iluncrypt.iluncryptapp.utils.ConfigManager;
+import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.*;

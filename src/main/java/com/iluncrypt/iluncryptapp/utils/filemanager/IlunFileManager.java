@@ -6,14 +6,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * Handles the reading and writing of .ilun encrypted files.
+ * Handles reading and writing of .ilun encrypted files.
  */
 public class IlunFileManager {
-
     private static final byte[] MAGIC_HEADER = "ILUNCR1\0".getBytes(StandardCharsets.UTF_8);
 
     /**
-     * Writes an encrypted file with metadata and cipher data.
+     * Writes an encrypted file with metadata and encrypted content.
+     *
+     * @param outputFile The file to be written.
+     * @param encryptedData The encrypted content.
+     * @param metadata The metadata of the original file.
+     * @param iv The initialization vector (IV), if applicable.
+     * @throws IOException If an error occurs while writing.
      */
     public static void writeIlunFile(File outputFile, byte[] encryptedData, IlunFileMetadata metadata, byte[] iv) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
@@ -38,11 +43,15 @@ public class IlunFileManager {
     }
 
     /**
-     * Reads metadata from an encrypted .ilun file.
+     * Reads metadata from an .ilun encrypted file.
+     *
+     * @param inputFile The encrypted input file.
+     * @return The file metadata.
+     * @throws IOException If reading fails or file format is invalid.
      */
     public static IlunFileMetadata readIlunMetadata(File inputFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(inputFile)) {
-            byte[] magicHeader = new byte[8];
+            byte[] magicHeader = new byte[MAGIC_HEADER.length];
             fis.read(magicHeader);
 
             if (!Arrays.equals(magicHeader, MAGIC_HEADER)) {
@@ -75,7 +84,43 @@ public class IlunFileManager {
     }
 
     /**
+     * Converts byte data to an encrypted file.
+     *
+     * @param encryptedData The encrypted content.
+     * @param metadata The metadata of the original file.
+     * @param iv The initialization vector (if applicable).
+     * @return The .ilun file created.
+     * @throws IOException If writing fails.
+     */
+    public static File saveEncryptedFile(byte[] encryptedData, IlunFileMetadata metadata, byte[] iv) throws IOException {
+        File outputFile = new File("encrypted.ilun");
+        writeIlunFile(outputFile, encryptedData, metadata, iv);
+        return outputFile;
+    }
+
+    /**
+     * Converts byte data to a decrypted file using metadata.
+     *
+     * @param decryptedData The decrypted content.
+     * @param metadata The metadata containing the original file extension.
+     * @return The restored original file.
+     * @throws IOException If writing fails.
+     */
+    public static File saveDecryptedFile(byte[] decryptedData, IlunFileMetadata metadata) throws IOException {
+        String fileName = "decrypted." + metadata.getExtension();
+        File outputFile = new File(fileName);
+        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+            fos.write(decryptedData);
+        }
+        return outputFile;
+    }
+
+    /**
      * Pads a string to a fixed length with null bytes.
+     *
+     * @param input The string to pad.
+     * @param length The desired length.
+     * @return A byte array of the padded string.
      */
     private static byte[] padString(String input, int length) {
         byte[] padded = new byte[length];

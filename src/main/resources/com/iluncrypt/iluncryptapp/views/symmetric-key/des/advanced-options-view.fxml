@@ -3,12 +3,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import io.github.palexdev.materialfx.controls.*?>
-<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <?import javafx.collections.FXCollections?>
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/17.0.6"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AdvancedOptionsController"
+           fx:controller="com.iluncrypt.iluncryptapp.controllers.symmetrickey.des.AdvancedOptionsController"
            stylesheets="@../../../assets/styles/Buttons.css">
     <VBox spacing="15">
         <padding>
@@ -34,7 +33,7 @@
             <MFXComboBox fx:id="comboPadding" GridPane.columnIndex="1" GridPane.rowIndex="2" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- IV Size -->
-            <Label text="IV Size:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label text="Initial Vector (IV) Size:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
             <MFXComboBox fx:id="comboIVSize" GridPane.columnIndex="1" GridPane.rowIndex="3" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- GCM Tag Size -->
@@ -48,6 +47,16 @@
             <!-- Authentication -->
             <Label text="Authentication:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
             <MFXComboBox fx:id="comboAuthentication" GridPane.columnIndex="1" GridPane.rowIndex="5" floatMode="DISABLED" styleClass="styled-combo"/>
+
+            <!-- Generate random Key automatically -->
+            <MFXCheckbox fx:id="checkGenerateKey" selected="true" text="Generate Key automatically" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+
+            <!-- Generate random Init Vector automatically -->
+            <MFXCheckbox fx:id="checkGenerateIV" selected="true" text="Generate Initial Vector (IV) automatically" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+            <!-- See Init Vector-->
+            <MFXCheckbox fx:id="checkSeeIV" selected="false" text="See Initial Vector (IV)" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+
         </GridPane>
 
         <!-- Button Section (aligned with Reset on the left, and Save options on the right) -->

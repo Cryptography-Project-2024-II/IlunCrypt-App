@@ -8,13 +8,15 @@ module com.iluncrypt.iluncryptapp {
     requires com.google.gson;
     requires org.bouncycastle.provider;
     requires org.bouncycastle.pkix;
+    requires gs.core;
+    requires gs.ui.javafx;
 
     opens com.iluncrypt.iluncryptapp to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.models.enums to com.google.gson;
     opens com.iluncrypt.iluncryptapp.utils to com.google.gson;
-    exports com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes to com.google.gson;
-
+    exports com.iluncrypt.iluncryptapp.models to com.google.gson;
+    opens com.iluncrypt.iluncryptapp.models.attacks.brauer to javafx.graphics;
     exports com.iluncrypt.iluncryptapp;
     opens com.iluncrypt.iluncryptapp.controllers.classic to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey to javafx.fxml;
@@ -46,4 +48,7 @@ module com.iluncrypt.iluncryptapp {
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.des to javafx.fxml;
     opens com.iluncrypt.iluncryptapp.controllers.symmetrickey.sdes to javafx.fxml;
+    opens com.iluncrypt.iluncryptapp.utils.config to com.google.gson;
+    opens com.iluncrypt.iluncryptapp.models to com.google.gson;
+    exports com.iluncrypt.iluncryptapp.models.enums.symmetrickey to com.google.gson;
 }

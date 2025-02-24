@@ -3,35 +3,34 @@ package com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.ContainerDialogController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
-import com.iluncrypt.iluncryptapp.models.AESConfig;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.models.algorithms.symmetrickey.AESManager;
+import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.KeySize;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.SymmetricKeyAlgorithm;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
-import com.iluncrypt.iluncryptapp.utils.ConfigManager;
-import io.github.palexdev.materialfx.controls.MFXCheckbox;
-import io.github.palexdev.materialfx.controls.MFXTextField;
+import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -39,80 +38,66 @@ import java.util.ResourceBundle;
  */
 public class AESController implements CipherController, Initializable {
 
-
-
-    private AESConfig aesConfig;
-
+    private SymmetricKeyConfig aesConfig;
     private final DialogHelper infoDialog;
     private final DialogHelper changeMethodDialog;
     private final DialogHelper errorDialog;
     private final DialogHelper advancedOptionsDialog;
     private final DialogHelper alertDialog;
     private final Stage stage;
-
-    private boolean sourceInfoActive = false;
-    private boolean encryptedInfoActive = false;
-
-
-
-    private String lastPlainText = "";
-    private String lastCipherText = "";
-    private String lastKey = "";
+    private boolean fileMode = false; // Flag to indicate file encryption/decryption mode
+    private File noEncryptedFile;
+    private File encryptedFile;
+    private byte[] iv;
 
     @FXML
-    private MFXCheckbox checkGenerateKey;
-
+    private VBox boxIV;
     @FXML
     private GridPane grid;
-
+    @FXML
+    private TextArea textAreaPlainText, textAreaCipherText;
+    @FXML
+    private MFXTextField textFieldKey, textFieldIV;
+    @FXML
+    private MFXButton btnCopyPlainText, btnCopyCipherText, btnCopyKey, btnCopyIV;
+    @FXML
+    private MFXButton btnShuffleIV, btnDeleteIV, btnDownloadIV, btnUploadIV;
+    @FXML
+    private MFXButton btnShuffleKey, btnDownloadKey, btnUploadKey, btnDeleteKey;
+    @FXML
+    private MFXButton btnImportPlainText, btnImportCipherText;
+    @FXML
+    private MFXButton btnClearCipherText, btnClearPlainText;
     @FXML
     private Label lblMode;
 
-    @FXML
-    private TextArea textAreaPlainText;
-
-    @FXML
-    private TextArea textAreaCipherText;
-
-    @FXML
-    private MFXTextField textFieldKey;
-
-    @FXML
-    private MFXTextField textFieldIV;
-
-
-    @FXML
-    private MFXButton btnImportPlainText;
-
-    @FXML
-    private MFXButton btnImportCipherText;
-
     public AESController(Stage stage) {
         this.stage = stage;
+
         this.infoDialog = new DialogHelper(stage);
         this.changeMethodDialog = new DialogHelper(stage);
         this.errorDialog = new DialogHelper(stage);
         this.advancedOptionsDialog = new DialogHelper(stage);
         this.alertDialog = new DialogHelper(stage);
-        this.aesConfig = ConfigManager.loadAESConfig();
+
+        this.aesConfig = ConfigManager.loadSymmetricKeyConfig("AES");
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         configureDialogs();
         loadAESConfig();
-
-        setupTextAreaListeners();
+        setupButtonActions();
     }
 
     private void loadAESConfig() {
         if (aesConfig == null) {
             throw new IllegalArgumentException("Failed to load AES configuration.");
         }
-
         lblMode.setText("Mode: "+aesConfig.getTransformation());
 
+        boxIV.setVisible(aesConfig.isShowIV());
+        boxIV.setManaged(aesConfig.isShowIV());
     }
 
     private void configureDialogs() {
@@ -123,284 +108,288 @@ public class AESController implements CipherController, Initializable {
         alertDialog.setOwnerNode(grid);
     }
 
-    private void setupTextAreaListeners() {
-        // Listener para detectar cuando se escribe en Source Information
-        textAreaPlainText.textProperty().addListener((obs, oldText, newText) -> {
-            if (!newText.isEmpty()) {
-                sourceInfoActive = true;
-                encryptedInfoActive = false;
-            } else {
-                sourceInfoActive = false;
-            }
-            updateUI();
-        });
+    /**
+     * Configures button actions for copying, regenerating, and importing files.
+     */
+    private void setupButtonActions() {
+        btnCopyPlainText.setOnAction(e -> copyToClipboard(textAreaPlainText.getText()));
+        btnCopyCipherText.setOnAction(e -> copyToClipboard(textAreaCipherText.getText()));
+        btnCopyKey.setOnAction(e -> copyToClipboard(textFieldKey.getText()));
+        btnCopyIV.setOnAction(e -> copyToClipboard(textFieldIV.getText()));
 
-        // Listener para detectar cuando se escribe en Encrypted Information
-        textAreaCipherText.textProperty().addListener((obs, oldText, newText) -> {
-            if (!newText.isEmpty()) {
-                encryptedInfoActive = true;
-                sourceInfoActive = false;
-            } else {
-                encryptedInfoActive = false;
-            }
-            updateUI();
-        });
+        btnShuffleKey.setOnAction(e -> regenerateKey());
+        btnUploadKey.setOnAction(e -> uploadKey());
+        btnDownloadKey.setOnAction(e -> downloadKey());
+        btnDeleteKey.setOnAction(e -> deleteKey());
 
-        // Focus Listener para Source Information
-        textAreaPlainText.focusedProperty().addListener((obs, oldFocus, newFocus) -> {
-            if (newFocus) {
-                textFieldKey.setVisible(true);
-            }
-        });
+        btnShuffleIV.setOnAction(e -> regenerateIV());
+        btnUploadIV.setOnAction(e -> uploadIV());
+        btnDownloadIV.setOnAction(e -> downloadIV());
+        btnDeleteIV.setOnAction(e -> deleteIV());
 
-        // Focus Listener para Encrypted Information
-        textAreaCipherText.focusedProperty().addListener((obs, oldFocus, newFocus) -> {
-            if (newFocus) {
-                textFieldKey.setVisible(!sourceInfoActive); // Oculta si ya se escribió en Source
+        btnClearCipherText.setOnAction(e -> clearCipherText());
+        btnClearPlainText.setOnAction(e -> clearPlainText());
+
+        btnImportPlainText.setOnAction(e -> importNoEncryptedFile());
+        btnImportCipherText.setOnAction(e -> importEncryptedFile());
+    }
+
+    private void clearPlainText() {
+        textAreaPlainText.clear();
+    }
+
+    private void clearCipherText() {
+        textAreaCipherText.clear();
+    }
+
+    private void deleteIV() {
+        textFieldIV.clear();
+        iv=null;
+    }
+
+    private void downloadIV() {
+    }
+
+    private void uploadIV() {
+    }
+
+    private void deleteKey() {
+        textFieldKey.clear();
+    }
+
+    private void downloadKey() {
+    }
+
+    private void uploadKey() {
+    }
+
+    /**
+     * Copies the given text to the clipboard.
+     */
+    private void copyToClipboard(String text) {
+        if (!text.isEmpty()) {
+            javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
+            javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+            content.putString(text);
+            clipboard.setContent(content);
+        }
+    }
+
+    /**
+     * Regenerates a new random key and updates the key field.
+     */
+    private void regenerateKey() {
+        try {
+            SecretKey generatedKey = AESManager.generateKey(aesConfig);
+            textFieldKey.setText(Base64.getEncoder().encodeToString(generatedKey.getEncoded()));
+        } catch (Exception e) {
+            showError("Key generation failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Generates a new random IV and updates the IV field.
+     */
+    private void regenerateIV() {
+        byte[] iv = new byte[aesConfig.getMode().getFixedIVSize()];
+        new java.security.SecureRandom().nextBytes(iv);
+        textFieldIV.setText(Base64.getEncoder().encodeToString(iv));
+    }
+
+    /**
+     * Imports a file for encryption or decryption and locks text fields.
+     */
+    private void importNoEncryptedFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File to Encrypt");
+        noEncryptedFile = fileChooser.showOpenDialog(stage);
+
+        if (noEncryptedFile != null) {
+            fileMode = true;
+            textAreaPlainText.clear();
+            textAreaCipherText.clear();
+            textFieldKey.clear();
+            textFieldIV.clear();
+
+            textAreaPlainText.setText(noEncryptedFile.getAbsolutePath());
+            textAreaPlainText.setEditable(false);
+        }
+    }
+
+    /**
+     * Imports a file for encryption or decryption and locks text fields.
+     */
+    private void importEncryptedFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File to Decrypt");
+        encryptedFile = fileChooser.showOpenDialog(stage);
+
+        if (encryptedFile != null) {
+            fileMode = true;
+            textAreaPlainText.clear();
+            textAreaCipherText.clear();
+            textFieldKey.clear();
+            textFieldIV.clear();
+
+            textAreaCipherText.setText(encryptedFile.getAbsolutePath());
+            textAreaCipherText.setEditable(false);
+        }
+    }
+
+    /**
+     * Encrypts either a text input or a file.
+     */
+    @FXML
+    private void encrypt(ActionEvent event) {
+        try {
+            Boolean isValidKey = false;
+
+            String keyText = textFieldKey.getText().trim();
+
+            byte[] keyBytes = null;
+            if (!keyText.isEmpty()) {
+                try {
+                    keyBytes = Base64.getDecoder().decode(keyText);
+                    int keySizeBits = keyBytes.length * 8;
+
+                    if (keySizeBits == aesConfig.getKeySize().getSize()) {
+                        isValidKey = true;
+                    }
+                } catch (IllegalArgumentException e) {
+                    showError("Invalid Base64 key format. Please enter a valid key.");
+                    return;
+                }
             }
+
+            if (!isValidKey && aesConfig.isGenerateKey()) {
+                SecretKey generatedKey = AESManager.generateKey(aesConfig);
+                keyBytes = generatedKey.getEncoded();
+                String base64Key = Base64.getEncoder().encodeToString(keyBytes);
+                textFieldKey.setText(base64Key);
+            }
+
+            if (textFieldKey.getText().trim().isEmpty()) {
+                showError("No key provided.");
+                return;
+            }
+
+            SecretKey key = new SecretKeySpec(keyBytes, "AES");
+            if(aesConfig.getMode().requiresIV()) {
+                if (aesConfig.isGenerateIV() && textFieldIV.getText().trim().isEmpty()) {
+                    iv = aesConfig.getMode().requiresIV() ? AESManager.generateIV(aesConfig) : null;
+
+                    if (aesConfig.isShowIV() && iv != null) {
+                        textFieldIV.setText(Base64.getEncoder().encodeToString(iv));
+                    }
+                } else {
+                    String ivText = textFieldIV.getText().trim();
+                    if (ivText.isEmpty()) {
+                        showError("No Initial Vector provided.");
+                        return;
+                    }
+
+                    try {
+                        iv = Base64.getDecoder().decode(ivText);
+
+                        int expectedIVSize = aesConfig.getMode().getFixedIVSize();
+                        if (expectedIVSize == -1) {
+                            expectedIVSize = aesConfig.getAlgorithm().getBaseIVSize();
+                        }
+
+                        if (iv.length != expectedIVSize) {
+                            showError("Invalid IV size. Expected " + expectedIVSize + " bytes, but got " + iv.length + " bytes.");
+                            return;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        showError("Invalid IV format. Please enter a valid Base64-encoded IV.");
+                        return;
+                    }
+
+                }
+            }
+
+            if(fileMode){
+                byte[] encryptedFile = AESManager.encryptFile(noEncryptedFile,key,iv,aesConfig);
+                textAreaCipherText.setText("Your file was successfully encrypted. You can now save it as a .ilun file.");
+                textAreaCipherText.setEditable(false);
+            }else {
+                String plainText = textAreaPlainText.getText();
+                if (plainText.isEmpty()) {
+                    showError("Plain text cannot be empty.");
+                    return;
+                }
+                String encryptedText = AESManager.encryptText(plainText, key, iv, aesConfig);
+                textAreaCipherText.setText(encryptedText);
+            }
+
+        } catch (Exception e) {
+            showError("Encryption failed: " + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * Decrypts either a text input or a file.
+     */
+    @FXML
+    private void decrypt(ActionEvent event) {
+        try {
+            SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(textFieldKey.getText()), "AES");
+            String cipherText = textAreaCipherText.getText();
+            String decryptedText = AESManager.decryptText(cipherText, key, aesConfig);
+            textAreaPlainText.setText(decryptedText);
+        } catch (Exception e) {
+            showError("Decryption failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Displays an error message in an alert dialog.
+     */
+    private void showError(String message) {
+        Platform.runLater(() -> {
+            errorDialog.showInfoDialog("Error", message);
         });
     }
 
-    private void updateUI() {
-        textAreaCipherText.setDisable(sourceInfoActive);
-        btnImportCipherText.setDisable(sourceInfoActive);
+    @Override
+    public void saveCurrentState() {
 
-        textAreaPlainText.setDisable(encryptedInfoActive);
-        btnImportPlainText.setDisable(encryptedInfoActive);
     }
 
+    @Override
+    public void restorePreviousState() {
+
+    }
+
+    @Override
+    public void switchEncryptionMethod(String methodView) {
+
+    }
+
+    @Override
+    public void closeDialog(DialogHelper dialog) {
+        dialog.closeDialog();
+        lblMode.setText("Mode: "+aesConfig.getTransformation());
+        boxIV.setVisible(aesConfig.isShowIV());
+        boxIV.setManaged(aesConfig.isShowIV());
+        if(!aesConfig.isShowIV()) {
+            textFieldIV.clear();
+        }else if(iv != null){
+            textFieldIV.setText(Base64.getEncoder().encodeToString(iv));
+        }
+
+    }
+
+    @Override
+    public void setConfig(CryptosystemConfig config) {
+
+    }
 
     @FXML
     private void handleBackButton() {
         IlunCryptController.getInstance().loadView("SYMMETRIC-KEY-ENCRYPTION");
-    }
-
-    @FXML
-    private void clearAll(ActionEvent actionEvent) {
-        Platform.runLater(() -> {
-            alertDialog.applyDialogChanges(dialog -> {
-                alertDialog.getDialogContent().clearActions();
-                alertDialog.getDialogContent().setHeaderText("Clear All");
-                alertDialog.getDialogContent().setContentText("Are you sure you want to clear all fields? This action cannot be undone.");
-                alertDialog.getDialogContent().setHeaderIcon(new MFXFontIcon("fas-circle-exclamation", 18));
-
-                MFXButton btnConfirm = new MFXButton("Yes");
-                btnConfirm.getStyleClass().add("mfx-primary");
-                btnConfirm.setOnAction(event -> {
-                    // Limpia los campos correctamente
-                    textAreaPlainText.clear();
-                    textAreaCipherText.clear();
-                    textFieldKey.clear();
-                    textFieldIV.clear();
-                    sourceInfoActive = false;
-                    encryptedInfoActive = false;
-                    updateUI();
-
-                    // Cierra el diálogo
-                    alertDialog.closeDialog();
-                });
-
-                MFXButton btnCancel = new MFXButton("Cancel");
-                btnCancel.setOnAction(event -> alertDialog.closeDialog());
-
-                // Agregar botones al diálogo
-                alertDialog.getDialogContent().addActions(btnConfirm, btnCancel);
-            });
-
-            // Muestra el diálogo
-            alertDialog.getDialogContent().setShowMinimize(false);
-            alertDialog.getDialogContent().setShowAlwaysOnTop(false);
-            alertDialog.getDialogContent().getStyleClass().add("mfx-warning-dialog");
-            alertDialog.getDialog().setDraggable(false);
-            alertDialog.getDialog().showDialog();
-        });
-    }
-
-
-
-    @FXML
-    private void copyPlainText(ActionEvent actionEvent) {
-        if (!textAreaPlainText.getText().isEmpty()) {
-            javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
-            javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
-            content.putString(textAreaPlainText.getText());
-            clipboard.setContent(content);
-        }
-    }
-
-    @FXML
-    private void copyEncryptedText(ActionEvent actionEvent) {
-        if (!textAreaCipherText.getText().isEmpty()) {
-            javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
-            javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
-            content.putString(textAreaCipherText.getText());
-            clipboard.setContent(content);
-        }
-    }
-
-    @FXML
-    private void importFile(ActionEvent actionEvent) {
-        sourceInfoActive = true;
-        encryptedInfoActive = false;
-        updateUI();
-    }
-
-    @FXML
-    private void importEncryptedData(ActionEvent actionEvent) {
-        encryptedInfoActive = true;
-        sourceInfoActive = false;
-        updateUI();
-    }
-
-    /**
-     * Encrypts either plain text or a file based on the user input.
-     *
-     * <p>If the plain text area is not empty, it encrypts the text and displays the Base64-encoded result.
-     * Otherwise, it opens file choosers to select an input file and a destination file, then encrypts the file.</p>
-     *
-     * @param event the action event triggered by the encrypt button.
-     */
-    public void encrypt(ActionEvent event) {
-        try {
-            SecretKey key = obtainSecretKey(); // Gets the key based on UI settings
-
-            if (!textAreaPlainText.getText().trim().isEmpty()) {
-                // Encrypt plain text
-                String plainText = textAreaPlainText.getText();
-                String encryptedBase64 = AESManager.encryptText(plainText, key, aesConfig);
-                textAreaCipherText.setText(encryptedBase64);
-            } else {
-                // Encrypt file: prompt for input and output files
-                File inputFile = selectInputFile();
-                if (inputFile == null) {
-                    showError("No input file selected.");
-                    return;
-                }
-                File outputFile = selectOutputFile();
-                if (outputFile == null) {
-                    showError("No output file selected.");
-                    return;
-                }
-                AESManager.encryptFile(inputFile, outputFile, key, aesConfig);
-                showMessage("File encrypted successfully.");
-            }
-        } catch (Exception e) {
-            showError("Encryption error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Decrypts either cipher text or a file based on the user input.
-     *
-     * <p>If the cipher text area is not empty, it decrypts the Base64-encoded text and shows the result.
-     * Otherwise, it opens file choosers to select an encrypted file and a destination file, then decrypts the file.</p>
-     *
-     * @param event the action event triggered by the decrypt button.
-     */
-    public void decrypt(ActionEvent event) {
-        try {
-            SecretKey key = obtainSecretKey(); // Gets the key based on UI settings
-
-            if (!textAreaCipherText.getText().trim().isEmpty()) {
-                // Decrypt plain text
-                String cipherTextBase64 = textAreaCipherText.getText();
-                String decryptedText = AESManager.decryptText(cipherTextBase64, key, aesConfig);
-                textAreaPlainText.setText(decryptedText);
-            } else {
-                // Decrypt file: prompt for input and output files
-                File inputFile = selectInputFile();
-                if (inputFile == null) {
-                    showError("No input file selected.");
-                    return;
-                }
-                File outputFile = selectOutputFile();
-                if (outputFile == null) {
-                    showError("No output file selected.");
-                    return;
-                }
-                AESManager.decryptFile(inputFile, outputFile, key, aesConfig);
-                showMessage("File decrypted successfully.");
-            }
-        } catch (Exception e) {
-            showError("Decryption error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obtains the SecretKey based on UI settings.
-     *
-     * <p>If the generate key checkbox is selected, it generates a new key and updates the key field.
-     * Otherwise, it retrieves the key from the key text field (assuming it is Base64-encoded).</p>
-     *
-     * @return the SecretKey for encryption/decryption.
-     * @throws Exception if key generation or conversion fails.
-     */
-    private SecretKey obtainSecretKey() throws Exception {
-        if (checkGenerateKey.isSelected()) {
-            // Generate a new key and update the key text field with its Base64 representation
-            SecretKey generatedKey = AESManager.generateKey(aesConfig);
-            textFieldKey.setText(Base64.getEncoder().encodeToString(generatedKey.getEncoded()));
-            return generatedKey;
-        } else {
-            // Retrieve the key from the text field (assumed to be Base64-encoded)
-            String keyString = textFieldKey.getText().trim();
-            if (keyString.isEmpty()) {
-                throw new Exception("No key provided.");
-            }
-            byte[] keyBytes = Base64.getDecoder().decode(keyString);
-            return new SecretKeySpec(keyBytes, "AES");
-        }
-    }
-
-    /**
-     * Opens a file chooser dialog for selecting an input file.
-     *
-     * @return the selected input File, or null if no file was chosen.
-     */
-    private File selectInputFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Input File");
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    /**
-     * Opens a file chooser dialog for selecting an output file.
-     *
-     * @return the selected output File, or null if no file was chosen.
-     */
-    private File selectOutputFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Output File");
-        return fileChooser.showSaveDialog(stage);
-    }
-
-    /**
-     * Displays an information message to the user.
-     *
-     * @param message the message to be displayed.
-     */
-    private void showMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    /**
-     * Displays an error message to the user.
-     *
-     * @param message the error message to be displayed.
-     */
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public void exportEncryptedInformation(ActionEvent actionEvent) {
     }
 
     @FXML
@@ -422,43 +411,49 @@ public class AESController implements CipherController, Initializable {
         );
     }
 
-    @Override
-    public void saveCurrentState() {
-        lastPlainText = textAreaPlainText.getText();
-        lastCipherText = textAreaCipherText.getText();
-        lastKey = textFieldKey.getText();
-    }
-
-    @Override
-    public void restorePreviousState() {
-        textAreaPlainText.setText(lastPlainText);
-        textAreaCipherText.setText(lastCipherText);
-        textFieldKey.setText(lastKey);
-    }
-
-    @Override
-    public void switchEncryptionMethod(String methodView) {
-        saveCurrentState();
-        IlunCryptController.getInstance().loadView(methodView);
-        restorePreviousState();
-    }
-
-    @Override
-    public void closeDialog(DialogHelper dialog) {
-        dialog.closeDialog();
-        lblMode.setText("Mode: "+aesConfig.getTransformation());
-    }
-
-    @Override
-    public void setConfig(CryptosystemConfig config) {
-        this.aesConfig = (AESConfig) config;
-    }
-
     public void showChangeMethodDialog(ActionEvent actionEvent) {
     }
 
-    public void setAesConfig(AESConfig aesConfig) {
-        this.aesConfig = aesConfig;
+    @FXML
+    private void clearAll(ActionEvent actionEvent) {
+        Platform.runLater(() -> {
+            alertDialog.applyDialogChanges(dialog -> {
+                alertDialog.getDialogContent().clearActions();
+                alertDialog.getDialogContent().setHeaderText("Clear All");
+                alertDialog.getDialogContent().setContentText("Are you sure you want to clear all fields? This action cannot be undone.");
+                alertDialog.getDialogContent().setHeaderIcon(new MFXFontIcon("fas-circle-exclamation", 18));
+
+                MFXButton btnConfirm = new MFXButton("Yes");
+                btnConfirm.getStyleClass().add("mfx-primary");
+                btnConfirm.setOnAction(event -> {
+                    // Limpia los campos correctamente
+                    textAreaPlainText.clear();
+                    textAreaCipherText.clear();
+                    textFieldKey.clear();
+                    textFieldIV.clear();
+
+                    // Cierra el diálogo
+                    alertDialog.closeDialog();
+                    textAreaCipherText.setEditable(true);
+                    textAreaPlainText.setEditable(true);
+                    textFieldKey.setEditable(true);
+                    textFieldIV.setEditable(true);
+                });
+
+                MFXButton btnCancel = new MFXButton("Cancel");
+                btnCancel.setOnAction(event -> alertDialog.closeDialog());
+
+                // Agregar botones al diálogo
+                alertDialog.getDialogContent().addActions(btnConfirm, btnCancel);
+            });
+
+            // Muestra el diálogo
+            alertDialog.getDialogContent().setShowMinimize(false);
+            alertDialog.getDialogContent().setShowAlwaysOnTop(false);
+            alertDialog.getDialogContent().getStyleClass().add("mfx-warning-dialog");
+            alertDialog.getDialog().setDraggable(false);
+            alertDialog.getDialog().showDialog();
+        });
     }
 
     public void showAdvancedOptions(ActionEvent actionEvent) {
@@ -475,5 +470,8 @@ public class AESController implements CipherController, Initializable {
                 }
         );
 
+    }
+
+    public void exportEncryptedInformation(ActionEvent actionEvent) {
     }
 }

@@ -1,4 +1,4 @@
-package com.iluncrypt.iluncryptapp.models.enums.symmetrickey.aes;
+package com.iluncrypt.iluncryptapp.models.enums.symmetrickey;
 
 /**
  * Enumeration of supported GCM authentication tag sizes.

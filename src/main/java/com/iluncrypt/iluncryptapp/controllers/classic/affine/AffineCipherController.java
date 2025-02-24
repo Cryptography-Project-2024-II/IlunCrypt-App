@@ -13,7 +13,7 @@ import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
 import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
 import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
 import com.iluncrypt.iluncryptapp.models.keys.AffineKey;
-import com.iluncrypt.iluncryptapp.utils.ConfigManager;
+import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.MFXTextField;

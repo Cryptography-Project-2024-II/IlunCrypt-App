@@ -2,7 +2,7 @@ package com.iluncrypt.iluncryptapp.controllers;
 
 import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.enums.AlphabetPreset;
-import com.iluncrypt.iluncryptapp.utils.ConfigManager;
+import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
