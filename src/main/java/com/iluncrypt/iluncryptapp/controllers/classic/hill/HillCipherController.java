@@ -231,34 +231,90 @@ public class HillCipherController implements CipherController, Initializable {
         alert.showAndWait();
     }
 
-    /** Encryption and Decryption **/
+    /*********** START ENCRIPTION,  *************/
 
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
-        if (!plainText.isEmpty()) {
-            int matrixSize = parseInt(textFieldMatrixSize.getText(), 2);
-            textAreaCipherText.setText(hillEncrypt(plainText, matrixSize));
+        String keyInput = textFieldMatrixSize.getText();
+        if (!plainText.isEmpty() && !keyInput.isEmpty()) {
+            int[][] keyMatrix = createKeyMatrix(keyInput);
+            //textAreaCipherText.setText(hillEncrypt(plainText, keyMatrix));
+            String cipherText = hillEncrypt(plainText, keyMatrix);
+            textAreaCipherText.setText(cipherText);
+        } else {
+            showAlert("Input Error", "Missing Input", "Please ensure both the plaintext and matrix key are provided.");
         }
     }
 
-    @FXML
-    private void decipherText() {
-        String cipherText = textAreaCipherText.getText();
-        if (!cipherText.isEmpty()) {
-            int matrixSize = parseInt(textFieldMatrixSize.getText(), 2);
-            textAreaPlainText.setText(hillDecrypt(cipherText, matrixSize));
+    private int[][] createKeyMatrix(String Dmatrix) {
+        String[] Nmatrix = Dmatrix.split(" ");
+        int numberOfElements = Nmatrix.length;
+        int MatrixSize = (int) Math.sqrt(numberOfElements);
+        if (MatrixSize * MatrixSize != numberOfElements) {
+            throw new IllegalArgumentException("El número de elementos no forma un cuadrado perfecto.");
         }
+        int[][] Matrix = new int[MatrixSize][MatrixSize];
+        int index = 0;
+        for (int i = 0; i < MatrixSize; i++) {
+            for (int j = 0; j < MatrixSize; j++) {
+                Matrix[i][j] = Integer.parseInt(Nmatrix[index]);
+                index++;
+            }
+        }
+        return Matrix;
+    }
+    private String hillEncrypt(String plainText, int[][] keyMatrix) {
+
+
+        // Asegurarse de que el texto tenga una longitud adecuada para el tamaño de la matriz
+        int size = keyMatrix.length;
+        int paddedLength = (int) Math.ceil((double) plainText.length() / size) * size;
+
+        // Rellenar con 'X' si el texto no es múltiplo del tamaño de la matriz
+        while (plainText.length() < paddedLength) {
+            plainText += 'X';
+        }
+
+        // Encriptar el texto
+        StringBuilder cipherText = new StringBuilder();
+        for (int i = 0; i < plainText.length(); i += size) {
+            // Crear un vector de caracteres del texto
+            int[] textVector = new int[size];
+            for (int j = 0; j < size; j++) {
+                textVector[j] = plainText.charAt(i + j) - 'A';  // Convertir a números (A = 0, B = 1, ...)
+            }
+
+            // Multiplicar la matriz de clave por el vector de texto
+            int[] encryptedVector = multiplyMatrixByVector(keyMatrix, textVector);
+
+            // Convertir el vector cifrado en texto
+            for (int value : encryptedVector) {
+                cipherText.append((char) (value + 'A'));  // Convertir de nuevo a letra
+            }
+        }
+
+        return cipherText.toString();
     }
 
-    private String hillEncrypt(String plainText, int matrixSize) {
-        return "EncryptedText"; // Placeholder implementation
+    // Metodo para multiplicar una matriz por un vector
+    private int[] multiplyMatrixByVector(int[][] matrix, int[] vector) {
+        int[] result = new int[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                result[i] += matrix[i][j] * vector[j];
+            }
+            result[i] = result[i] % 26;  // Asegurarse de que el resultado esté en el rango 0-25
+        }
+        return result;
     }
+/*********** END ENCRIPTION,  *************/
 
-    private String hillDecrypt(String cipherText, int matrixSize) {
-        return "DecryptedText"; // Placeholder implementation
-    }
+/*********** STAR DECRIPTION,  *************/
 
+
+/*********** END DECRIPTION,  *************/
     /** Helper Methods **/
 
     private int parseInt(String text, int defaultValue) {

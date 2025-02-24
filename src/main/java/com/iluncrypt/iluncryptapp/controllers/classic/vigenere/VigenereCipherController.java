@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
  */
 public class VigenereCipherController implements CipherController, Initializable {
 
+    private static final int ALPHABET_SIZE = 26;
     private final DialogHelper infoDialog;
     private final DialogHelper changeMethodDialog;
 
@@ -223,7 +224,7 @@ public class VigenereCipherController implements CipherController, Initializable
         String plainText = textAreaPlainText.getText();
         if (!plainText.isEmpty()) {
             String key = textFieldKey.getText();
-            textAreaCipherText.setText(vigenereEncrypt(plainText, key));
+            textAreaCipherText.setText(VigenereEncrypt(plainText, key));
         }
     }
 
@@ -232,17 +233,64 @@ public class VigenereCipherController implements CipherController, Initializable
         String cipherText = textAreaCipherText.getText();
         if (!cipherText.isEmpty()) {
             String key = textFieldKey.getText();
-            textAreaPlainText.setText(vigenereDecrypt(cipherText, key));
+            textAreaPlainText.setText(VigenereDecrypt(cipherText, key));
         }
     }
 
-    private String vigenereEncrypt(String plainText, String key) {
-        return "EncryptedText"; // Placeholder implementation
+    private String ExtendKey(String text, String key) {
+        StringBuilder extendedKey = new StringBuilder(key);
+        int messageLength = text.length();
+        int keyLength = key.length();
+
+        for (int i = 0; extendedKey.length() < messageLength; i++) {
+            extendedKey.append(key.charAt(i % keyLength));
+        }
+        return extendedKey.toString();
     }
 
-    private String vigenereDecrypt(String cipherText, String key) {
-        return "DecryptedText"; // Placeholder implementation
+    private String VigenereEncrypt(String text, String extendedKey) {
+        StringBuilder result = new StringBuilder();
+        int keyIndex = 0;
+        for (char c : text.toCharArray()) {
+            if (Character.isLetter(c)) {
+                char base = Character.isLowerCase(c) ? 'a' : 'A';
+                char keyChar = extendedKey.charAt(keyIndex % extendedKey.length());
+                int shift = Character.toLowerCase(keyChar) - 'a';
+                result.append((char) (((c - base + shift) % ALPHABET_SIZE) + base));
+                keyIndex++;
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
+    private String VigenereDecrypt(String text, String extendedKey) {
+        StringBuilder result = new StringBuilder();
+        int keyIndex = 0;
+
+        for (char c : text.toCharArray()) {
+            if (Character.isLetter(c)) {
+                // Determinar si la letra es minúscula o mayúscula
+                char base = Character.isLowerCase(c) ? 'a' : 'A';
+                // Obtener el carácter correspondiente de la clave extendida
+                char keyChar = extendedKey.charAt(keyIndex % extendedKey.length());
+                // Calcular el desplazamiento basado en la letra de la clave
+                int shift = Character.toLowerCase(keyChar) - 'a';
+
+                // Aplicar el descifrado de Vigenère (restar el desplazamiento)
+                result.append((char) (((c - base - shift + ALPHABET_SIZE) % ALPHABET_SIZE) + base));
+
+                // Incrementar el índice de la clave solo si la letra es alfabética
+                keyIndex++;
+            } else {
+                // Si no es una letra, agregar el carácter tal cual
+                result.append(c);
+            }
+        }
+
+        return result.toString();
+    }
+
 
     /** Increment/Decrement Controls **/
 
