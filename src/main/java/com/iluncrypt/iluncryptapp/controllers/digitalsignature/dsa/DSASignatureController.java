@@ -1,13 +1,20 @@
 package com.iluncrypt.iluncryptapp.controllers.digitalsignature.dsa;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.DSAConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.publickey.DSAManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,7 +33,11 @@ import java.util.ResourceBundle;
 public class DSASignatureController implements CipherController, Initializable {
 
     private final DialogHelper infoDialog;
+    private final DialogHelper errorDialog;
     private final Stage stage;
+    private DSAConfig DSAConfig = new DSAConfig();
+    private KeyPair currentKeyPair;
+    private File selectedFile;
 
     @FXML
     private MFXTextField textFileName;
@@ -35,7 +46,7 @@ public class DSASignatureController implements CipherController, Initializable {
     private GridPane grid;
 
     @FXML
-    private TextArea textAreaMessage;
+    private Label lblStatus;
 
     @FXML
     private TextArea textAreaSignature;
@@ -49,104 +60,183 @@ public class DSASignatureController implements CipherController, Initializable {
     public DSASignatureController(Stage stage) {
         this.stage = stage;
         this.infoDialog = new DialogHelper(stage);
+        this.errorDialog = new DialogHelper(stage);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         infoDialog.setOwnerNode(grid);
+        errorDialog.setOwnerNode(grid);
+
+        // Initialize status
+        lblStatus.setText("Ready to sign or verify files");
     }
 
+    @FXML
+    public void handleBackButton(ActionEvent actionEvent) {
+        IlunCryptController.getInstance().loadView("DIGITAL-SIGNATURE");
+    }
 
+    @FXML
+    public void showInfoDialog(ActionEvent actionEvent) {
+        infoDialog.showInfoDialog(
+                "DSA Digital Signature",
+                "DSA Digital Signatures use the DSA algorithm to verify the authenticity and integrity of a file. " +
+                        "The sender signs the file with their private key, and the recipient can verify the signature using the sender's public key."
+        );
+    }
+
+    @FXML
+    public void generateKeyPair(ActionEvent actionEvent) {
+        try {
+            currentKeyPair = DSAManager.generateKeyPair(DSAConfig);
+            textFieldPublicKey.setText(Base64.getEncoder()
+                    .encodeToString(currentKeyPair.getPublic().getEncoded()));
+            textFieldPrivateKey.setText(Base64.getEncoder()
+                    .encodeToString(currentKeyPair.getPrivate().getEncoded()));
+            lblStatus.setText("Key pair generated successfully!");
+        } catch (Exception e) {
+            showError("Key Generation Error", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void signData(ActionEvent actionEvent) {
+        try {
+            if (selectedFile == null) {
+                throw new IllegalArgumentException("Please select a file to sign");
+            }
+
+            // If private key is empty, generate a new key pair
+            if (textFieldPrivateKey.getText().isEmpty()) {
+                generateKeyPair(null);
+            }
+
+            PrivateKey privateKey = parsePrivateKey(textFieldPrivateKey.getText());
+            String signature = DSAManager.signFile(selectedFile, privateKey);
+            textAreaSignature.setText(signature);
+            lblStatus.setText("File signed successfully! To verify: share the file, signature, and public key with the recipient.");
+        } catch (Exception e) {
+            showError("Signature Creation Failed", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void verifySignature(ActionEvent actionEvent) {
+        try {
+            if (selectedFile == null) {
+                throw new IllegalArgumentException("Please select a file to verify");
+            }
+
+            if (textAreaSignature.getText().isEmpty()) {
+                throw new IllegalArgumentException("Please provide a signature to verify");
+            }
+
+            if (textFieldPublicKey.getText().isEmpty()) {
+                throw new IllegalArgumentException("Please provide a public key to verify the signature");
+            }
+
+            PublicKey publicKey = parsePublicKey(textFieldPublicKey.getText());
+            boolean isValid = DSAManager.verifyFileSignature(
+                    selectedFile,
+                    textAreaSignature.getText(),
+                    publicKey
+            );
+
+            if (isValid) {
+                lblStatus.setText("SIGNATURE VERIFIED ✓ - The file is authentic and has not been modified.");
+            } else {
+                lblStatus.setText("INVALID SIGNATURE ✗ - The file may have been tampered with or the wrong public key was used.");
+            }
+        } catch (Exception e) {
+            showError("Signature Verification Failed", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void importFile(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File");
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            selectedFile = file;
+            textFileName.setText(file.getName());
+            lblStatus.setText("File selected: " + file.getAbsolutePath() +
+                    "\nSize: " + (file.length() / 1024) + " KB");
+        }
+    }
+
+    @FXML
+    public void copySignature(ActionEvent actionEvent) {
+        copyToClipboard(textAreaSignature.getText());
+    }
+
+    private void copyToClipboard(String content) {
+        if (!content.isEmpty()) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent cc = new ClipboardContent();
+            cc.putString(content);
+            clipboard.setContent(cc);
+            lblStatus.setText("Copied to clipboard!");
+        }
+    }
+
+    @FXML
+    public void clearTextAreas(ActionEvent actionEvent) {
+        textAreaSignature.clear();
+        lblStatus.setText("Cleared signature and status.");
+    }
+
+    private PublicKey parsePublicKey(String base64Key) throws GeneralSecurityException {
+        byte[] keyBytes = Base64.getDecoder().decode(base64Key);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+        return KeyFactory.getInstance("DSA").generatePublic(spec);
+    }
+
+    private PrivateKey parsePrivateKey(String base64Key) throws GeneralSecurityException {
+        byte[] keyBytes = Base64.getDecoder().decode(base64Key);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+        return KeyFactory.getInstance("DSA").generatePrivate(spec);
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // Required interface methods
+    @Override
+    public void saveCurrentState() {
+        // Not needed for this implementation
+    }
 
     @Override
-    public void saveCurrentState() {}
+    public void restorePreviousState() {
+        // Not needed for this implementation
+    }
 
     @Override
-    public void restorePreviousState() {}
-
-    @Override
-    public void switchEncryptionMethod(String methodView) {}
+    public void switchEncryptionMethod(String methodView) {
+        // Not needed for this implementation
+    }
 
     @Override
     public void closeDialog(DialogHelper dialog) {
-
+        dialog.closeDialog();
     }
 
     @Override
     public void setConfig(CryptosystemConfig config) {
-
-    }
-
-    public void handleBackButton(ActionEvent actionEvent) {
-    }
-
-    public void showInfoDialog(ActionEvent actionEvent) {
-    }
-
-    public void showChangeMethodDialog(ActionEvent actionEvent) {
-    }
-
-    public void importPlainText(ActionEvent actionEvent) {
-    }
-
-    public void copyPlainText(ActionEvent actionEvent) {
-    }
-
-    public void showOtherSettings(ActionEvent actionEvent) {
-    }
-
-    public void exportEncryptedText(ActionEvent actionEvent) {
-    }
-
-    public void clearTextAreas(ActionEvent actionEvent) {
-    }
-
-    public void showCryptanalysisDialog(ActionEvent actionEvent) {
-    }
-
-    public void decrementA(ActionEvent actionEvent) {
-    }
-
-    public void incrementA(ActionEvent actionEvent) {
-    }
-
-    public void decrementB(ActionEvent actionEvent) {
-    }
-
-    public void incrementB(ActionEvent actionEvent) {
-    }
-
-    public void cipherText(ActionEvent actionEvent) {
-    }
-
-    public void decipherText(ActionEvent actionEvent) {
-    }
-
-    public void importCipherText(ActionEvent actionEvent) {
-    }
-
-    public void copyCipherText(ActionEvent actionEvent) {
-
-    }
-
-    public void copySignature(ActionEvent actionEvent) {
-    }
-
-    public void verifySignature(ActionEvent actionEvent) {
-    }
-
-    public void signData(ActionEvent actionEvent) {
-    }
-
-    public void generateKeyPair(ActionEvent actionEvent) {
-    }
-
-    public void importFile(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-            textFileName.setText(file.getName());
-            // Store full path if needed
+        if (config instanceof DSAConfig) {
+            this.DSAConfig = (DSAConfig) config;
         }
+    }
+
+    // Stubs for other action handlers
+    public void showChangeMethodDialog(ActionEvent actionEvent) {
+        // Implement if needed
     }
 }

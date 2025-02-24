@@ -1,6 +1,6 @@
 package com.iluncrypt.iluncryptapp.models.algorithms.publickey;
 
-import com.iluncrypt.iluncryptapp.models.RSAConfig;
+import com.iluncrypt.iluncryptapp.models.DSAConfig;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileManager;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileMetadata;
 import javax.crypto.Cipher;
@@ -12,44 +12,44 @@ import java.security.*;
 import java.security.spec.*;
 import java.util.Base64;
 
-public class RSAManager {
-    private static final String ALGORITHM = "RSA";
-    private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
+public class DSAManager {
+    private static final String ALGORITHM = "DSA";
+    private static final String SIGNATURE_ALGORITHM = "SHA256withDSA";
 
-    public static KeyPair generateKeyPair(RSAConfig config) throws NoSuchAlgorithmException {
+    public static KeyPair generateKeyPair(DSAConfig config) throws NoSuchAlgorithmException {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
         keyGen.initialize(config.getKeySize().getSize());
         return keyGen.generateKeyPair();
     }
 
-    public static String encryptText(String text, PublicKey publicKey, RSAConfig config) throws Exception {
+    public static String encryptText(String text, PublicKey publicKey, DSAConfig config) throws Exception {
         byte[] data = text.getBytes(StandardCharsets.UTF_8);
         validateDataSize(data.length, config);
         return Base64.getEncoder().encodeToString(encryptBytes(data, publicKey, config));
     }
 
-    public static String decryptText(String encryptedText, PrivateKey privateKey, RSAConfig config) throws Exception {
+    public static String decryptText(String encryptedText, PrivateKey privateKey, DSAConfig config) throws Exception {
         byte[] decrypted = decryptBytes(Base64.getDecoder().decode(encryptedText), privateKey, config);
         return new String(decrypted, StandardCharsets.UTF_8);
     }
 
-    private static byte[] encryptBytes(byte[] data, PublicKey publicKey, RSAConfig config) throws Exception {
+    private static byte[] encryptBytes(byte[] data, PublicKey publicKey, DSAConfig config) throws Exception {
         Cipher cipher = Cipher.getInstance(config.getTransformation());
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         return cipher.doFinal(data);
     }
 
-    private static byte[] decryptBytes(byte[] encryptedData, PrivateKey privateKey, RSAConfig config) throws Exception {
+    private static byte[] decryptBytes(byte[] encryptedData, PrivateKey privateKey, DSAConfig config) throws Exception {
         Cipher cipher = Cipher.getInstance(config.getTransformation());
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return cipher.doFinal(encryptedData);
     }
 
-    private static void validateDataSize(int length, RSAConfig config) {
+    private static void validateDataSize(int length, DSAConfig config) {
         int maxSize = config.getKeySize().getSize()/8 - 11;
         if(length > maxSize) {
             throw new IllegalArgumentException(
-                    "Data exceeds maximum size of " + maxSize + " bytes for RSA-" +
+                    "Data exceeds maximum size of " + maxSize + " bytes for DSA-" +
                             config.getKeySize().getSize()
             );
         }
