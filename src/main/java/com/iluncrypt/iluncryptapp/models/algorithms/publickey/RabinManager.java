@@ -3,6 +3,9 @@ package com.iluncrypt.iluncryptapp.models.algorithms.publickey;
 import com.iluncrypt.iluncryptapp.models.RabinConfig;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RabinManager {
     private static final SecureRandom random = new SecureRandom();
@@ -38,35 +41,38 @@ public class RabinManager {
         return m.modPow(BigInteger.TWO, n).toString();
     }
 
-    public static String decryptText(String cipherText, String privateKey, String publicKey,
-                                     RabinConfig config) throws Exception {
+    public static List<String> decryptText(String cipherText, String privateKey,
+                                           String publicKey) throws Exception {
+        List<String> results = new ArrayList<>();
         String[] primes = privateKey.split(",");
         BigInteger p = new BigInteger(primes[0]);
         BigInteger q = new BigInteger(primes[1]);
         BigInteger n = new BigInteger(publicKey);
-
-        validatePrime(p, "p");
-        validatePrime(q, "q");
-        validateKeyConsistency(p, q, n);
-
         BigInteger c = new BigInteger(cipherText);
-        BigInteger m = computeMessage(c, p, q);
 
-        return new String(m.toByteArray());
+        BigInteger[] roots = computeSquareRoots(c, p, q);
+
+        for(BigInteger m : roots) {
+            results.add(Arrays.toString(m.toByteArray()));
+        }
+
+        return results;
     }
 
-
-    private static BigInteger computeMessage(BigInteger c, BigInteger p, BigInteger q) {
-        // Chinese Remainder Theorem implementation
+    private static BigInteger[] computeSquareRoots(BigInteger c, BigInteger p, BigInteger q) {
+        BigInteger n = p.multiply(q);
         BigInteger mp = c.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
         BigInteger mq = c.modPow(q.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), q);
 
         BigInteger yp = p.modInverse(q);
         BigInteger yq = q.modInverse(p);
 
-        return mp.multiply(q).multiply(yq)
-                .add(mq.multiply(p).multiply(yp))
-                .mod(p.multiply(q));
+        return new BigInteger[] {
+                mp.multiply(q).multiply(yq).add(mq.multiply(p).multiply(yp)).mod(n),
+                mp.multiply(q).multiply(yq).subtract(mq.multiply(p).multiply(yp)).mod(n),
+                n.subtract(mp.multiply(q).multiply(yq).add(mq.multiply(p).multiply(yp))).mod(n),
+                n.subtract(mp.multiply(q).multiply(yq).subtract(mq.multiply(p).multiply(yp))).mod(n)
+        };
     }
 
     private static BigInteger generatePrime(int bitLength) {

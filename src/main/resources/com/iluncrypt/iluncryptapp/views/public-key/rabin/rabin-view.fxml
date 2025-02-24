@@ -291,4 +291,36 @@
             <Insets left="20.0" right="20.0" />
         </GridPane.margin>
     </TextArea>
+    <GridPane fx:id="decryptionGrid" hgap="10" vgap="10" GridPane.columnSpan="8" GridPane.rowIndex="7">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="50"/>
+        </rowConstraints>
+
+        <!-- Row 1 -->
+        <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <TextArea fx:id="decryption1" wrapText="true" editable="false" styleClass="decryption-box"/>
+            <MFXButton text="Select" onAction="#selectDecryption1" styleClass="select-button"/>
+        </VBox>
+
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <TextArea fx:id="decryption2" wrapText="true" editable="false" styleClass="decryption-box"/>
+            <MFXButton text="Select" onAction="#selectDecryption2" styleClass="select-button"/>
+        </VBox>
+
+        <!-- Row 2 -->
+        <VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <TextArea fx:id="decryption3" wrapText="true" editable="false" styleClass="decryption-box"/>
+            <MFXButton text="Select" onAction="#selectDecryption3" styleClass="select-button"/>
+        </VBox>
+
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextArea fx:id="decryption4" wrapText="true" editable="false" styleClass="decryption-box"/>
+            <MFXButton text="Select" onAction="#selectDecryption4" styleClass="select-button"/>
+        </VBox>
+    </GridPane>
 </GridPane>

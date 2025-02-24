@@ -19,6 +19,7 @@ import java.math.BigInteger;
 
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -51,6 +52,12 @@ public class RabinController implements CipherController, Initializable {
 
     @FXML
     private MFXTextField textFieldPrivateKey;
+
+    @FXML
+    private TextArea decryption1, decryption2, decryption3, decryption4;
+
+    @FXML
+    private GridPane decryptionGrid;
 
     public RabinController(Stage stage) {
         this.stage = stage;
@@ -101,15 +108,46 @@ public class RabinController implements CipherController, Initializable {
     @FXML
     private void decipherText() {
         try {
-            String plainText = RabinManager.decryptText(
+            List<String> results = RabinManager.decryptText(
                     textAreaCipherText.getText(),
                     textFieldPrivateKey.getText(),
-                    textFieldPublicKey.getText(),
-                    config
+                    textFieldPublicKey.getText()
             );
-            textAreaPlainText.setText(plainText);
+
+            updateDecryptionFields(results);
         } catch (Exception e) {
             showError("Decryption Error", e.getMessage());
+        }
+    }
+
+    private void updateDecryptionFields(List<String> results) {
+        TextArea[] fields = {decryption1, decryption2, decryption3, decryption4};
+        for(int i = 0; i < 4; i++) {
+            if(i < results.size()) {
+                fields[i].setText(results.get(i));
+                fields[i].setDisable(false);
+            } else {
+                fields[i].clear();
+                fields[i].setDisable(true);
+            }
+        }
+    }
+
+    @FXML
+    private void selectDecryption1() { copyToPlainText(decryption1.getText()); }
+
+    @FXML
+    private void selectDecryption2() { copyToPlainText(decryption2.getText()); }
+
+    @FXML
+    private void selectDecryption3() { copyToPlainText(decryption3.getText()); }
+
+    @FXML
+    private void selectDecryption4() { copyToPlainText(decryption4.getText()); }
+
+    private void copyToPlainText(String text) {
+        if(!text.equals("Invalid padding")) {
+            textAreaPlainText.setText(text);
         }
     }
 
