@@ -3,8 +3,15 @@ package com.iluncrypt.iluncryptapp.controllers.classic.permutation;
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.controllers.classic.ClassicCiphersDialogController;
+import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.algorithms.classic.PermutationCipher;
+import com.iluncrypt.iluncryptapp.models.enums.CaseHandling;
+import com.iluncrypt.iluncryptapp.models.enums.UnknownCharHandling;
+import com.iluncrypt.iluncryptapp.models.enums.WhitespaceHandling;
+import com.iluncrypt.iluncryptapp.models.keys.PermutationKey;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
@@ -21,7 +28,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Controller for the Permutation Cipher encryption system.
@@ -29,7 +36,16 @@ import java.util.ResourceBundle;
  */
 public class PermutationCipherController implements CipherController, Initializable {
 
+    private Alphabet plaintextAlphabet;
+    private Alphabet ciphertextAlphabet;
+    private Alphabet keyAlphabet;
+    private CaseHandling caseHandling;
+    private UnknownCharHandling unknownCharHandling;
+    private WhitespaceHandling whitespaceHandling;
+    private int alphabetSize;
+
     private final DialogHelper infoDialog;
+    private final DialogHelper errorDialog;
     private final DialogHelper changeMethodDialog;
 
     // Stores the last entered values when switching methods
@@ -47,7 +63,7 @@ public class PermutationCipherController implements CipherController, Initializa
     private TextArea textAreaCipherText;
 
     @FXML
-    private MFXTextField textFieldPermutationKey;
+    private MFXTextField textFieldKey;
 
     @FXML
     private MFXButton btnInfo;
@@ -61,6 +77,7 @@ public class PermutationCipherController implements CipherController, Initializa
     public PermutationCipherController(Stage stage) {
         this.infoDialog = new DialogHelper(stage);
         this.changeMethodDialog = new DialogHelper(stage);
+        this.errorDialog = new DialogHelper(stage);
     }
 
     /**
@@ -70,6 +87,26 @@ public class PermutationCipherController implements CipherController, Initializa
     public void initialize(URL location, ResourceBundle resources) {
         configureGridGrowth();
         configureDialogs();
+        loadConfig();
+    }
+
+    private void loadConfig() {
+        plaintextAlphabet = ConfigManager.loadClassicCipherConfig("permutation").getPlaintextAlphabet();
+        ciphertextAlphabet = ConfigManager.loadClassicCipherConfig("permutation").getCiphertextAlphabet();
+
+        if (plaintextAlphabet == null || ciphertextAlphabet == null) {
+            throw new IllegalArgumentException("Both alphabets must be valid..");
+        }
+        if (plaintextAlphabet.size() != ciphertextAlphabet.size()) {
+            throw new IllegalArgumentException("The alphabets must be the same size.");
+        }
+
+        alphabetSize = plaintextAlphabet.size();
+        keyAlphabet = Alphabet.generateZAlphabet(alphabetSize);
+
+        caseHandling = CaseHandling.IGNORE; // o PRESERVE, STRICT, según convenga
+        unknownCharHandling = UnknownCharHandling.REMOVE; // ejemplo
+        whitespaceHandling = WhitespaceHandling.PRESERVE; // ejemplo
     }
 
     /**
@@ -88,6 +125,7 @@ public class PermutationCipherController implements CipherController, Initializa
     private void configureDialogs() {
         infoDialog.setOwnerNode(grid);
         changeMethodDialog.setOwnerNode(grid);
+        errorDialog.setOwnerNode(grid);
     }
 
     /**
@@ -174,8 +212,8 @@ public class PermutationCipherController implements CipherController, Initializa
         lastPlainText = textAreaPlainText.getText();
         lastCipherText = textAreaCipherText.getText();
 
-        if (textFieldPermutationKey != null) {
-            lastPermutationKey = textFieldPermutationKey.getText();
+        if (textFieldKey != null) {
+            lastPermutationKey = textFieldKey.getText();
         }
     }
 
@@ -187,8 +225,8 @@ public class PermutationCipherController implements CipherController, Initializa
         textAreaPlainText.setText(lastPlainText);
         textAreaCipherText.setText(lastCipherText);
 
-        if (textFieldPermutationKey != null) {
-            textFieldPermutationKey.setText(lastPermutationKey);
+        if (textFieldKey != null) {
+            textFieldKey.setText(lastPermutationKey);
         }
     }
 
@@ -222,28 +260,99 @@ public class PermutationCipherController implements CipherController, Initializa
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
-        if (!plainText.isEmpty()) {
-            String key = textFieldPermutationKey.getText();
-            textAreaCipherText.setText(permutationEncrypt(plainText, key));
+        String keyStr = textFieldKey.getText();
+
+        // Si la clave está vacía, generamos blockSize y clave aleatoria
+        if (keyStr == null || keyStr.trim().isEmpty()) {
+            int minBlockSize = 3; // Cota mínima para el tamaño del bloque
+            int blockSize = generateBlockSize(plainText.length(), minBlockSize);
+
+            // Genera la clave de permutación aleatoria para el blockSize obtenido
+            keyStr = generateRandomPermutationKey(blockSize);
+
+            // Actualiza el alfabeto de clave (ℤ_n) según el nuevo blockSize
+            keyAlphabet = Alphabet.generateZAlphabet(blockSize);
+
+            // Actualiza el campo de la UI con la clave generada
+            textFieldKey.setText(keyStr);
+        }
+
+        // Si hay texto y clave, realiza el cifrado
+        if (!plainText.isEmpty() && !keyStr.isEmpty()) {
+            textAreaCipherText.setText(permutationEncrypt(plainText, keyStr));
         }
     }
 
     @FXML
     private void decipherText() {
         String cipherText = textAreaCipherText.getText();
-        if (!cipherText.isEmpty()) {
-            String key = textFieldPermutationKey.getText();
-            textAreaPlainText.setText(permutationDecrypt(cipherText, key));
+        String keyStr = textFieldKey.getText();
+        if (!cipherText.isEmpty() && !keyStr.isEmpty()) {
+            textAreaPlainText.setText(permutationDecrypt(cipherText, keyStr));
         }
     }
 
-    private String permutationEncrypt(String plainText, String key) {
-        return "EncryptedText"; // Placeholder implementation
+    private String permutationEncrypt(String plainText, String keyStr) {
+        try {
+            PermutationKey key = new PermutationKey(keyStr, keyAlphabet);
+            PermutationCipher permutationCipher = new PermutationCipher(
+                    plaintextAlphabet,
+                    ciphertextAlphabet,
+                    caseHandling,
+                    unknownCharHandling,
+                    whitespaceHandling
+            );
+            return permutationCipher.encrypt(plainText, key);
+        } catch (IllegalArgumentException e) {
+            errorDialog.showInfoDialog("Encryption Error", e.getMessage());
+            return "";
+        }
     }
 
-    private String permutationDecrypt(String cipherText, String key) {
-        return "DecryptedText"; // Placeholder implementation
+    private String permutationDecrypt(String cipherText, String keyStr) {
+        try {
+            PermutationKey key = new PermutationKey(keyStr, keyAlphabet);
+            PermutationCipher permutationCipher = new PermutationCipher(
+                    plaintextAlphabet,
+                    ciphertextAlphabet,
+                    caseHandling,
+                    unknownCharHandling,
+                    whitespaceHandling
+            );
+            return permutationCipher.decrypt(cipherText, key);
+        } catch (IllegalArgumentException e) {
+            errorDialog.showInfoDialog("Decryption Error", e.getMessage());
+            return "";
+        }
     }
+
+
+    private int generateBlockSize(int inputLength, int minBlockSize) {
+        if (inputLength < minBlockSize) {
+            return inputLength;
+        }
+        // Calcula un máximo: por ejemplo, cota mínima + un cuarto de la longitud de la entrada,
+        // sin exceder la propia longitud de la entrada.
+        int maxBlockSize = Math.min(inputLength, minBlockSize + inputLength / 4);
+        Random random = new Random();
+        return random.nextInt(maxBlockSize - minBlockSize + 1) + minBlockSize;
+    }
+
+    private String generateRandomPermutationKey(int blockSize) {
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 1; i <= blockSize; i++) {
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers);
+        StringBuilder sb = new StringBuilder();
+        for (Integer num : numbers) {
+            sb.append(num);
+        }
+        return sb.toString();
+    }
+
+
+
 
     /** Increment/Decrement Controls **/
 

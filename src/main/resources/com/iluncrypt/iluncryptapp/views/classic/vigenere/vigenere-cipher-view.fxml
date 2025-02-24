@@ -102,6 +102,35 @@
       </GridPane.margin>
    </Label>
 
+   <HBox alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnSpan="8" GridPane.rowIndex="1">
+      <GridPane.margin>
+         <Insets right="20.0" />
+      </GridPane.margin>
+      <Region HBox.hgrow="ALWAYS" />
+
+
+      <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-file-import" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnClearPlainText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-trash-can" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-copy" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnSavePlainText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-floppy-disk" size="16.0" />
+         </graphic>
+      </MFXButton>
+   </HBox>
+
    <!-- TextArea for Clear Text -->
    <TextArea
            fx:id="textAreaPlainText"
@@ -127,9 +156,9 @@
                   <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Export Encrypted" styleClass="outline-button" fx:id="btnExportEncrypted" onAction="#exportEncryptedMessage" prefWidth="150.0" prefHeight="40.0">
+            <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="150.0" prefHeight="40.0">
                <graphic>
-                  <MFXFontIcon description="fas-file-export" size="16.0" styleClass="button-icon"/>
+                  <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
          </VBox>
@@ -141,16 +170,33 @@
                   <MFXFontIcon description="fas-eraser" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="150.0" prefHeight="40.0">
-               <graphic>
-                  <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass="button-icon"/>
-               </graphic>
-            </MFXButton>
          </VBox>
 
          <!-- Center Section: TextField for Key -->
          <VBox spacing="15.0" alignment="CENTER">
             <MFXTextField fx:id="textFieldKey" floatMode="BORDER" floatingText="Key" promptText="Enter key..." prefWidth="200.0" />
+            <HBox fx:id="buttonContainerKey" alignment="BOTTOM_CENTER" spacing="10">
+               <MFXButton fx:id="btnShuffleKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-shuffle" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnUploadKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-upload" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDownloadKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-floppy-disk" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+               <MFXButton fx:id="btnDeleteKey" text="" styleClass="outline-button">
+                  <graphic>
+                     <MFXFontIcon description="fas-trash-can" size="16.0" styleClass="button-icon"/>
+                  </graphic>
+               </MFXButton>
+            </HBox>
          </VBox>
 
          <!-- Right Section: Cipher/Decipher -->
@@ -180,6 +226,33 @@
          <Insets left="20.0" />
       </GridPane.margin>
    </Label>
+
+   <HBox alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnSpan="8" GridPane.rowIndex="5">
+      <GridPane.margin>
+         <Insets right="20.0" />
+      </GridPane.margin>
+      <Region HBox.hgrow="ALWAYS" />
+      <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-file-import" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnClearCipherText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-trash-can" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-copy" size="16.0" />
+         </graphic>
+      </MFXButton>
+      <MFXButton fx:id="btnSaveCipherText" styleClass="icon-button" text="">
+         <graphic>
+            <MFXFontIcon description="fas-floppy-disk" size="16.0" />
+         </graphic>
+      </MFXButton>
+   </HBox>
 
    <!-- TextArea for Cipher Text -->
    <TextArea

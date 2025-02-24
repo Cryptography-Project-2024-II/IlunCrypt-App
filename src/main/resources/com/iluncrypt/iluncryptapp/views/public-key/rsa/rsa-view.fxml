@@ -108,14 +108,26 @@
             <Insets right="20.0" />
         </GridPane.margin>
         <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="" onAction="#importPlainText">
+
+
+        <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-file-import" size="16.0" />
             </graphic>
         </MFXButton>
-        <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="" onAction="#copyPlainText">
+        <MFXButton fx:id="btnClearPlainText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-trash-can" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-copy" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnSavePlainText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-floppy-disk" size="16.0" />
             </graphic>
         </MFXButton>
     </HBox>
@@ -141,25 +153,16 @@
         </GridPane.margin>
         <HBox spacing="50.0" alignment="CENTER" HBox.hgrow="ALWAYS">
 
-            <!-- Leftmost Section: Other Settings and Export -->
-            <VBox spacing="15.0" alignment="CENTER">
-                <MFXButton text="Advanced Options" styleClass="outline-button" fx:id="btnAdvancedOptions" onAction="#showAdvancedOptions" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
-                    </graphic>
-                </MFXButton>
-                <MFXButton text="Export Encrypted Information" styleClass="outline-button" fx:id="btnExportEncryptedInformation" onAction="#exportEncryptedInformation" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-file-export" size="16.0" styleClass="button-icon"/>
-                    </graphic>
-                </MFXButton>
-            </VBox>
-
             <VBox spacing="15.0" alignment="CENTER_LEFT">
                 <Label fx:id="lblMode" text="Setup:" alignment="CENTER" styleClass="text-label" />
                 <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" onAction="#clearTextAreas" prefWidth="200.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
+                    </graphic>
+                </MFXButton>
+                <MFXButton text="Advanced Options" styleClass="outline-button" fx:id="btnAdvancedOptions" onAction="#showAdvancedOptions" prefWidth="200.0" prefHeight="40.0">
+                    <graphic>
+                        <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
                     </graphic>
                 </MFXButton>
             </VBox>
@@ -252,14 +255,24 @@
             <Insets right="20.0" />
         </GridPane.margin>
         <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="" onAction="#importCipherText">
+        <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-file-import" size="16.0" />
             </graphic>
         </MFXButton>
-        <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="" onAction="#copyCipherText">
+        <MFXButton fx:id="btnClearCipherText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-trash-can" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-copy" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnSaveCipherText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-floppy-disk" size="16.0" />
             </graphic>
         </MFXButton>
     </HBox>

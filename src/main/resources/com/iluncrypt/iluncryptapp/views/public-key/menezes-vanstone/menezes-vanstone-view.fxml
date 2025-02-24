@@ -107,14 +107,26 @@
             <Insets right="20.0" />
         </GridPane.margin>
         <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="" onAction="#importPlainText">
+
+
+        <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-file-import" size="16.0" />
             </graphic>
         </MFXButton>
-        <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="" onAction="#copyPlainText">
+        <MFXButton fx:id="btnClearPlainText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-trash-can" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-copy" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnSavePlainText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-floppy-disk" size="16.0" />
             </graphic>
         </MFXButton>
     </HBox>
@@ -145,11 +157,6 @@
                 <MFXButton text="Other Settings" styleClass="outline-button" fx:id="btnOtherSettings" onAction="#showOtherSettings" prefWidth="200.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
-                    </graphic>
-                </MFXButton>
-                <MFXButton text="Export Encrypted Message" styleClass="outline-button" fx:id="btnExportEncryptedText" onAction="#exportEncryptedText" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-file-export" size="16.0" styleClass="button-icon"/>
                     </graphic>
                 </MFXButton>
             </VBox>
@@ -250,14 +257,24 @@
             <Insets right="20.0" />
         </GridPane.margin>
         <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="" onAction="#importCipherText">
+        <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-file-import" size="16.0" />
             </graphic>
         </MFXButton>
-        <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="" onAction="#copyCipherText">
+        <MFXButton fx:id="btnClearCipherText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-trash-can" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="">
             <graphic>
                 <MFXFontIcon description="fas-copy" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnSaveCipherText" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-floppy-disk" size="16.0" />
             </graphic>
         </MFXButton>
     </HBox>
