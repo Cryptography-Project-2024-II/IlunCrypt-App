@@ -9,7 +9,6 @@ import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
-import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileData;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileManager;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileMetadata;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunKeyManager;
@@ -555,6 +554,8 @@ public class AESController implements CipherController, Initializable {
             showError("Encryption failed: " + e.getMessage());
         }
     }
+
+
 
 
 

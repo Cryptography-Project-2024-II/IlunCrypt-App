@@ -115,6 +115,13 @@ public class SymmetricKeyConfig extends CryptosystemConfig{
         this.paddingScheme = validatePaddingScheme(this.mode, paddingScheme);
     }
 
+    /**
+     * Updates the padding scheme.
+     */
+    public void setPaddingScheme(PaddingScheme paddingScheme, boolean force) {
+        this.paddingScheme = paddingScheme;
+    }
+
     /** @return The selected padding scheme. */
     public PaddingScheme getPaddingScheme() {
         return paddingScheme;
@@ -193,6 +200,7 @@ public class SymmetricKeyConfig extends CryptosystemConfig{
         }
         return padding;
     }
+
 
 
 

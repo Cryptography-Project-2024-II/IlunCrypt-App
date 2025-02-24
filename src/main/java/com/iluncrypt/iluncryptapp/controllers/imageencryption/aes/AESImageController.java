@@ -7,44 +7,51 @@ import com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AdvancedOptionsCo
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.models.algorithms.symmetrickey.AESManager;
 import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.AuthenticationMethod;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.SymmetricKeyMode;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+import com.iluncrypt.iluncryptapp.utils.ImageMetadataUtil;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
-import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileManager;
-import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileMetadata;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunKeyManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.utils.SwingFXUtils;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.nio.ByteBuffer;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
-
-import static com.iluncrypt.iluncryptapp.models.algorithms.symmetrickey.AESManager.decryptFile;
 
 /**
  * Controller for AES encryption.
  */
 public class AESImageController implements CipherController, Initializable {
-
 
 
     private SymmetricKeyConfig aesConfig;
@@ -54,15 +61,23 @@ public class AESImageController implements CipherController, Initializable {
     private final DialogHelper advancedOptionsDialog;
     private final DialogHelper alertDialog;
     private final Stage stage;
-    private boolean fileMode = false; // Flag to indicate file encryption/decryption mode
     private File decryptedFile;
     private File encryptedFile;
     private byte[] encryptedInfo;
     private byte[] decryptedInfo;
     private byte[] iv;
 
+
+    @FXML
+    private AnchorPane encryptedImageContainer, unencryptedImageContainer;
+    @FXML
+    private ImageView unencryptedImageView, encryptedImageView;
+    @FXML
+    private MFXButton btnAdvancedOptions;
     @FXML
     private MFXButton btnBack;
+    @FXML
+    private MFXButton btnClear;
     @FXML
     private VBox boxIV;
     @FXML
@@ -71,6 +86,8 @@ public class AESImageController implements CipherController, Initializable {
     private TextArea textAreaPathUnencryptedImage, textAreaPathEncryptedImage;
     @FXML
     private MFXTextField textFieldKey, textFieldIV;
+    @FXML
+    private MFXButton btnEncrypt, btnDecrypt;
     @FXML
     private MFXButton btnCopyUnencryptedImage, btnCopyEncryptedImage, btnCopyKey, btnCopyIV;
     @FXML
@@ -145,116 +162,113 @@ public class AESImageController implements CipherController, Initializable {
         btnDownloadIV.setOnAction(e -> downloadIV());
         btnDeleteIV.setOnAction(e -> deleteIV());
 
-        btnClearUnencryptedImage.setOnAction(e -> clearCipherText());
-        btnClearEncryptedImage.setOnAction(e -> clearPlainText());
+        btnClearUnencryptedImage.setOnAction(e -> clearDecryptArea());
+        btnClearEncryptedImage.setOnAction(e -> clearEncryptArea());
+        btnClear.setOnAction(e -> clearAll());
 
         btnImportUnencryptedImage.setOnAction(e -> importNoEncryptedFile());
         btnImportEncryptedImage.setOnAction(e -> importEncryptedFile());
-        btnSaveUnencryptedImage.setOnAction(e -> saveEncryptedInformation());
-        btnSaveEncryptedImage.setOnAction(e -> saveDecryptedInformation());
+        btnSaveUnencryptedImage.setOnAction(e -> saveDecryptedInformation());
+        btnSaveEncryptedImage.setOnAction(e -> saveEncryptedInformation());
+
+        btnEncrypt.setOnAction(e -> encrypt());
+        btnDecrypt.setOnAction(e -> decrypt());
+
+        btnAdvancedOptions.setOnAction(e->showAdvancedOptions());
     }
 
-    private void saveDecryptedInformation() {
-        // Verificar si hay datos disponibles para guardar
-        if ((decryptedInfo == null || decryptedInfo.length == 0) && textAreaPathUnencryptedImage.getText().isEmpty()) {
-            infoDialog.showInfoDialog("Error","No decrypted data available to save.");
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Decrypted File");
-
-        String originalExtension = "txt";
-        if (fileMode && encryptedFile != null) {
-            try {
-                IlunFileMetadata metadata = IlunFileManager.readIlunFile(encryptedFile).getMetadata();
-                originalExtension = metadata.getExtension().isEmpty() ? "txt" : metadata.getExtension();
-            } catch (IOException e) {
-                showError("Failed to retrieve original file extension: " + e.getMessage());
-            }
-        }
-
-        // Configurar el filtro con la extensión original o txt
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
-                "Original Format (*." + originalExtension + ")", "*." + originalExtension);
-        fileChooser.getExtensionFilters().add(filter);
-        fileChooser.setInitialFileName("decrypted." + originalExtension);
-
-        File fileToSave = fileChooser.showSaveDialog(stage);
-        if (fileToSave == null) {
-            return; // Usuario canceló la operación
-        }
-
-        try (FileOutputStream fos = new FileOutputStream(fileToSave)) {
-            byte[] dataToSave;
-
-            // Si se procesó un archivo, usa los bytes descifrados
-            if (fileMode && decryptedInfo != null) {
-                dataToSave = decryptedInfo;
-            } else {
-                // Si el texto fue ingresado manualmente, guardar el texto como TXT
-                dataToSave = textAreaPathUnencryptedImage.getText().getBytes(StandardCharsets.UTF_8);
-            }
-
-            fos.write(dataToSave);
-            infoDialog.showInfoDialog("Success","Decrypted file saved successfully.");
-        } catch (IOException e) {
-            showError("Failed to save decrypted file: " + e.getMessage());
-        }
-    }
-
-
+    /**
+     * Saves the currently displayed encrypted image.
+     * The encrypted image is saved in the format chosen by the user (PNG, JPEG, BMP, GIF, etc.).
+     */
     private void saveEncryptedInformation() {
-        // Verificar si hay información cifrada
-        if ((encryptedInfo == null || encryptedInfo.length == 0) && textAreaPathEncryptedImage.getText().isEmpty()) {
-            infoDialog.showInfoDialog("Error","No encrypted data available to save.");
+        // Verify that there is an encrypted image in the ImageView.
+        if (encryptedImageView.getImage() == null) {
+            showError("No encrypted image available to save.");
             return;
         }
 
+        // Open a FileChooser for the user to select the save location and format.
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Encrypted File");
-
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("IlunCrypt Encrypted Files", "*.ilun"));
-        if(decryptedFile!=null) {
-            fileChooser.setInitialFileName(getNameFile(decryptedFile) + ".ilun");
-        }else{
-            fileChooser.setInitialFileName("message.ilun");
-        }
+        fileChooser.setTitle("Save Encrypted Image");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG Image", "*.png"),
+                new FileChooser.ExtensionFilter("JPEG Image", "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter("BMP Image", "*.bmp"),
+                new FileChooser.ExtensionFilter("GIF Image", "*.gif")
+        );
+        fileChooser.setInitialFileName("encrypted_image.png"); // default
         File fileToSave = fileChooser.showSaveDialog(stage);
-
         if (fileToSave == null) {
-            return;
+            return; // User cancelled the operation.
+        }
+
+        // Convert the JavaFX image to a BufferedImage.
+        javafx.scene.image.Image fxImage = encryptedImageView.getImage();
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
+
+        // Determine the format from the file extension; default to PNG if not found.
+        String format = getFileExtension(fileToSave);
+        if (format.isEmpty()) {
+            format = "png";
         }
 
         try {
-            byte[] dataToSave;
-
-            if (fileMode && encryptedInfo != null) {
-                dataToSave = encryptedInfo;
-            } else {
-                String cipherText = textAreaPathEncryptedImage.getText();
-                dataToSave = Base64.getDecoder().decode(cipherText);
-            }
-
-            String extension = (decryptedFile != null) ? getFileExtension(decryptedFile) : "txt";
-            byte[] checksum = MessageDigest.getInstance("SHA-256").digest(dataToSave);
-
-
-            IlunFileMetadata metadata = new IlunFileMetadata(
-                    aesConfig.isSaveAlgorithm() ? aesConfig.getAlgorithm().name() : null,
-                    extension,
-                    dataToSave.length,
-                    checksum,
-                    aesConfig.isSaveAlgorithm()
-            );
-
-            IlunFileManager.writeIlunFile(fileToSave, dataToSave, metadata);
-            infoDialog.showInfoDialog("Success", "Encrypted file saved successfully: " + fileToSave.getAbsolutePath());
-
-        } catch (Exception e) {
-            showError("Failed to save encrypted file: " + e.getMessage());
+            // Save the encrypted image using ImageIO. The encrypted image already contains
+            // the IV and authentication data as per the new strategy.
+            ImageIO.write(bufferedImage, format, fileToSave);
+            infoDialog.showInfoDialog("Success", "Encrypted image saved successfully.");
+        } catch (IOException e) {
+            showError("Failed to save encrypted image: " + e.getMessage());
         }
     }
+
+
+    /**
+     * Saves the currently displayed decrypted image.
+     * The decrypted image is saved directly without metadata, so any supported format may be used.
+     */
+    @FXML
+    private void saveDecryptedInformation() {
+        // Verify that there is a decrypted image in the ImageView.
+        if (unencryptedImageView.getImage() == null) {
+            showError("No decrypted image available to save.");
+            return;
+        }
+
+        // Open a FileChooser for the user to select the save location.
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Decrypted Image");
+        // Allow multiple image formats here.
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG Image", "*.png"),
+                new FileChooser.ExtensionFilter("JPEG Image", "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter("BMP Image", "*.bmp")
+        );
+        fileChooser.setInitialFileName("decrypted_image.png");
+        File fileToSave = fileChooser.showSaveDialog(stage);
+        if (fileToSave == null) {
+            return; // User cancelled the operation.
+        }
+
+        // Convert the FX image to a BufferedImage.
+        javafx.scene.image.Image fxImage = unencryptedImageView.getImage();
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
+
+        try {
+            // Save the decrypted image directly using ImageIO (no metadata is needed).
+            String format = getFileExtension(fileToSave);
+            if (format.isEmpty()) {
+                format = "png";
+            }
+            ImageIO.write(bufferedImage, format, fileToSave);
+            infoDialog.showInfoDialog("Success", "Decrypted image saved successfully.");
+        } catch (IOException e) {
+            showError("Failed to save decrypted image: " + e.getMessage());
+        }
+    }
+
+
 
     /**
      * Gets the extension of a file.
@@ -285,12 +299,18 @@ public class AESImageController implements CipherController, Initializable {
     }
 
 
-    private void clearPlainText() {
-        textAreaPathUnencryptedImage.clear();
+    private void clearEncryptArea() {
+        textAreaPathEncryptedImage.clear();
+        encryptedImageView.setImage(null);
+        encryptedImageContainer.setStyle("-fx-background-color: #D3D3D3;");
+        encryptedFile = null;
     }
 
-    private void clearCipherText() {
-        textAreaPathEncryptedImage.clear();
+    private void clearDecryptArea() {
+        textAreaPathUnencryptedImage.clear();
+        unencryptedImageView.setImage(null);
+        unencryptedImageContainer.setStyle("-fx-background-color: #D3D3D3;");
+        decryptedFile = null;
     }
 
     private void deleteIV() {
@@ -424,9 +444,20 @@ public class AESImageController implements CipherController, Initializable {
      * Generates a new random IV and updates the IV field.
      */
     private void regenerateIV() {
+        System.out.println(aesConfig.getMode().getFixedIVSize());
         byte[] iv = new byte[aesConfig.getMode().getFixedIVSize()];
         new java.security.SecureRandom().nextBytes(iv);
         textFieldIV.setText(Base64.getEncoder().encodeToString(iv));
+    }
+
+    public void displayImage(Image image, ImageView imageView) {
+        imageView.setImage(image);
+
+        imageView.setOnMouseClicked(event -> {
+            if (imageView.getImage() != null) {
+                showEnlargedImage(imageView.getImage());
+            }
+        });
     }
 
     /**
@@ -434,11 +465,10 @@ public class AESImageController implements CipherController, Initializable {
      */
     private void importNoEncryptedFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select File to Encrypt");
+        fileChooser.setTitle("Select Image to Encrypt");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"));
         decryptedFile = fileChooser.showOpenDialog(stage);
-
         if (decryptedFile != null) {
-            fileMode = true;
             textAreaPathUnencryptedImage.clear();
             textAreaPathEncryptedImage.clear();
             textFieldKey.clear();
@@ -446,6 +476,13 @@ public class AESImageController implements CipherController, Initializable {
 
             textAreaPathUnencryptedImage.setText(decryptedFile.getAbsolutePath());
             textAreaPathUnencryptedImage.setEditable(false);
+            try {
+                Image image = new Image(new FileInputStream(decryptedFile));
+                displayImage(image, unencryptedImageView);
+                unencryptedImageContainer.setStyle("-fx-background-color: transparent;");
+            } catch (FileNotFoundException e) {
+                showError("Error loading image: " + e.getMessage());
+            }
         }
     }
 
@@ -454,11 +491,11 @@ public class AESImageController implements CipherController, Initializable {
      */
     private void importEncryptedFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select File to Decrypt");
+        fileChooser.setTitle("Select Image to Decrypt");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"));
         encryptedFile = fileChooser.showOpenDialog(stage);
 
         if (encryptedFile != null) {
-            fileMode = true;
             textAreaPathUnencryptedImage.clear();
             textAreaPathEncryptedImage.clear();
             textFieldKey.clear();
@@ -466,14 +503,44 @@ public class AESImageController implements CipherController, Initializable {
 
             textAreaPathEncryptedImage.setText(encryptedFile.getAbsolutePath());
             textAreaPathEncryptedImage.setEditable(false);
+            try {
+                Image image = new Image(new FileInputStream(encryptedFile));
+                displayImage(image, encryptedImageView);
+                encryptedImageContainer.setStyle("-fx-background-color: transparent;");
+            } catch (FileNotFoundException e) {
+                showError("Error loading image: " + e.getMessage());
+            }
         }
     }
 
+    private void showEnlargedImage(Image image) {
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double maxWidth = screenBounds.getWidth() * 0.6;
+        double maxHeight = screenBounds.getHeight() * 0.6;
+
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+
+        imageView.setFitWidth(maxWidth);
+        imageView.setFitHeight(maxHeight);
+
+        StackPane pane = new StackPane(imageView);
+        Scene scene = new Scene(pane);
+
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Expanded view");
+
+        stage.setWidth(maxWidth);
+        stage.setHeight(maxHeight);
+        stage.show();
+    }
+
     /**
-     * Encrypts either a text input or a file.
+     * Encrypts either a image.
      */
     @FXML
-    private void encrypt(ActionEvent event) {
+    private void encrypt() {
         try {
             Boolean isValidKey = false;
 
@@ -541,19 +608,20 @@ public class AESImageController implements CipherController, Initializable {
                 }
             }
 
-            if(fileMode){
-                encryptedInfo = AESManager.encryptFile(decryptedFile,key,iv,aesConfig);
-                textAreaPathEncryptedImage.setText("Your file was successfully encrypted. You can now save it as a .ilun file.");
-                textAreaPathEncryptedImage.setEditable(false);
-            }else {
-                String plainText = textAreaPathUnencryptedImage.getText();
-                if (plainText.isEmpty()) {
-                    showError("Plain text cannot be empty.");
-                    return;
-                }
-                String encryptedText = AESManager.encryptText(plainText, key, iv, aesConfig);
-                textAreaPathEncryptedImage.setText(encryptedText);
+            BufferedImage inputImage = ImageIO.read(decryptedFile);
+            if (inputImage == null) {
+                showError("Could not read image from the selected file.");
+                return;
             }
+
+            BufferedImage encryptedImage = AESManager.encryptImage(inputImage, key, iv, aesConfig);
+
+            javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(encryptedImage, null);
+            displayImage(fxImage, encryptedImageView);
+            encryptedImageContainer.setStyle("-fx-background-color: transparent;");
+            textAreaPathEncryptedImage.setText("Your image was successfully encrypted. You can save it.");
+            textAreaPathEncryptedImage.setEditable(false);
+
 
         } catch (Exception e) {
             showError("Encryption failed: " + e.getMessage());
@@ -561,12 +629,11 @@ public class AESImageController implements CipherController, Initializable {
     }
 
 
-
     /**
-     * Decrypts either a text input or a file.
+     * Decrypts either a image.
      */
     @FXML
-    private void decrypt(ActionEvent event) {
+    private void decrypt() {
         try {
             // Verificar que se haya ingresado una clave válida
             String keyText = textFieldKey.getText().trim();
@@ -585,33 +652,29 @@ public class AESImageController implements CipherController, Initializable {
 
             SecretKey key = new SecretKeySpec(keyBytes, "AES");
 
-            if (fileMode) {
-                // Se está procesando un archivo encriptado
-                if (encryptedFile == null) {
-                    showError("No encrypted file loaded.");
-                    return;
-                }
-
-                decryptedInfo = decryptFile(encryptedFile, key, aesConfig);
-                textAreaPathUnencryptedImage.setText("File decrypted successfully. You can now save it.");
-                textAreaPathUnencryptedImage.setEditable(false);
-            } else {
-                // Se está procesando texto encriptado manualmente
-                String cipherText = textAreaPathEncryptedImage.getText().trim();
-                if (cipherText.isEmpty()) {
-                    showError("Cipher text cannot be empty.");
-                    return;
-                }
-
-                // Desencriptar el texto y mostrarlo
-                String decryptedText = AESManager.decryptText(cipherText, key, aesConfig);
-                textAreaPathUnencryptedImage.setText(decryptedText);
+            // Leer la imagen encriptada desde el archivo
+            BufferedImage encryptedImage = ImageIO.read(encryptedFile);
+            if (encryptedImage == null) {
+                showError("Could not read encrypted image from the selected file.");
+                return;
             }
+
+            // Llamar al método actualizado que desencripta la imagen
+            BufferedImage decryptedImage = AESManager.decryptImage(encryptedImage, key, aesConfig);
+
+            // Convertir la imagen desencriptada a JavaFX Image y actualizar la vista
+            javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(decryptedImage, null);
+            displayImage(fxImage, unencryptedImageView);
+            unencryptedImageView.setStyle("-fx-background-color: transparent;");
+            textAreaPathUnencryptedImage.setText("Your image was successfully decrypted. You can save it.");
+            textAreaPathUnencryptedImage.setEditable(false);
+
 
         } catch (Exception e) {
             showError("Decryption failed: " + e.getMessage());
         }
     }
+
 
 
     /**
@@ -685,8 +748,7 @@ public class AESImageController implements CipherController, Initializable {
     }
 
     @FXML
-    private void clearAll(ActionEvent actionEvent) {
-        fileMode = false;
+    private void clearAll() {
         Platform.runLater(() -> {
             alertDialog.applyDialogChanges(dialog -> {
                 alertDialog.getDialogContent().clearActions();
@@ -697,9 +759,8 @@ public class AESImageController implements CipherController, Initializable {
                 MFXButton btnConfirm = new MFXButton("Yes");
                 btnConfirm.getStyleClass().add("mfx-primary");
                 btnConfirm.setOnAction(event -> {
-                    // Limpia los campos correctamente
-                    textAreaPathUnencryptedImage.clear();
-                    textAreaPathEncryptedImage.clear();
+                    clearDecryptArea();
+                    clearEncryptArea();
                     textFieldKey.clear();
                     textFieldIV.clear();
 
@@ -727,7 +788,7 @@ public class AESImageController implements CipherController, Initializable {
         });
     }
 
-    public void showAdvancedOptions(ActionEvent actionEvent) {
+    private void showAdvancedOptions() {
         advancedOptionsDialog.showFXMLDialog(
                 "Advanced Options (AES)",
                 "views/symmetric-key/aes/advanced-options-view.fxml",

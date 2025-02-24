@@ -144,12 +144,12 @@
                     <Insets left="20.0" right="20.0" />
                 </HBox.margin>
             </TextArea>
-            <AnchorPane fx:id="UnencryptedImageContainer" prefWidth="200" prefHeight="200" style="-fx-background-color: #D3D3D3;">
+            <AnchorPane fx:id="unencryptedImageContainer" prefWidth="200" prefHeight="200" style="-fx-background-color: #D3D3D3;">
                 <HBox.margin>
                     <Insets right="20.0" />
                 </HBox.margin>
                 <children>
-                    <ImageView fx:id="UnencryptedImageView"
+                    <ImageView fx:id="unencryptedImageView"
                                fitWidth="200"
                                fitHeight="200"
                                preserveRatio="true" />
@@ -331,12 +331,12 @@
                     <Insets left="20.0" right="20.0" />
                 </HBox.margin>
             </TextArea>
-            <AnchorPane fx:id="ecnryptedImageContainer" prefWidth="200" prefHeight="200" style="-fx-background-color: #D3D3D3;">
+            <AnchorPane fx:id="encryptedImageContainer" prefWidth="200" prefHeight="200" style="-fx-background-color: #D3D3D3;">
                 <HBox.margin>
                     <Insets right="20.0" />
                 </HBox.margin>
                 <children>
-                    <ImageView fx:id="EncryptedImageView"
+                    <ImageView fx:id="encryptedImageView"
                                fitWidth="200"
                                fitHeight="200"
                                preserveRatio="true" />
