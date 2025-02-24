@@ -9,8 +9,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.net.URL;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -25,6 +27,9 @@ public class RSASignatureController implements CipherController, Initializable {
 
     private final DialogHelper infoDialog;
     private final Stage stage;
+
+    @FXML
+    private MFXTextField textFileName;
 
     @FXML
     private GridPane grid;
@@ -121,4 +126,26 @@ public class RSASignatureController implements CipherController, Initializable {
     public void copyCipherText(ActionEvent actionEvent) {
 
     }
+
+    public void copySignature(ActionEvent actionEvent) {
+    }
+
+    public void generateKeyPair(ActionEvent actionEvent) {
+    }
+
+    public void signData(ActionEvent actionEvent) {
+    }
+
+    public void verifySignature(ActionEvent actionEvent) {
+    }
+
+    public void importFile(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            textFileName.setText(file.getName());
+            // Store full path if needed
+        }
+    }
+
 }
