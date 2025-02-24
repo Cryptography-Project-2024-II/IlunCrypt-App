@@ -20,42 +20,39 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
             </columnConstraints>
 
+            <Label text="Algorithm:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <MFXComboBox fx:id="comboAlgorithm" GridPane.columnIndex="1" GridPane.rowIndex="0" floatMode="DISABLED" styleClass="styled-combo"/>
+
             <!-- Operation Mode -->
-            <Label text="Operation Mode:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <MFXComboBox fx:id="comboOperationMode" GridPane.columnIndex="1" GridPane.rowIndex="0" floatMode="DISABLED" styleClass="styled-combo"/>
+            <Label text="Operation Mode:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <MFXComboBox fx:id="comboOperationMode" GridPane.columnIndex="1" GridPane.rowIndex="1" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- Key Size -->
-            <Label text="Key Size:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <MFXComboBox fx:id="comboKeySize" GridPane.columnIndex="1" GridPane.rowIndex="1" floatMode="DISABLED" styleClass="styled-combo"/>
+            <Label text="Key Size:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <MFXComboBox fx:id="comboKeySize" GridPane.columnIndex="1" GridPane.rowIndex="2" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- Padding -->
-            <Label text="Padding:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <MFXComboBox fx:id="comboPadding" GridPane.columnIndex="1" GridPane.rowIndex="2" floatMode="DISABLED" styleClass="styled-combo"/>
+            <Label text="Padding:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <MFXComboBox fx:id="comboPadding" GridPane.columnIndex="1" GridPane.rowIndex="3" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- IV Size -->
-            <Label text="Initial Vector (IV) Size:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <MFXComboBox fx:id="comboIVSize" GridPane.columnIndex="1" GridPane.rowIndex="3" floatMode="DISABLED" styleClass="styled-combo"/>
-
-            <!-- GCM Tag Size -->
-            <Label text="GCM Tag Size:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <MFXComboBox fx:id="comboGCMTagSize" GridPane.columnIndex="1" GridPane.rowIndex="4" floatMode="DISABLED" styleClass="styled-combo">
-                <items>
-                    <FXCollections fx:factory="observableArrayList"/>
-                </items>
-            </MFXComboBox>
+            <Label text="Initial Vector (IV) Size:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <MFXTextField fx:id="txtIVSize" GridPane.columnIndex="1" GridPane.rowIndex="4" floatMode="DISABLED" styleClass="styled-combo" disable="true"/>
 
             <!-- Authentication -->
             <Label text="Authentication:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
             <MFXComboBox fx:id="comboAuthentication" GridPane.columnIndex="1" GridPane.rowIndex="5" floatMode="DISABLED" styleClass="styled-combo"/>
 
             <!-- Generate random Key automatically -->
-            <MFXCheckbox fx:id="checkGenerateKey" selected="true" text="Generate Key automatically" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-
-            <!-- Generate random Init Vector automatically -->
-            <MFXCheckbox fx:id="checkGenerateIV" selected="true" text="Generate Initial Vector (IV) automatically" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+            <MFXCheckbox fx:id="checkGenerateKey"  text="Generate Key automatically" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
 
             <!-- See Init Vector-->
-            <MFXCheckbox fx:id="checkSeeIV" selected="false" text="See Initial Vector (IV)" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+            <MFXCheckbox fx:id="checkSeeIV" text="See Initial Vector (IV)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+            <!-- Generate random Init Vector automatically -->
+            <MFXCheckbox fx:id="checkGenerateIV"  text="Generate Initial Vector (IV) automatically" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+
+
 
         </GridPane>
 

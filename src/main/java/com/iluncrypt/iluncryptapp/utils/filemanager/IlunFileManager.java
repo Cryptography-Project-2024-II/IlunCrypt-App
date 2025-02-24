@@ -14,13 +14,12 @@ public class IlunFileManager {
     /**
      * Writes an encrypted file with metadata and encrypted content.
      *
-     * @param outputFile The file to be written.
-     * @param encryptedData The encrypted content.
-     * @param metadata The metadata of the original file.
-     * @param iv The initialization vector (IV), if applicable.
+     * @param outputFile    The file to be written.
+     * @param encryptedData The encrypted content, including IV if applicable.
+     * @param metadata      The metadata of the original file.
      * @throws IOException If an error occurs while writing.
      */
-    public static void writeIlunFile(File outputFile, byte[] encryptedData, IlunFileMetadata metadata, byte[] iv) throws IOException {
+    public static void writeIlunFile(File outputFile, byte[] encryptedData, IlunFileMetadata metadata) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             fos.write(MAGIC_HEADER);
             fos.write(metadata.isStoreAlgorithm() ? 0x01 : 0x00);
@@ -34,22 +33,18 @@ public class IlunFileManager {
             fos.write(metadata.getChecksum());
             fos.write(new byte[4]); // Reserved bytes
 
-            if (iv != null) {
-                fos.write(iv);
-            }
-
             fos.write(encryptedData);
         }
     }
 
     /**
-     * Reads metadata from an .ilun encrypted file.
+     * Reads an encrypted .ilun file and extracts metadata and encrypted content.
      *
-     * @param inputFile The encrypted input file.
-     * @return The file metadata.
+     * @param inputFile The .ilun file to read.
+     * @return A {@link IlunFileData} object containing the extracted metadata and encrypted data.
      * @throws IOException If reading fails or file format is invalid.
      */
-    public static IlunFileMetadata readIlunMetadata(File inputFile) throws IOException {
+    public static IlunFileData readIlunFile(File inputFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(inputFile)) {
             byte[] magicHeader = new byte[MAGIC_HEADER.length];
             fis.read(magicHeader);
@@ -79,46 +74,21 @@ public class IlunFileManager {
 
             fis.skip(4); // Reserved bytes
 
-            return new IlunFileMetadata(algorithm, extension, originalSize, checksum, flag == 0x01);
-        }
-    }
+            // Leer los datos cifrados completos (incluyendo IV si es necesario)
+            byte[] encryptedData = fis.readAllBytes();
 
-    /**
-     * Converts byte data to an encrypted file.
-     *
-     * @param encryptedData The encrypted content.
-     * @param metadata The metadata of the original file.
-     * @param iv The initialization vector (if applicable).
-     * @return The .ilun file created.
-     * @throws IOException If writing fails.
-     */
-    public static File saveEncryptedFile(byte[] encryptedData, IlunFileMetadata metadata, byte[] iv) throws IOException {
-        File outputFile = new File("encrypted.ilun");
-        writeIlunFile(outputFile, encryptedData, metadata, iv);
-        return outputFile;
-    }
+            // Crear objeto de metadatos
+            IlunFileMetadata metadata = new IlunFileMetadata(algorithm, extension, originalSize, checksum, flag == 0x01);
 
-    /**
-     * Converts byte data to a decrypted file using metadata.
-     *
-     * @param decryptedData The decrypted content.
-     * @param metadata The metadata containing the original file extension.
-     * @return The restored original file.
-     * @throws IOException If writing fails.
-     */
-    public static File saveDecryptedFile(byte[] decryptedData, IlunFileMetadata metadata) throws IOException {
-        String fileName = "decrypted." + metadata.getExtension();
-        File outputFile = new File(fileName);
-        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-            fos.write(decryptedData);
+            // Devolver los datos
+            return new IlunFileData(metadata, encryptedData);
         }
-        return outputFile;
     }
 
     /**
      * Pads a string to a fixed length with null bytes.
      *
-     * @param input The string to pad.
+     * @param input  The string to pad.
      * @param length The desired length.
      * @return A byte array of the padded string.
      */

@@ -7,7 +7,9 @@ import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXCheckbox;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,21 +18,21 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AdvancedOptionsController implements Initializable {
 
     @FXML private StackPane rootPane;
+    @FXML private MFXComboBox<String> comboAlgorithm;
     @FXML private MFXComboBox<String> comboOperationMode;
     @FXML private MFXComboBox<String> comboKeySize;
     @FXML private MFXComboBox<String> comboPadding;
-    @FXML private MFXComboBox<String> comboGCMTagSize;
     @FXML private MFXComboBox<String> comboAuthentication;
 
-    @FXML private MFXButton btnSaveAsDefault;
-    @FXML private MFXButton btnReset;
-    @FXML private MFXButton btnSave;
-    @FXML private MFXButton btnCancel;
+    @FXML private MFXTextField txtIVSize;
+
+    @FXML private MFXCheckbox checkGenerateKey, checkSeeIV, checkGenerateIV;
 
     private final DialogHelper dialog;
     private final Stage stage;
@@ -51,10 +53,21 @@ public class AdvancedOptionsController implements Initializable {
         Platform.runLater(() -> {
             loadAdvancedOptions();
             setupDynamicOptions();
+
+            double comboBoxWidth = comboOperationMode.getWidth();
+            txtIVSize.setPrefWidth(comboBoxWidth);
+
         });
     }
 
     private void loadAdvancedOptions() {
+
+        checkGenerateIV.setSelected(config.isGenerateIV());
+        checkGenerateKey.setSelected(config.isGenerateKey());
+        checkSeeIV.setSelected(config.isShowIV());
+
+        comboAlgorithm.getItems().addAll("DES", "TDES");
+
         for (SymmetricKeyMode mode : SymmetricKeyMode.values()) {
             comboOperationMode.getItems().add(mode.getMode());
         }
@@ -64,22 +77,30 @@ public class AdvancedOptionsController implements Initializable {
         for (PaddingScheme padding : PaddingScheme.values()) {
             comboPadding.getItems().add(padding.toString());
         }
-        for (GCMTagSize gcmTagSize : GCMTagSize.values()) {
-            comboGCMTagSize.getItems().add(gcmTagSize.toString());
-        }
-        for (AuthenticationMethod authMethod : AuthenticationMethod.values()) {
-            comboAuthentication.getItems().add(authMethod.toString());
-        }
 
+        for (AuthenticationMethod authMethod : AuthenticationMethod.values()) {
+            comboAuthentication.getItems().add(authMethod.getHMACAlgorithm());
+        }
+        comboAlgorithm.setValue(config.getAlgorithm().name());
         comboOperationMode.setValue(config.getMode().getMode());
         comboKeySize.setValue(config.getKeySize().toString());
         comboPadding.setValue(config.getPaddingScheme().toString());
-        if (config.getGCMTagSize() != null) {
-            comboGCMTagSize.setValue(config.getGCMTagSize().toString());
+
+        SymmetricKeyAlgorithm selectedAlgorithm = config.getAlgorithm();
+        SymmetricKeyMode selectedMode = SymmetricKeyMode.fromString(comboOperationMode.getValue());
+
+        if (selectedMode.requiresIV()) {
+            int ivSize = selectedMode.getFixedIVSize() > 0 ? selectedMode.getFixedIVSize() : selectedAlgorithm.getBaseIVSize();
+            txtIVSize.setText(ivSize + " bytes");
         } else {
-            comboGCMTagSize.setValue("N/A");
+            txtIVSize.setText("N/A");
         }
-        comboAuthentication.setValue(config.getAuthenticationMethod().toString());
+
+        comboAuthentication.setValue(
+                config.getAuthenticationMethod().getHMACAlgorithm() != null
+                        ? config.getAuthenticationMethod().getHMACAlgorithm()
+                        : "No authentication"
+        );
 
         adjustOptionsBasedOnMode();
     }
@@ -91,64 +112,138 @@ public class AdvancedOptionsController implements Initializable {
     private void adjustOptionsBasedOnMode() {
         String selectedMode = comboOperationMode.getValue();
         SymmetricKeyMode mode = SymmetricKeyMode.fromString(selectedMode);
+        SymmetricKeyAlgorithm selectedAlgorithm = config.getAlgorithm();
+
         if (mode == null) return;
 
+
+        // Determinar el tamaño del IV
+        if (mode.requiresIV()) {
+            int ivSize = mode.getFixedIVSize() > 0 ? mode.getFixedIVSize() : selectedAlgorithm.getBaseIVSize();
+            txtIVSize.setText(ivSize + " bytes");
+            checkSeeIV.setSelected(config.isShowIV());
+            checkSeeIV.setDisable(false);
+            checkGenerateIV.setSelected(config.isGenerateIV());
+            checkGenerateIV.setDisable(false);
+        } else {
+            txtIVSize.setText("N/A");
+            checkSeeIV.setSelected(false);
+            checkSeeIV.setDisable(true);
+            checkGenerateIV.setSelected(false);
+            checkGenerateIV.setDisable(true);
+        }
+
         boolean isGCM = mode == SymmetricKeyMode.GCM;
-        boolean requiresIV = mode.requiresIV();
         boolean supportsPadding = mode == SymmetricKeyMode.ECB || mode == SymmetricKeyMode.CBC;
 
-        // Ajuste del Padding
+        // --- Ajuste del Padding ---
         comboPadding.getItems().clear();
         comboPadding.setDisable(!supportsPadding);
         if (supportsPadding) {
             for (PaddingScheme padding : mode.getSupportedPadding()) {
                 comboPadding.getItems().add(padding.toString());
             }
-            comboPadding.setValue(config.getPaddingScheme().toString());
+            if (mode.supportsPadding(config.getPaddingScheme())) {
+                comboPadding.setValue(config.getPaddingScheme().toString());
+            } else {
+                comboPadding.setValue(mode.getPaddingScheme().toString()); // Primer padding válido
+            }
         } else {
             comboPadding.getItems().add(PaddingScheme.NO_PADDING.toString());
             comboPadding.setValue(PaddingScheme.NO_PADDING.toString());
         }
 
-        // Ajuste del tamaño del tag GCM
-        comboGCMTagSize.setDisable(!isGCM);
-        if (isGCM) {
-            comboGCMTagSize.setValue(config.getGCMTagSize() != null ? config.getGCMTagSize().toString() : GCMTagSize.TAG_128.toString());
-        } else {
-            comboGCMTagSize.setValue("N/A");
+        // --- Ajuste de tamaños de clave permitidos según el algoritmo ---
+        comboKeySize.getItems().clear();
+        List<KeySize> validKeySizes = KeySize.getValidKeySizes(selectedAlgorithm);
+
+        for (KeySize keySize : validKeySizes) {
+            comboKeySize.getItems().add(keySize.toString());
         }
 
-        // Ajuste de autenticación
+        // Verifica si hay valores en la lista antes de asignar el primero
+        if (!comboKeySize.getItems().isEmpty()) {
+            if (comboKeySize.getItems().contains(config.getKeySize().toString())) {
+                comboKeySize.setValue(config.getKeySize().toString());
+            } else {
+                comboKeySize.setValue(comboKeySize.getItems().get(0)); // Primer valor válido solo si hay elementos
+            }
+        }
+
+        // Verifica si hay valores en la lista antes de asignar el primero
+        if (!comboKeySize.getItems().isEmpty()) {
+            if (comboKeySize.getItems().contains(config.getKeySize().toString())) {
+                comboKeySize.setValue(config.getKeySize().toString());
+            } else {
+                comboKeySize.setValue(comboKeySize.getItems().get(0)); // Primer valor válido solo si hay elementos
+            }
+        }
+
+        // --- Ajuste de métodos de autenticación ---
+        comboAuthentication.getItems().clear();
         comboAuthentication.setDisable(isGCM);
         if (isGCM) {
+            comboAuthentication.getItems().add("N/A");
             comboAuthentication.setValue("N/A");
         } else {
-            comboAuthentication.setValue(config.getAuthenticationMethod().toString());
+            for (AuthenticationMethod method : AuthenticationMethod.values()) {
+                String algorithm = method.getHMACAlgorithm();
+                comboAuthentication.getItems().add(algorithm != null ? algorithm : "No authentication");
+            }
+
+            // Establecer el valor actual o "No authentication" si es null
+            comboAuthentication.setValue(config.getAuthenticationMethod().getHMACAlgorithm() != null
+                    ? config.getAuthenticationMethod().getHMACAlgorithm()
+                    : "No authentication"
+            );
         }
     }
 
-    private void saveConfig() {
-        config.setMode(SymmetricKeyMode.fromString(comboOperationMode.getValue()));
-        config.setKeySize(KeySize.fromSize(
-                Integer.parseInt(comboKeySize.getValue().replace(" bits", "")),
-                config.getAlgorithm() // Pasar el algoritmo seleccionado
-        ));
-        config.setPaddingScheme(PaddingScheme.fromString(comboPadding.getValue()));
 
-        // Si GCM está activo, obtener el tamaño del tag, de lo contrario establecerlo como null
-        if (!comboGCMTagSize.isDisabled() && !comboGCMTagSize.getValue().equals("N/A")) {
-            config.setGCMTagSize(GCMTagSize.fromSize(Integer.parseInt(comboGCMTagSize.getValue().replace(" bits", ""))));
-        } else {
-            config.setGCMTagSize(null);
+    private void saveConfig() {
+        // Validar que el algoritmo esté presente antes de continuar
+        if (config.getAlgorithm() == null) {
+            throw new IllegalStateException("Algorithm must be set before saving configuration.");
         }
 
-        // Ajuste de autenticación
-        if (!comboAuthentication.isDisabled() && !comboAuthentication.getValue().equals("N/A")) {
-            config.setAuthenticationMethod(AuthenticationMethod.fromString(comboAuthentication.getValue()));
+        // Asignar modo de operación
+        config.setMode(SymmetricKeyMode.fromString(comboOperationMode.getValue()));
+
+        // Validar y asignar tamaño de clave
+        try {
+            String keySizeStr = comboKeySize.getValue();
+            if (keySizeStr != null && !keySizeStr.isEmpty()) {
+                int keySize = Integer.parseInt(keySizeStr.replace(" bits", ""));
+                config.setKeySize(KeySize.fromSize(keySize, config.getAlgorithm())); // Verifica que KeySize.fromSize() funcione bien
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid key size format: " + comboKeySize.getValue(), e);
+        }
+
+        // Asignar esquema de padding
+        if (comboPadding.getValue() != null) {
+            config.setPaddingScheme(PaddingScheme.fromString(comboPadding.getValue()));
+        }
+
+        // Asignar método de autenticación
+        if (!comboAuthentication.isDisabled() && comboAuthentication.getValue() != null) {
+            String authMethod = comboAuthentication.getValue();
+            if (!authMethod.equals("N/A") && !authMethod.equals("No authentication")) {
+                config.setAuthenticationMethod(AuthenticationMethod.fromString(authMethod));
+            } else {
+                config.setAuthenticationMethod(AuthenticationMethod.NONE);
+            }
         } else {
             config.setAuthenticationMethod(AuthenticationMethod.NONE);
         }
+
+        config.setShowIV(checkSeeIV.isSelected());
+        config.setGenerateIV(checkGenerateIV.isSelected());
+        config.setGenerateKey(checkGenerateKey.isSelected());
+        //config.setSaveAlgorithm();
+
     }
+
 
     @FXML
     private void handleSave() {
@@ -164,17 +259,39 @@ public class AdvancedOptionsController implements Initializable {
 
     @FXML
     private void handleResetConfiguration() {
-        SymmetricKeyConfig defaultConfig = ConfigManager.loadSymmetricKeyConfig("AES");
+        // Cargar la configuración predeterminada
+        SymmetricKeyConfig defaultConfig = ConfigManager.getDefaultSymmetricKeyConfig("DES");
+
+        // Restablecer las opciones de cifrado
         comboOperationMode.setValue(defaultConfig.getMode().getMode());
         comboKeySize.setValue(defaultConfig.getKeySize().toString());
         comboPadding.setValue(defaultConfig.getPaddingScheme().toString());
-        comboGCMTagSize.setValue(defaultConfig.getGCMTagSize() != null ? defaultConfig.getGCMTagSize().toString() : "N/A");
-        comboAuthentication.setValue(defaultConfig.getAuthenticationMethod().toString());
+
+        // Manejo especial para autenticación, asegurando que se muestre "No authentication" si es null
+        comboAuthentication.setValue(
+                defaultConfig.getAuthenticationMethod().getHMACAlgorithm() != null
+                        ? defaultConfig.getAuthenticationMethod().getHMACAlgorithm()
+                        : "No authentication"
+        );
+
+        // Restablecer valores de checkboxes
+        checkGenerateIV.setSelected(defaultConfig.isGenerateIV());
+        checkGenerateKey.setSelected(defaultConfig.isGenerateKey());
+        checkSeeIV.setSelected(defaultConfig.isShowIV());
+
+        config.setShowIV(checkSeeIV.isSelected());
+        config.setGenerateIV(checkGenerateIV.isSelected());
+        config.setGenerateKey(checkGenerateKey.isSelected());
+
+        // Ajustar opciones dinámicamente según el modo seleccionado
         adjustOptionsBasedOnMode();
+
+        // Guardar y cerrar el diálogo
         saveConfig();
         ConfigManager.saveSymmetricKeyConfig(config);
         closeDialog();
     }
+
 
     @FXML
     private void closeDialog() {

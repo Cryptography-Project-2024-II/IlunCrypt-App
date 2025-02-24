@@ -2,6 +2,7 @@ package com.iluncrypt.iluncryptapp.models.algorithms.symmetrickey;
 
 import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
 import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.*;
+import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileData;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileManager;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileMetadata;
 
@@ -10,6 +11,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -205,16 +207,13 @@ public class AESManager {
             iv = generateIV(config);
         }
 
+        // Llamada al método encrypt que ya se encarga de incluir el IV
         byte[] encryptedData = encrypt(fileBytes, key, iv, config);
 
-        // Concatenar IV si es necesario
-        int totalSize = (iv != null ? iv.length : 0) + encryptedData.length;
-        ByteBuffer buffer = ByteBuffer.allocate(totalSize);
-        if (iv != null) buffer.put(iv);
-        buffer.put(encryptedData);
-
-        return buffer.array();
+        // Retornar directamente el resultado sin concatenar el IV nuevamente
+        return encryptedData;
     }
+
 
 
     /**
@@ -227,21 +226,14 @@ public class AESManager {
      * @throws Exception if decryption fails.
      */
     public static byte[] decryptFile(File inputFile, SecretKey key, SymmetricKeyConfig config) throws Exception {
-        byte[] encryptedData = readFile(inputFile);
+
+        IlunFileData fileData = IlunFileManager.readIlunFile(inputFile);
+
+        byte[] encryptedData = fileData.getEncryptedData();
         ByteBuffer buffer = ByteBuffer.wrap(encryptedData);
 
-        byte[] iv = null;
-        if (config.getMode().requiresIV()) {
-            int ivSize = config.getMode().getFixedIVSize();
-            if (ivSize == -1) ivSize = config.getAlgorithm().getBaseIVSize();
-            iv = new byte[ivSize];
-            buffer.get(iv); // Leer IV del archivo
-        }
 
-        byte[] cipherText = new byte[buffer.remaining()];
-        buffer.get(cipherText);
-
-        return decrypt(cipherText, key, config);
+        return decrypt(encryptedData, key, config);
     }
 
 
@@ -283,13 +275,134 @@ public class AESManager {
         return java.nio.file.Files.readAllBytes(file.toPath());
     }
 
+    /**
+     * Encripta una imagen convirtiéndola en un vector de píxeles, encriptando sus bytes y reconstruyéndola.
+     *
+     * @param image  La imagen original.
+     * @param key    La clave AES.
+     * @param iv     El vector de inicialización (IV) a usar.
+     * @param config La configuración simétrica.
+     * @return Una nueva imagen que contiene los píxeles encriptados.
+     * @throws Exception Si ocurre algún error en el proceso de encriptación.
+     */
+    public static BufferedImage encryptImage(BufferedImage image, SecretKey key, byte[] iv, SymmetricKeyConfig config) throws Exception {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        // Extraer los píxeles de la imagen (cada pixel como int, 4 bytes)
+        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+        // Convertir el arreglo de int a un arreglo de bytes
+        ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 4);
+        for (int pixel : pixels) {
+            byteBuffer.putInt(pixel);
+        }
+        byte[] pixelBytes = byteBuffer.array();
 
-    private static byte[] calculateChecksum(byte[] data) throws NoSuchAlgorithmException {
-        return MessageDigest.getInstance("SHA-256").digest(data);
+        // Encriptar los bytes de la imagen sin concatenar IV/hmac (se usa el IV recibido)
+        byte[] encryptedBytes = encryptImageData(pixelBytes, key, iv, config);
+
+        // Reconstruir el arreglo de píxeles a partir del arreglo encriptado
+        ByteBuffer encryptedBuffer = ByteBuffer.wrap(encryptedBytes);
+        int[] encryptedPixels = new int[pixels.length];
+        for (int i = 0; i < encryptedPixels.length; i++) {
+            encryptedPixels[i] = encryptedBuffer.getInt();
+        }
+
+        // Crear la nueva imagen con el mismo ancho, alto y tipo que la original
+        BufferedImage encryptedImage = new BufferedImage(width, height, image.getType());
+        encryptedImage.setRGB(0, 0, width, height, encryptedPixels, 0, width);
+        return encryptedImage;
     }
 
-    private static String getFileExtension(File file) {
-        String name = file.getName();
-        return name.contains(".") ? name.substring(name.lastIndexOf(".") + 1) : "";
+    /**
+     * Desencripta una imagen previamente encriptada con el método encryptImage.
+     *
+     * @param encryptedImage La imagen encriptada.
+     * @param key            La clave AES.
+     * @param iv             El vector de inicialización (IV) que se usó en la encriptación.
+     * @param config         La configuración simétrica.
+     * @return La imagen original reconstruida.
+     * @throws Exception Si ocurre algún error en el proceso de desencriptación.
+     */
+    public static BufferedImage decryptImage(BufferedImage encryptedImage, SecretKey key, byte[] iv, SymmetricKeyConfig config) throws Exception {
+        int width = encryptedImage.getWidth();
+        int height = encryptedImage.getHeight();
+        // Extraer los píxeles de la imagen encriptada
+        int[] pixels = encryptedImage.getRGB(0, 0, width, height, null, 0, width);
+        // Convertir los píxeles a bytes
+        ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 4);
+        for (int pixel : pixels) {
+            byteBuffer.putInt(pixel);
+        }
+        byte[] encryptedBytes = byteBuffer.array();
+
+        // Desencriptar los bytes
+        byte[] decryptedBytes = decryptImageData(encryptedBytes, key, iv, config);
+
+        // Reconstruir los píxeles a partir de los bytes desencriptados
+        ByteBuffer decryptedBuffer = ByteBuffer.wrap(decryptedBytes);
+        int[] decryptedPixels = new int[pixels.length];
+        for (int i = 0; i < decryptedPixels.length; i++) {
+            decryptedPixels[i] = decryptedBuffer.getInt();
+        }
+
+        // Crear la imagen original con el mismo ancho, alto y tipo
+        BufferedImage decryptedImage = new BufferedImage(width, height, encryptedImage.getType());
+        decryptedImage.setRGB(0, 0, width, height, decryptedPixels, 0, width);
+        return decryptedImage;
     }
+
+    /**
+     * Método auxiliar que encripta un arreglo de bytes (píxeles) sin agregar IV o HMAC al resultado.
+     *
+     * @param data   Los bytes a encriptar.
+     * @param key    La clave AES.
+     * @param iv     El vector de inicialización (IV).
+     * @param config La configuración simétrica.
+     * @return El arreglo de bytes encriptado.
+     * @throws Exception Si ocurre un error en la encriptación.
+     */
+    private static byte[] encryptImageData(byte[] data, SecretKey key, byte[] iv, SymmetricKeyConfig config) throws Exception {
+        String transformation = config.getAlgorithm().name() + "/" + config.getMode().getMode() + "/" + config.getPaddingScheme().getPadding();
+        Cipher cipher = Cipher.getInstance(transformation);
+
+        if (config.getMode() == SymmetricKeyMode.GCM) {
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(config.getGCMTagSize().getSize(), iv);
+            cipher.init(Cipher.ENCRYPT_MODE, key, gcmSpec);
+        } else if (config.getMode().requiresIV()) {
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+        } else {
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+        }
+
+        return cipher.doFinal(data);
+    }
+
+    /**
+     * Método auxiliar que desencripta un arreglo de bytes (píxeles) sin esperar IV o HMAC en el dato.
+     *
+     * @param data   Los bytes encriptados.
+     * @param key    La clave AES.
+     * @param iv     El vector de inicialización (IV) que se usó en la encriptación.
+     * @param config La configuración simétrica.
+     * @return El arreglo de bytes desencriptado.
+     * @throws Exception Si ocurre un error en la desencriptación.
+     */
+    private static byte[] decryptImageData(byte[] data, SecretKey key, byte[] iv, SymmetricKeyConfig config) throws Exception {
+        String transformation = config.getAlgorithm().name() + "/" + config.getMode().getMode() + "/" + config.getPaddingScheme().getPadding();
+        Cipher cipher = Cipher.getInstance(transformation);
+
+        if (config.getMode() == SymmetricKeyMode.GCM) {
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(config.getGCMTagSize().getSize(), iv);
+            cipher.init(Cipher.DECRYPT_MODE, key, gcmSpec);
+        } else if (config.getMode().requiresIV()) {
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+        } else {
+            cipher.init(Cipher.DECRYPT_MODE, key);
+        }
+
+        return cipher.doFinal(data);
+    }
+
 }

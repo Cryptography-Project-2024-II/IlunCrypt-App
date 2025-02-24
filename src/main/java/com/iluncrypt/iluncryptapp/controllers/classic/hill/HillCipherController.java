@@ -330,4 +330,8 @@ public class HillCipherController implements CipherController, Initializable {
     public void showOtherSettings(ActionEvent actionEvent) {
 
     }
+
+    public void decipherText(ActionEvent actionEvent) {
+
+    }
 }
