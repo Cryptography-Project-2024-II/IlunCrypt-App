@@ -20,6 +20,9 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -30,6 +33,19 @@ public class SubstitutionCipherController implements CipherController, Initializ
 
     private final DialogHelper infoDialog;
     private final DialogHelper changeMethodDialog;
+
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    @FXML
+    private MFXButton btnCipher;
+    @FXML
+    private MFXButton btnDecipher;
+    @FXML
+    private MFXTextField textFieldPlainAlphabet;
+
+    @FXML
+    private MFXTextField textFieldCipherAlphabet;
+
+
 
     // Stores the last entered values when switching methods
     private String lastPlainText = "";
@@ -69,7 +85,27 @@ public class SubstitutionCipherController implements CipherController, Initializ
     public void initialize(URL location, ResourceBundle resources) {
         configureGridGrowth();
         configureDialogs();
+        btnCipher.setOnAction(e -> cipherText());
+        btnDecipher.setOnAction(e -> decipherText());
     }
+
+    private void generateRandomKey() {
+        List<Character> shuffledAlphabet = new ArrayList<>();
+        for (char c : ALPHABET.toCharArray()) {
+            shuffledAlphabet.add(c);
+        }
+        Collections.shuffle(shuffledAlphabet);
+
+        StringBuilder cipherAlphabet = new StringBuilder();
+        for (char c : shuffledAlphabet) {
+            cipherAlphabet.append(c);
+        }
+
+        // Establecer el alfabeto original (A-Z) y el cifrado en los textfields
+        textFieldPlainAlphabet.setText(ALPHABET);
+        textFieldCipherAlphabet.setText(cipherAlphabet.toString());
+    }
+
 
     /**
      * Configures the properties of the GridPane for responsive behavior.
@@ -221,27 +257,64 @@ public class SubstitutionCipherController implements CipherController, Initializ
     @FXML
     private void cipherText() {
         String plainText = textAreaPlainText.getText();
-        if (!plainText.isEmpty()) {
-            String key = textFieldKey.getText();
-            textAreaCipherText.setText(substitutionEncrypt(plainText, key));
+
+        // Si no hay un alfabeto en los campos, generamos uno
+        if (textFieldPlainAlphabet.getText().isEmpty() || textFieldCipherAlphabet.getText().isEmpty()) {
+            generateRandomKey();
         }
+
+        textAreaCipherText.setText(substitutionEncrypt(plainText));
     }
+
+
 
     @FXML
     private void decipherText() {
         String cipherText = textAreaCipherText.getText();
-        if (!cipherText.isEmpty()) {
-            String key = textFieldKey.getText();
-            textAreaPlainText.setText(substitutionDecrypt(cipherText, key));
+
+        if (textFieldPlainAlphabet.getText().isEmpty() || textFieldCipherAlphabet.getText().isEmpty()) {
+            infoDialog.showInfoDialog("Error", "No key provided for decryption.");
+            return;
         }
+
+        textAreaPlainText.setText(substitutionDecrypt(cipherText));
     }
 
-    private String substitutionEncrypt(String plainText, String key) {
-        return "EncryptedText"; // Placeholder implementation
+
+
+    private String substitutionEncrypt(String plainText) {
+        plainText = cleanInput(plainText);
+        String plainAlphabet = textFieldPlainAlphabet.getText();
+        String cipherAlphabet = textFieldCipherAlphabet.getText();
+
+        StringBuilder cipherText = new StringBuilder();
+
+        for (char c : plainText.toCharArray()) {
+            int index = plainAlphabet.indexOf(c);
+            cipherText.append(cipherAlphabet.charAt(index));
+        }
+        return cipherText.toString();
     }
 
-    private String substitutionDecrypt(String cipherText, String key) {
-        return "DecryptedText"; // Placeholder implementation
+
+
+    private String substitutionDecrypt(String cipherText) {
+        cipherText = cleanInput(cipherText);
+        String plainAlphabet = textFieldPlainAlphabet.getText();
+        String cipherAlphabet = textFieldCipherAlphabet.getText();
+
+        StringBuilder plainText = new StringBuilder();
+
+        for (char c : cipherText.toCharArray()) {
+            int index = cipherAlphabet.indexOf(c);
+            plainText.append(plainAlphabet.charAt(index));
+        }
+        return plainText.toString();
+    }
+
+
+    private String cleanInput(String input) {
+        return input.toUpperCase().replaceAll("[^A-Z]", "");
     }
 
     /** Increment/Decrement Controls **/

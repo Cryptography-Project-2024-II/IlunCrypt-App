@@ -156,9 +156,12 @@
                     </graphic>
                 </MFXButton>
             </VBox>
+            <VBox spacing="15.0" alignment="CENTER_LEFT">
+                <MFXComboBox fx:id="comboBoxCipher" floatMode="BORDER" floatingText="Cipher" promptText="Select a language..." prefWidth="150.0" />
+            </VBox>
 
             <VBox spacing="15.0" alignment="CENTER_LEFT">
-                <MFXComboBox fx:id="comboBoxFormat" floatMode="BORDER" floatingText="Language" promptText="Select a language..." prefWidth="150.0" />
+                <MFXComboBox fx:id="comboBoxLanguage" floatMode="BORDER" floatingText="Language" promptText="Select a language..." prefWidth="150.0" />
             </VBox>
 
             <!-- Right Section: Cipher/Decipher -->
@@ -192,6 +195,8 @@
         <VBox spacing="18" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity">
             <MFXTableView fx:id="tableCandidates" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity" maxWidth="Infinity">
                 <tableColumns>
+                    <MFXTableColumn text="Key" fx:id="colKey" minWidth="150" maxWidth="Infinity"/>
+                    <MFXTableColumn text="Score" fx:id="colProbability" minWidth="150" maxWidth="Infinity"/>
                     <MFXTableColumn text="Possible candidates" fx:id="colCandidate" minWidth="150" maxWidth="Infinity"/>
                 </tableColumns>
             </MFXTableView>

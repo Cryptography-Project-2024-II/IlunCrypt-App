@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.Optional;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 /**
@@ -31,13 +32,15 @@ import java.util.ResourceBundle;
 public class HillCipherController implements CipherController, Initializable {
 
     private static final int ALPHABET_SIZE = 26;
-
+    private static final int MODULO = 26;
     private final DialogHelper infoDialog;
     private final DialogHelper changeMethodDialog;
 
     // Stores the last entered values when switching methods
     private String lastPlainText = "";
     private String lastCipherText = "";
+    @FXML
+    private MFXTextField textFieldKey;
     private int lastA = 1;
     private int lastB = 0;
 
@@ -235,16 +238,16 @@ public class HillCipherController implements CipherController, Initializable {
 
     @FXML
     private void cipherText() {
-        String plainText = textAreaPlainText.getText();
-        String keyInput = textFieldMatrixSize.getText();
-        if (!plainText.isEmpty() && !keyInput.isEmpty()) {
-            int[][] keyMatrix = createKeyMatrix(keyInput);
-            //textAreaCipherText.setText(hillEncrypt(plainText, keyMatrix));
-            String cipherText = hillEncrypt(plainText, keyMatrix);
-            textAreaCipherText.setText(cipherText);
-        } else {
-            showAlert("Input Error", "Missing Input", "Please ensure both the plaintext and matrix key are provided.");
+        String plainText = cleanInput(textAreaPlainText.getText());
+        String keyStr = textFieldKey.getText();
+
+        if (keyStr.isEmpty()) {
+            generateRandomKey();
+            keyStr = textFieldKey.getText();
         }
+
+        int[][] keyMatrix = parseMatrix(keyStr);
+        textAreaCipherText.setText(hillEncrypt(plainText, keyMatrix));
     }
 
     private int[][] createKeyMatrix(String Dmatrix) {
@@ -264,51 +267,7 @@ public class HillCipherController implements CipherController, Initializable {
         }
         return Matrix;
     }
-    private String hillEncrypt(String plainText, int[][] keyMatrix) {
 
-
-        // Asegurarse de que el texto tenga una longitud adecuada para el tamaño de la matriz
-        int size = keyMatrix.length;
-        int paddedLength = (int) Math.ceil((double) plainText.length() / size) * size;
-
-        // Rellenar con 'X' si el texto no es múltiplo del tamaño de la matriz
-        while (plainText.length() < paddedLength) {
-            plainText += 'X';
-        }
-
-        // Encriptar el texto
-        StringBuilder cipherText = new StringBuilder();
-        for (int i = 0; i < plainText.length(); i += size) {
-            // Crear un vector de caracteres del texto
-            int[] textVector = new int[size];
-            for (int j = 0; j < size; j++) {
-                textVector[j] = plainText.charAt(i + j) - 'A';  // Convertir a números (A = 0, B = 1, ...)
-            }
-
-            // Multiplicar la matriz de clave por el vector de texto
-            int[] encryptedVector = multiplyMatrixByVector(keyMatrix, textVector);
-
-            // Convertir el vector cifrado en texto
-            for (int value : encryptedVector) {
-                cipherText.append((char) (value + 'A'));  // Convertir de nuevo a letra
-            }
-        }
-
-        return cipherText.toString();
-    }
-
-    // Metodo para multiplicar una matriz por un vector
-    private int[] multiplyMatrixByVector(int[][] matrix, int[] vector) {
-        int[] result = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            result[i] = 0;
-            for (int j = 0; j < matrix[i].length; j++) {
-                result[i] += matrix[i][j] * vector[j];
-            }
-            result[i] = result[i] % 26;  // Asegurarse de que el resultado esté en el rango 0-25
-        }
-        return result;
-    }
 /*********** END ENCRIPTION,  *************/
 
 /*********** STAR DECRIPTION,  *************/
@@ -331,7 +290,110 @@ public class HillCipherController implements CipherController, Initializable {
 
     }
 
-    public void decipherText(ActionEvent actionEvent) {
+    @FXML
+    private void decipherText() {
+        String cipherText = cleanInput(textAreaCipherText.getText());
+        String keyStr = textFieldKey.getText();
 
+        if (keyStr.isEmpty()) {
+            infoDialog.showInfoDialog("Error", "No key provided for decryption.");
+            return;
+        }
+
+        int[][] keyMatrix = parseMatrix(keyStr);
+        int[][] inverseKey = invertMatrixMod26(keyMatrix);
+        if (inverseKey == null) {
+            infoDialog.showInfoDialog("Error", "Key matrix is not invertible in Z26.");
+            return;
+        }
+
+        textAreaPlainText.setText(hillEncrypt(cipherText, inverseKey));
     }
+
+    @FXML
+    private void generateRandomKey() {
+        Random rand = new Random();
+        int[][] matrix;
+        do {
+            matrix = new int[][]{
+                    {rand.nextInt(26), rand.nextInt(26)},
+                    {rand.nextInt(26), rand.nextInt(26)}
+            };
+        } while (invertMatrixMod26(matrix) == null);
+
+        textFieldKey.setText(formatMatrix(matrix));
+    }
+
+    private String hillEncrypt(String text, int[][] keyMatrix) {
+        StringBuilder cipherText = new StringBuilder();
+        int size = keyMatrix.length;
+
+        while (text.length() % size != 0) {
+            text += (char) ('A' + new Random().nextInt(26));
+        }
+
+        for (int i = 0; i < text.length(); i += size) {
+            int[] vector = new int[size];
+            for (int j = 0; j < size; j++) {
+                vector[j] = text.charAt(i + j) - 'A';
+            }
+
+            int[] encryptedVector = multiplyMatrixByVector(keyMatrix, vector);
+            for (int value : encryptedVector) {
+                cipherText.append((char) (value + 'A'));
+            }
+        }
+        return cipherText.toString();
+    }
+
+    private int[] multiplyMatrixByVector(int[][] matrix, int[] vector) {
+        int[] result = new int[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                result[i] += matrix[i][j] * vector[j];
+            }
+            result[i] = (result[i] % MODULO + MODULO) % MODULO;
+        }
+        return result;
+    }
+
+    private int[][] invertMatrixMod26(int[][] matrix) {
+        int det = (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]) % MODULO;
+        det = (det + MODULO) % MODULO;
+
+        int invDet = modInverse(det, MODULO);
+        if (invDet == -1) return null;
+
+        return new int[][]{
+                {(matrix[1][1] * invDet) % MODULO, (-matrix[0][1] * invDet) % MODULO},
+                {(-matrix[1][0] * invDet) % MODULO, (matrix[0][0] * invDet) % MODULO}
+        };
+    }
+
+    private int modInverse(int a, int m) {
+        for (int x = 1; x < m; x++) {
+            if ((a * x) % m == 1) return x;
+        }
+        return -1;
+    }
+
+    private String cleanInput(String input) {
+        return input.toUpperCase().replaceAll("[^A-Z]", "");
+    }
+
+    private int[][] parseMatrix(String input) {
+        input = input.replaceAll("\\[|\\]", "").trim();
+        String[] values = input.split(",\s*");
+        return new int[][]{
+                {Integer.parseInt(values[0]), Integer.parseInt(values[1])},
+                {Integer.parseInt(values[2]), Integer.parseInt(values[3])}
+        };
+    }
+
+    private String formatMatrix(int[][] matrix) {
+        return String.format("[[%d, %d], [%d, %d]]", matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]);
+    }
+
+
 }

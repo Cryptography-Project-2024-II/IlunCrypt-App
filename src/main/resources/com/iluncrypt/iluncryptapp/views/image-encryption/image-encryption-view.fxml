@@ -86,9 +86,7 @@
       <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20.0;" GridPane.columnIndex="0" fillWidth="true">
          <!-- Section Label -->
          <MFXButton text="AES" styleClass="outline-button" onAction="#handleAESCipher"
-                    prefHeight="40.0" onMouseEntered="#handleHoverAES" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
-         <MFXButton text="DES" styleClass="outline-button" onAction="#handleDESCipher"
-                    prefHeight="40.0" onMouseEntered="#handleHoverDES" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+                    prefHeight="40.0" maxWidth="Infinity"/>
       </VBox>
 
       <!-- Right Panel: Dynamic content area within an MFXScrollPane -->

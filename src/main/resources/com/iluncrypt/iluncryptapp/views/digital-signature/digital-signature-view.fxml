@@ -87,9 +87,9 @@
          <!-- Section Label -->
          <Label text="Signature Algorithms" styleClass="group-label" alignment="CENTER" wrapText="true"/>
          <MFXButton text="RSA" styleClass="outline-button" onAction="#handleRSASignature"
-                    prefHeight="40.0" onMouseEntered="#handleHoverRSA" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+                    prefHeight="40.0"  maxWidth="Infinity"/>
          <MFXButton text="DSA" styleClass="outline-button" onAction="#handleDSASignature"
-                    prefHeight="40.0" onMouseEntered="#handleHoverDSA" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
+                    prefHeight="40.0" maxWidth="Infinity"/>
       </VBox>
 
       <!-- Right Panel: Dynamic content area within an MFXScrollPane -->

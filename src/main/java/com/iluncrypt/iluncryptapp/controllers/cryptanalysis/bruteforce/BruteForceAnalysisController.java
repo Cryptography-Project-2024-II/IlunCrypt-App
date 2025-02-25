@@ -39,9 +39,10 @@ public class BruteForceAnalysisController implements CipherController, Initializ
 
 
     @FXML
-    private MFXTableView tableCandidates;
+    private MFXTableView<Candidate> tableCandidates;
+
     @FXML
-    private MFXTableColumn colCandidate, colKey, colProbability;
+    private MFXTableColumn<Candidate> colCandidate, colKey, colProbability;
 
     @FXML
     private GridPane grid;
@@ -75,21 +76,32 @@ public class BruteForceAnalysisController implements CipherController, Initializ
         comboBoxCipher.getItems().addAll("Shift", "Multiplicative");
         comboBoxCipher.setValue("Shift");
 
-        // Configurar la columna de Key
-        colKey = new MFXTableColumn<String>("Key", true);
+        colKey = new MFXTableColumn<>("Key", true);
         colKey.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getKey));
 
         // Configurar la columna de Probability (formateado a 4 decimales)
-        colProbability = new MFXTableColumn<Double>("Score", true);
+        colProbability = new MFXTableColumn<>("Score", true);
         colProbability.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getProbability));
 
         // Configurar la columna de Decrypted Text (candidato)
-        colCandidate = new MFXTableColumn<String>("Possible Candidate", true);
+        colCandidate = new MFXTableColumn<>("Possible Candidate", true);
         colCandidate.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getDecryptedText));
 
         // Asignar las columnas a la tabla de candidatos
         tableCandidates.getTableColumns().setAll(colKey, colProbability, colCandidate);
 
+
+        tableCandidates.getTableColumns().setAll(colKey, colProbability, colCandidate);
+
+        //  Agregar un listener para que al hacer clic en una fila se muestre el candidato en el textarea
+        tableCandidates.getSelectionModel().selectionProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Candidate selected = tableCandidates.getSelectionModel().getSelectedValue();
+                if (selected != null) {
+                    textAreaCandidates.setText(selected.getDecryptedText());
+                }
+            }
+        });
 
     }
 

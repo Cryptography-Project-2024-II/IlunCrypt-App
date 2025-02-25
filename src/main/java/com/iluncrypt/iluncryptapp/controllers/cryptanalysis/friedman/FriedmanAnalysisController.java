@@ -2,14 +2,18 @@ package com.iluncrypt.iluncryptapp.controllers.cryptanalysis.friedman;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
 import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
+import com.iluncrypt.iluncryptapp.models.Alphabet;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.attacks.BruteForceAnalysis;
+import com.iluncrypt.iluncryptapp.models.attacks.Candidate;
+import com.iluncrypt.iluncryptapp.models.attacks.VigenereCryptanalysis;
 import com.iluncrypt.iluncryptapp.models.enums.Language;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
-import javafx.event.ActionEvent;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -23,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -34,9 +39,10 @@ public class FriedmanAnalysisController implements CipherController, Initializab
     private final Stage stage;
 
     @FXML
-    private MFXTableView tableCandidates;
+    private MFXTableView<Candidate> tableCandidates;
+
     @FXML
-    private MFXTableColumn colCandidate;
+    private MFXTableColumn<Candidate> colCandidate, colKey, colProbability;
 
     @FXML
     private GridPane grid;
@@ -45,7 +51,7 @@ public class FriedmanAnalysisController implements CipherController, Initializab
     private TextArea textAreaCandidates, textAreaTextToAttack;
 
     @FXML
-    private MFXComboBox<String> comboBoxFormat;
+    private MFXComboBox<String> comboBoxLanguage;
     @FXML
     private MFXButton btnBack, btnInfo, btnChangeMethod, btnImportTextToAttack, btnClearTextToAttack, btnCopyTextToAttack, btnClear, btnAttack, btnCopyCandidate, btnSaveCandidate;
 
@@ -60,12 +66,38 @@ public class FriedmanAnalysisController implements CipherController, Initializab
     public void initialize(URL location, ResourceBundle resources) {
         infoDialog.setOwnerNode(grid);
         errorDialog.setOwnerNode(grid);
-        comboBoxFormat.getItems().setAll(
+        comboBoxLanguage.getItems().setAll(
                 Arrays.stream(Language.values())
                         .map(Language::getDisplayName)
                         .toList()
         );
         setupButtonActions();
+        // Configurar la columna de Key
+        colKey = new MFXTableColumn<>("Key", true);
+        colKey.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getKey));
+
+        // Configurar la columna de Probability (formateado a 4 decimales)
+        colProbability = new MFXTableColumn<>("Score", true);
+        colProbability.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getProbability));
+
+        // Configurar la columna de Decrypted Text (candidato)
+        colCandidate = new MFXTableColumn<>("Possible Candidate", true);
+        colCandidate.setRowCellFactory(candidate -> new MFXTableRowCell<>(Candidate::getDecryptedText));
+
+        // Asignar las columnas a la tabla de candidatos
+        tableCandidates.getTableColumns().setAll(colKey, colProbability, colCandidate);
+
+        tableCandidates.getTableColumns().setAll(colKey, colProbability, colCandidate);
+
+        //  Agregar un listener para que al hacer clic en una fila se muestre el candidato en el textarea
+        tableCandidates.getSelectionModel().selectionProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Candidate selected = tableCandidates.getSelectionModel().getSelectedValue();
+                if (selected != null) {
+                    textAreaCandidates.setText(selected.getDecryptedText());
+                }
+            }
+        });
     }
 
     /**
@@ -124,6 +156,25 @@ public class FriedmanAnalysisController implements CipherController, Initializab
     }
 
     private void attack() {
+        String cipherText = textAreaTextToAttack.getText().trim();
+        if (cipherText.isEmpty()) {
+            errorDialog.showInfoDialog("Error", "Please provide cipher text to attack.");
+            return;
+        }
+
+        // Convert the selected language string to enum Language
+        Language language = Language.fromDisplayName(comboBoxLanguage.getValue());
+
+        // Call bruteForce method from BruteForceAnalysis
+        List<Candidate> candidates = VigenereCryptanalysis.decryptVigenere(cipherText, language);
+
+        // Update the table with the candidates
+        tableCandidates.getItems().setAll(candidates);
+
+        // Optionally, you can update textAreaCandidates with the best candidate
+        if (!candidates.isEmpty()) {
+            textAreaCandidates.setText(candidates.get(0).getDecryptedText());
+        }
     }
 
     private void copyTextToAttack() {

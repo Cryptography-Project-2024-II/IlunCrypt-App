@@ -173,7 +173,6 @@
          <!-- Center Section: Key and Format -->
          <VBox spacing="15.0" alignment="CENTER">
             <MFXTextField fx:id="textFieldKey" floatMode="BORDER" floatingText="Key" promptText="Enter key..." prefWidth="150.0" />
-            <MFXComboBox fx:id="comboBoxFormat" floatMode="BORDER" floatingText="Format" promptText="Select format..." prefWidth="150.0" />
             <HBox fx:id="buttonContainerKey" alignment="BOTTOM_CENTER" spacing="10">
                <MFXButton fx:id="btnShuffleKey" text="" styleClass="outline-button">
                   <graphic>

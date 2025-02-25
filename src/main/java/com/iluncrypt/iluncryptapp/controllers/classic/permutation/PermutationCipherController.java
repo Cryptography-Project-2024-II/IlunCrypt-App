@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the Permutation Cipher encryption system.
@@ -344,11 +345,9 @@ public class PermutationCipherController implements CipherController, Initializa
             numbers.add(i);
         }
         Collections.shuffle(numbers);
-        StringBuilder sb = new StringBuilder();
-        for (Integer num : numbers) {
-            sb.append(num);
-        }
-        return sb.toString();
+
+        // Convertir la lista en el formato (1, 2, 3, ...)
+        return "(" + numbers.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ")";
     }
 
 
