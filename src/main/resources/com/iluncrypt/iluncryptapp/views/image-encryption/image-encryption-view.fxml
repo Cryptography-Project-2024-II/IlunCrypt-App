@@ -89,11 +89,6 @@
                     prefHeight="40.0" onMouseEntered="#handleHoverAES" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
          <MFXButton text="DES" styleClass="outline-button" onAction="#handleDESCipher"
                     prefHeight="40.0" onMouseEntered="#handleHoverDES" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
-         <Label text="⸻" styleClass="group-label" alignment="CENTER" wrapText="true"/>
-         <MFXButton text="Hill" styleClass="outline-button" onAction="#handleHillCipher"
-                    prefHeight="40.0" onMouseEntered="#handleHoverHill" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
-         <MFXButton text="Permutation" styleClass="outline-button" onAction="#handlePermutationCipher"
-                    prefHeight="40.0" onMouseEntered="#handleHoverPermutation" onMouseExited="#handleHoverExited" maxWidth="Infinity"/>
       </VBox>
 
       <!-- Right Panel: Dynamic content area within an MFXScrollPane -->

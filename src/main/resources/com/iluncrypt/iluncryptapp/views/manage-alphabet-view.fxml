@@ -51,7 +51,7 @@
 
 
     <!-- Botones para añadir y editar alfabetos -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
+    <HBox spacing="10" alignment="CENTER_LEFT" visible="false">
         <MFXButton text="Add Alphabet" fx:id="btnAddAlphabet" styleClass="outline-button" onMouseClicked="#addAlphabet"/>
         <MFXButton text="Edit Alphabet" fx:id="btnEditAlphabet" styleClass="outline-button-green" onMouseClicked="#editAlphabet"/>
     </HBox>

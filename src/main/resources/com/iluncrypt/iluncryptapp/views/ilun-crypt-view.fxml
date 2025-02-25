@@ -80,7 +80,7 @@
         </StackPane>
 
         <!-- Contenedor con borde y título para Theme -->
-        <StackPane alignment="TOP_CENTER">
+        <StackPane alignment="TOP_CENTER" visible="false" >
             <VBox styleClass="bordered-section" spacing="10.0" alignment="CENTER">
                 <MFXToggleButton fx:id="themeToggle" text="%theme.light" />
             </VBox>
@@ -92,7 +92,7 @@
         </StackPane>
 
         <!-- Contenedor con borde y título para Language -->
-        <StackPane alignment="TOP_CENTER">
+        <StackPane alignment="TOP_CENTER" visible="false">
             <VBox styleClass="bordered-section" spacing="10.0" alignment="CENTER">
                 <MFXComboBox fx:id="languageComboBox" floatMode="DISABLED" maxWidth="Infinity" styleClass="styled-combo-light">
                     <VBox.margin>

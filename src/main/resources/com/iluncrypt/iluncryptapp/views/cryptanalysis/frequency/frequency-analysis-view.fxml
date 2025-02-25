@@ -14,6 +14,10 @@
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.scene.layout.Region?>
 
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import javafx.scene.control.Separator?>
+<?import io.github.palexdev.materialfx.controls.MFXTableColumn?>
 <GridPane
         fx:id="grid"
         hgap="20.0"
@@ -72,13 +76,13 @@
 
             <!-- Centered Section: Info Button, Title, and Method Change -->
             <HBox alignment="CENTER" spacing="10.0">
-                <MFXButton fx:id="btnInfo" styleClass="icon-button" text="" onAction="#showInfoDialog" prefWidth="40.0" prefHeight="40.0">
+                <MFXButton fx:id="btnInfo" styleClass="icon-button" text=""  prefWidth="40.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-circle-info" size="16.0" />
                     </graphic>
                 </MFXButton>
                 <Label text="Frequency Analysis" styleClass="top-bar-title" alignment="CENTER" />
-                <MFXButton fx:id="btnChangeMethod" styleClass="icon-button" text="" onAction="#showChangeMethodDialog" prefWidth="40.0" prefHeight="40.0">
+                <MFXButton fx:id="btnChangeMethod" styleClass="icon-button" text="" prefWidth="40.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-caret-down" size="16.0" />
                     </graphic>
@@ -92,7 +96,7 @@
 
     <!-- Label for Plain Text -->
     <Label
-            text="Plain Text"
+            text="Cipher Text to Attack"
             styleClass="text-label"
             alignment="CENTER_LEFT"
             GridPane.columnSpan="8"
@@ -107,12 +111,17 @@
             <Insets right="20.0" />
         </GridPane.margin>
         <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportPlainText" styleClass="icon-button" text="" onAction="#importPlainText">
+        <MFXButton fx:id="btnImportTextToAttack" styleClass="icon-button" text="" >
             <graphic>
                 <MFXFontIcon description="fas-file-import" size="16.0" />
             </graphic>
         </MFXButton>
-        <MFXButton fx:id="btnCopyPlainText" styleClass="icon-button" text="" onAction="#copyPlainText">
+        <MFXButton fx:id="btnClearTextToAttack" styleClass="icon-button" text="">
+            <graphic>
+                <MFXFontIcon description="fas-trash-can" size="16.0" />
+            </graphic>
+        </MFXButton>
+        <MFXButton fx:id="btnCopyTextToAttack" styleClass="icon-button" text="" >
             <graphic>
                 <MFXFontIcon description="fas-copy" size="16.0" />
             </graphic>
@@ -123,9 +132,9 @@
 
     <!-- TextArea for Clear Text -->
     <TextArea
-            fx:id="textAreaPlainText"
+            fx:id="textAreaTextToAttack"
             wrapText="true"
-            promptText="Enter clear text here..."
+            promptText="Enter text to attack here..."
             GridPane.columnSpan="8"
             GridPane.rowIndex="2">
         <GridPane.margin>
@@ -140,80 +149,23 @@
         </GridPane.margin>
         <HBox spacing="50.0" alignment="CENTER" HBox.hgrow="ALWAYS">
 
-            <!-- Leftmost Section: Other Settings and Export -->
             <VBox spacing="15.0" alignment="CENTER_LEFT">
-                <MFXButton text="Other Settings" styleClass="outline-button" fx:id="btnOtherSettings" onAction="#showOtherSettings" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
-                    </graphic>
-                </MFXButton>
-                <MFXButton text="Export Encrypted Message" styleClass="outline-button" fx:id="btnExportEncryptedText" onAction="#exportEncryptedText" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-file-export" size="16.0" styleClass="button-icon"/>
-                    </graphic>
-                </MFXButton>
-            </VBox>
-
-            <!-- Left Section: Clear All and Cryptanalysis -->
-            <VBox spacing="15.0" alignment="CENTER_LEFT">
-                <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" onAction="#clearTextAreas" prefWidth="200.0" prefHeight="40.0">
+                <MFXButton text="Clear All" styleClass="outline-button" fx:id="btnClear" prefWidth="200.0" prefHeight="40.0">
                     <graphic>
                         <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
                     </graphic>
                 </MFXButton>
-                <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="200.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass = "button-icon"/>
-                    </graphic>
-                </MFXButton>
             </VBox>
 
-            <!-- Center Section: Number Inputs for A and B -->
-            <VBox spacing="15.0" alignment="CENTER">
-                <HBox spacing="10.0" alignment="CENTER">
-                    <Label text="A:" alignment="CENTER_LEFT" styleClass="text-label" />
-                    <HBox spacing="5.0" alignment="CENTER">
-                        <MFXButton text="" styleClass="icon-button" onAction="#decrementA">
-                            <graphic>
-                                <MFXFontIcon description="fas-minus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                        <MFXTextField fx:id="textFieldA" promptText="0" text="5" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                        <MFXButton text="" styleClass="icon-button" onAction="#incrementA">
-                            <graphic>
-                                <MFXFontIcon description="fas-plus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                    </HBox>
-                </HBox>
-                <HBox spacing="10.0" alignment="CENTER">
-                    <Label text="B:" alignment="CENTER_LEFT" styleClass="text-label" />
-                    <HBox spacing="5.0" alignment="CENTER">
-                        <MFXButton text="" styleClass="icon-button" onAction="#decrementB">
-                            <graphic>
-                                <MFXFontIcon description="fas-minus" size="16.0"/>
-                            </graphic>
-                        </MFXButton>
-                        <MFXTextField fx:id="textFieldB" promptText="0" text="8" floatMode="DISABLED" styleClass="no-border-textfield" alignment="CENTER" prefWidth="50.0" />
-                        <MFXButton text="" styleClass="icon-button" onAction="#incrementB">
-                            <graphic>
-                                <MFXFontIcon description="fas-plus" size="16.0" />
-                            </graphic>
-                        </MFXButton>
-                    </HBox>
-                </HBox>
+            <VBox spacing="15.0" alignment="CENTER_LEFT">
+                <MFXComboBox fx:id="comboBoxFormat" floatMode="BORDER" floatingText="Language" promptText="Select a language..." prefWidth="150.0" />
             </VBox>
 
             <!-- Right Section: Cipher/Decipher -->
             <VBox spacing="15.0" alignment="CENTER_RIGHT">
-                <MFXButton text="Cipher" styleClass="outline-button-green" fx:id="btnCipher" onAction="#cipherText" prefWidth="150.0" prefHeight="40.0">
+                <MFXButton text="Attack" styleClass="outline-button-red" fx:id="btnAttack" prefWidth="150.0" prefHeight="40.0">
                     <graphic>
-                        <MFXFontIcon description="fas-lock" size="16.0" styleClass = "button-icon"/>
-                    </graphic>
-                </MFXButton>
-                <MFXButton text="Decipher" styleClass="outline-button-red" fx:id="btnDecipher" onAction="#decipherText" prefWidth="150.0" prefHeight="40.0">
-                    <graphic>
-                        <MFXFontIcon description="fas-lock-open" size="16.0" styleClass = "button-icon"/>
+                        <MFXFontIcon description="fas-bolt" size="16.0" styleClass = "button-icon"/>
                     </graphic>
                 </MFXButton>
             </VBox>
@@ -222,7 +174,7 @@
 
     <!-- Label for Cipher Text -->
     <Label
-            text="Cipher Text"
+            text="Candidates"
             styleClass="text-label"
             alignment="CENTER_LEFT"
             GridPane.columnSpan="8"
@@ -231,33 +183,52 @@
             <Insets left="20.0" />
         </GridPane.margin>
     </Label>
-    <HBox alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnSpan="8" GridPane.rowIndex="5">
+
+    <HBox spacing="15" VBox.vgrow="ALWAYS" GridPane.columnSpan="8"
+          GridPane.rowIndex="6">
         <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets left="20.0" right="20.0"/>
         </GridPane.margin>
-        <Region HBox.hgrow="ALWAYS" />
-        <MFXButton fx:id="btnImportCipherText" styleClass="icon-button" text="" onAction="#importCipherText">
-            <graphic>
-                <MFXFontIcon description="fas-file-import" size="16.0" />
-            </graphic>
-        </MFXButton>
-        <MFXButton fx:id="btnCopyCipherText" styleClass="icon-button" text="" onAction="#copyCipherText">
-            <graphic>
-                <MFXFontIcon description="fas-copy" size="16.0" />
-            </graphic>
-        </MFXButton>
+        <VBox spacing="18" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity">
+            <MFXTableView fx:id="tableCandidates" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity" maxWidth="Infinity">
+                <tableColumns>
+                    <MFXTableColumn text="Possible candidates" fx:id="colCandidate" minWidth="150" maxWidth="Infinity"/>
+                </tableColumns>
+            </MFXTableView>
+        </VBox>
+
+        <Separator orientation="VERTICAL" VBox.vgrow="ALWAYS"/>
+
+
+        <VBox spacing="10" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity">
+            <GridPane.margin>
+                <Insets left="20.0" right="20.0" />
+            </GridPane.margin>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <MFXButton fx:id="btnCopyCandidate" styleClass="icon-button" text="">
+                    <graphic><MFXFontIcon description="fas-copy" size="18"/></graphic>
+                </MFXButton>
+                <MFXButton fx:id="btnSaveCandidate" styleClass="icon-button" text="">
+                    <graphic>
+                        <MFXFontIcon description="fas-floppy-disk" size="16.0" />
+                    </graphic>
+                </MFXButton>
+            </HBox>
+
+            <!-- TextArea for Cipher Text -->
+            <TextArea
+                    fx:id="textAreaCandidates"
+                    wrapText="true"
+                    promptText="Select a potential candidate..."
+                    editable="false"
+                    GridPane.columnSpan="8"
+                    GridPane.rowIndex="6">
+
+            </TextArea>
+        </VBox>
     </HBox>
 
 
-    <!-- TextArea for Cipher Text -->
-    <TextArea
-            fx:id="textAreaCipherText"
-            wrapText="true"
-            promptText="Enter cipher text here..."
-            GridPane.columnSpan="8"
-            GridPane.rowIndex="6">
-        <GridPane.margin>
-            <Insets left="20.0" right="20.0" />
-        </GridPane.margin>
-    </TextArea>
+
+
 </GridPane>

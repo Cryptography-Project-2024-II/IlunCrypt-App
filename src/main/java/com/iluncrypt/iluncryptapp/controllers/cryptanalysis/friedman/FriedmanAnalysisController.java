@@ -1,77 +1,167 @@
 package com.iluncrypt.iluncryptapp.controllers.cryptanalysis.friedman;
 
 import com.iluncrypt.iluncryptapp.controllers.CipherController;
+import com.iluncrypt.iluncryptapp.controllers.IlunCryptController;
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
+import com.iluncrypt.iluncryptapp.models.enums.Language;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXTableColumn;
+import io.github.palexdev.materialfx.controls.MFXTableView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
  * Controller for Friedman Test Cryptanalysis.
  */
 public class FriedmanAnalysisController implements CipherController, Initializable {
-
     private final DialogHelper infoDialog;
+    private final DialogHelper errorDialog;
     private final Stage stage;
+
+    @FXML
+    private MFXTableView tableCandidates;
+    @FXML
+    private MFXTableColumn colCandidate;
 
     @FXML
     private GridPane grid;
 
     @FXML
-    private TextArea textAreaCipherText;
+    private TextArea textAreaCandidates, textAreaTextToAttack;
 
     @FXML
-    private TextArea textAreaResults;
+    private MFXComboBox<String> comboBoxFormat;
+    @FXML
+    private MFXButton btnBack, btnInfo, btnChangeMethod, btnImportTextToAttack, btnClearTextToAttack, btnCopyTextToAttack, btnClear, btnAttack, btnCopyCandidate, btnSaveCandidate;
+
 
     public FriedmanAnalysisController(Stage stage) {
         this.stage = stage;
         this.infoDialog = new DialogHelper(stage);
+        this.errorDialog = new DialogHelper(stage);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         infoDialog.setOwnerNode(grid);
+        errorDialog.setOwnerNode(grid);
+        comboBoxFormat.getItems().setAll(
+                Arrays.stream(Language.values())
+                        .map(Language::getDisplayName)
+                        .toList()
+        );
+        setupButtonActions();
     }
 
-    @FXML
-    private void performFriedmanTest() {
-        String cipherText = textAreaCipherText.getText();
-        if (cipherText.isEmpty()) {
-            infoDialog.showInfoDialog("Error", "Cipher text cannot be empty.");
+    /**
+     * Configures button actions for copying, regenerating, and importing files.
+     */
+    private void setupButtonActions() {
+        btnBack.setOnAction(e -> handleBackButton());
+        btnInfo.setOnAction(e -> showInfoDialog());
+        btnChangeMethod.setOnAction(e -> showChangeMethodDialog());
+        btnImportTextToAttack.setOnAction(e -> importTextToAttack());
+        btnClearTextToAttack.setOnAction(e -> clearTextToAttack());
+        btnCopyTextToAttack.setOnAction(e -> copyTextToAttack());
+        btnClear.setOnAction(e -> clearAll());
+        btnAttack.setOnAction(e -> attack());
+        btnCopyCandidate.setOnAction(e -> copyCandidate());
+        btnSaveCandidate.setOnAction(e -> saveCandidate());
+    }
+
+    private void saveCandidate() {
+
+        if (textAreaCandidates.getText().isEmpty()) {
+            errorDialog.showInfoDialog("Error","No decrypted data available to save.");
             return;
         }
 
-        // Perform Friedman test (example implementation)
-        double indexOfCoincidence = calculateIndexOfCoincidence(cipherText);
-        double estimatedKeyLength = (0.027 * cipherText.length()) / ((0.065 - indexOfCoincidence) + cipherText.length() * (indexOfCoincidence - 0.038));
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Candidate");
 
-        textAreaResults.setText("Estimated key length: " + String.format("%.2f", estimatedKeyLength));
+        String originalExtension = "txt";
+
+        // Configurar el filtro con la extensión original o txt
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
+                "Original Format (*." + originalExtension + ")", "*." + originalExtension);
+        fileChooser.getExtensionFilters().add(filter);
+        fileChooser.setInitialFileName("decrypted." + originalExtension);
+
+        File fileToSave = fileChooser.showSaveDialog(stage);
+        if (fileToSave == null) {
+            return; // Usuario canceló la operación
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(fileToSave)) {
+            byte[] dataToSave;
+
+            dataToSave = textAreaCandidates.getText().getBytes(StandardCharsets.UTF_8);
+
+            fos.write(dataToSave);
+            infoDialog.showInfoDialog("Success","Decrypted file saved successfully.");
+        } catch (IOException e) {
+            errorDialog.showInfoDialog("Failed to save decrypted file: ", e.getMessage());
+        }
     }
 
-    private double calculateIndexOfCoincidence(String text) {
-        int[] frequencies = new int[26];
-        int total = 0;
+    private void copyCandidate() {
+        copyToClipboard(textAreaCandidates.getText());
+    }
 
-        for (char c : text.toUpperCase().toCharArray()) {
-            if (c >= 'A' && c <= 'Z') {
-                frequencies[c - 'A']++;
-                total++;
+    private void attack() {
+    }
+
+    private void copyTextToAttack() {
+        copyToClipboard(textAreaTextToAttack.getText());
+    }
+
+    /**
+     * Copies the given text to the clipboard.
+     */
+    private void copyToClipboard(String text) {
+        if (!text.isEmpty()) {
+            javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
+            javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+            content.putString(text);
+            clipboard.setContent(content);
+        }
+    }
+
+    private void clearTextToAttack() {
+        textAreaTextToAttack.clear();
+    }
+
+    private void importTextToAttack() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File to Encrypt");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) {
+            try {
+                String content = new String(java.nio.file.Files.readAllBytes(file.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+                textAreaTextToAttack.setText(content);
+            } catch (IOException e) {
+                errorDialog.showInfoDialog("Error", "Could not read file: " + e.getMessage());
             }
         }
 
-        double ic = 0.0;
-        for (int freq : frequencies) {
-            ic += (freq * (freq - 1));
-        }
-
-        return ic / (total * (total - 1));
     }
 
     @Override
@@ -93,56 +183,20 @@ public class FriedmanAnalysisController implements CipherController, Initializab
 
     }
 
-
-    public void handleBackButton(ActionEvent actionEvent) {
+    public void handleBackButton() {
+        IlunCryptController.getInstance().loadView("CRIPTANALYSIS-OPTIONS");
     }
 
-    public void showInfoDialog(ActionEvent actionEvent) {
+    public void showInfoDialog() {
     }
 
-    public void showChangeMethodDialog(ActionEvent actionEvent) {
+    public void showChangeMethodDialog() {
     }
 
-    public void importPlainText(ActionEvent actionEvent) {
-    }
 
-    public void copyPlainText(ActionEvent actionEvent) {
-    }
-
-    public void showOtherSettings(ActionEvent actionEvent) {
-    }
-
-    public void exportEncryptedText(ActionEvent actionEvent) {
-    }
-
-    public void clearTextAreas(ActionEvent actionEvent) {
-    }
-
-    public void showCryptanalysisDialog(ActionEvent actionEvent) {
-    }
-
-    public void decrementA(ActionEvent actionEvent) {
-    }
-
-    public void incrementA(ActionEvent actionEvent) {
-    }
-
-    public void decrementB(ActionEvent actionEvent) {
-    }
-
-    public void incrementB(ActionEvent actionEvent) {
-    }
-
-    public void cipherText(ActionEvent actionEvent) {
-    }
-
-    public void decipherText(ActionEvent actionEvent) {
-    }
-
-    public void importCipherText(ActionEvent actionEvent) {
-    }
-
-    public void copyCipherText(ActionEvent actionEvent) {
-
+    public void clearAll() {
+        tableCandidates.getItems().clear();
+        textAreaTextToAttack.clear();
+        textAreaCandidates.clear();
     }
 }

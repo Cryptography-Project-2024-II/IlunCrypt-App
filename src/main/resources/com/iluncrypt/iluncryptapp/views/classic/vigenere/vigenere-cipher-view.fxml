@@ -156,11 +156,6 @@
                   <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
                </graphic>
             </MFXButton>
-            <MFXButton text="Cryptanalysis" styleClass="outline-button" fx:id="btnCryptanalysis" onAction="#showCryptanalysisDialog" prefWidth="150.0" prefHeight="40.0">
-               <graphic>
-                  <MFXFontIcon description="fas-magnifying-glass-arrow-right" size="16.0" styleClass="button-icon"/>
-               </graphic>
-            </MFXButton>
          </VBox>
 
          <!-- Middle Left Section: Clear All and Cryptanalysis -->

@@ -7,10 +7,8 @@ import com.iluncrypt.iluncryptapp.controllers.symmetrickey.aes.AdvancedOptionsCo
 import com.iluncrypt.iluncryptapp.models.CryptosystemConfig;
 import com.iluncrypt.iluncryptapp.models.algorithms.symmetrickey.AESManager;
 import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
-import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.AuthenticationMethod;
-import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.SymmetricKeyMode;
+import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.*;
 import com.iluncrypt.iluncryptapp.utils.DialogHelper;
-import com.iluncrypt.iluncryptapp.utils.ImageMetadataUtil;
 import com.iluncrypt.iluncryptapp.utils.LanguageManager;
 import com.iluncrypt.iluncryptapp.utils.config.ConfigManager;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunKeyManager;
@@ -35,17 +33,23 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.imageio.ImageIO;
+import javax.imageio.*;
+import javax.imageio.metadata.IIOInvalidTreeException;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 /**
@@ -125,9 +129,15 @@ public class AESImageController implements CipherController, Initializable {
     }
 
     private void loadAESConfig() {
-        if (aesConfig == null) {
-            throw new IllegalArgumentException("Failed to load AES configuration.");
-        }
+        aesConfig.setPaddingScheme(PaddingScheme.NO_PADDING);
+        aesConfig.setShowIV(true);
+        aesConfig.setGenerateKey(true);
+        aesConfig.setSaveAlgorithm(true);
+        aesConfig.setGenerateIV(true);
+        aesConfig.setKeySize(KeySize.AES_256);
+        aesConfig.setMode(SymmetricKeyMode.CTR);
+        aesConfig.setGCMTagSize(null);
+        aesConfig.setAlgorithm(SymmetricKeyAlgorithm.AES);
         lblMode.setText("Mode: "+aesConfig.getTransformation());
 
         boxIV.setVisible(aesConfig.isShowIV());
@@ -177,69 +187,95 @@ public class AESImageController implements CipherController, Initializable {
         btnAdvancedOptions.setOnAction(e->showAdvancedOptions());
     }
 
-    /**
-     * Saves the currently displayed encrypted image.
-     * The encrypted image is saved in the format chosen by the user (PNG, JPEG, BMP, GIF, etc.).
-     */
     private void saveEncryptedInformation() {
-        // Verify that there is an encrypted image in the ImageView.
+        // Verificar que exista una imagen encriptada
         if (encryptedImageView.getImage() == null) {
             showError("No encrypted image available to save.");
             return;
         }
 
-        // Open a FileChooser for the user to select the save location and format.
+        // Forzar que el guardado de imagen encriptada sea solo en PNG
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Encrypted Image");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PNG Image", "*.png"),
-                new FileChooser.ExtensionFilter("JPEG Image", "*.jpg", "*.jpeg"),
-                new FileChooser.ExtensionFilter("BMP Image", "*.bmp"),
-                new FileChooser.ExtensionFilter("GIF Image", "*.gif")
-        );
-        fileChooser.setInitialFileName("encrypted_image.png"); // default
+        // Sólo se permite PNG
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
+        fileChooser.setInitialFileName("encrypted_image.png");
         File fileToSave = fileChooser.showSaveDialog(stage);
         if (fileToSave == null) {
-            return; // User cancelled the operation.
-        }
-
-        // Convert the JavaFX image to a BufferedImage.
-        javafx.scene.image.Image fxImage = encryptedImageView.getImage();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
-
-        // Determine the format from the file extension; default to PNG if not found.
-        String format = getFileExtension(fileToSave);
-        if (format.isEmpty()) {
-            format = "png";
+            return; // Usuario canceló la operación.
         }
 
         try {
-            // Save the encrypted image using ImageIO. The encrypted image already contains
-            // the IV and authentication data as per the new strategy.
-            ImageIO.write(bufferedImage, format, fileToSave);
-            infoDialog.showInfoDialog("Success", "Encrypted image saved successfully.");
+            // Convertir la imagen JavaFX a BufferedImage
+            javafx.scene.image.Image fxImage = encryptedImageView.getImage();
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
+
+            // Obtener el IV desde el campo y verificar que no esté vacío
+            String ivBase64 = textFieldIV.getText().trim();
+            if (ivBase64.isEmpty()) {
+                showError("No IV available to embed.");
+                return;
+            }
+
+            // Preparar el ImageWriter para PNG
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("png");
+            if (!writers.hasNext()) {
+                showError("No PNG ImageWriter found.");
+                return;
+            }
+            ImageWriter writer = writers.next();
+
+            ImageWriteParam writeParam = writer.getDefaultWriteParam();
+            ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_ARGB);
+            IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier, writeParam);
+            String nativeFormat = metadata.getNativeMetadataFormatName();
+
+            // Crear un nodo de metadata para insertar el IV como tEXtEntry
+            IIOMetadataNode textEntry = new IIOMetadataNode("tEXtEntry");
+            textEntry.setAttribute("keyword", "IV");
+            textEntry.setAttribute("value", ivBase64);
+
+            IIOMetadataNode textNode = new IIOMetadataNode("tEXt");
+            textNode.appendChild(textEntry);
+
+            IIOMetadataNode root = new IIOMetadataNode(nativeFormat);
+            root.appendChild(textNode);
+
+            try {
+                metadata.mergeTree(nativeFormat, root);
+            } catch (IIOInvalidTreeException e) {
+                showError("Failed to embed IV metadata: " + e.getMessage());
+                return;
+            }
+
+            // Escribir la imagen en formato PNG con la metadata incrustada
+            ImageOutputStream ios = ImageIO.createImageOutputStream(fileToSave);
+            writer.setOutput(ios);
+            IIOImage iioImage = new IIOImage(bufferedImage, null, metadata);
+            writer.write(null, iioImage, writeParam);
+            ios.close();
+            writer.dispose();
+
+            infoDialog.showInfoDialog("Success", "Encrypted image saved successfully with IV metadata.");
         } catch (IOException e) {
             showError("Failed to save encrypted image: " + e.getMessage());
         }
     }
 
 
-    /**
-     * Saves the currently displayed decrypted image.
-     * The decrypted image is saved directly without metadata, so any supported format may be used.
-     */
+
     @FXML
     private void saveDecryptedInformation() {
-        // Verify that there is a decrypted image in the ImageView.
+        // Verificar que exista una imagen desencriptada
         if (unencryptedImageView.getImage() == null) {
             showError("No decrypted image available to save.");
             return;
         }
 
-        // Open a FileChooser for the user to select the save location.
+        // Permitir múltiples formatos para la imagen desencriptada
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Decrypted Image");
-        // Allow multiple image formats here.
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PNG Image", "*.png"),
                 new FileChooser.ExtensionFilter("JPEG Image", "*.jpg", "*.jpeg"),
@@ -248,15 +284,15 @@ public class AESImageController implements CipherController, Initializable {
         fileChooser.setInitialFileName("decrypted_image.png");
         File fileToSave = fileChooser.showSaveDialog(stage);
         if (fileToSave == null) {
-            return; // User cancelled the operation.
+            return; // Usuario canceló la operación.
         }
 
-        // Convert the FX image to a BufferedImage.
+        // Convertir la imagen JavaFX a BufferedImage
         javafx.scene.image.Image fxImage = unencryptedImageView.getImage();
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
 
         try {
-            // Save the decrypted image directly using ImageIO (no metadata is needed).
+            // Determinar el formato a partir de la extensión (por defecto PNG)
             String format = getFileExtension(fileToSave);
             if (format.isEmpty()) {
                 format = "png";
@@ -267,6 +303,7 @@ public class AESImageController implements CipherController, Initializable {
             showError("Failed to save decrypted image: " + e.getMessage());
         }
     }
+
 
 
 
@@ -614,13 +651,16 @@ public class AESImageController implements CipherController, Initializable {
                 return;
             }
 
-            BufferedImage encryptedImage = AESManager.encryptImage(inputImage, key, iv, aesConfig);
+// Encriptar la imagen a nivel de píxeles usando AES/CTR/NoPadding
+            BufferedImage encryptedImage = AESManager.encryptImage(inputImage, key, iv);
 
+// Convertir la imagen encriptada a formato JavaFX y actualizar la vista
             javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(encryptedImage, null);
             displayImage(fxImage, encryptedImageView);
             encryptedImageContainer.setStyle("-fx-background-color: transparent;");
             textAreaPathEncryptedImage.setText("Your image was successfully encrypted. You can save it.");
             textAreaPathEncryptedImage.setEditable(false);
+
 
 
         } catch (Exception e) {
@@ -659,10 +699,55 @@ public class AESImageController implements CipherController, Initializable {
                 return;
             }
 
-            // Llamar al método actualizado que desencripta la imagen
-            BufferedImage decryptedImage = AESManager.decryptImage(encryptedImage, key, aesConfig);
 
-            // Convertir la imagen desencriptada a JavaFX Image y actualizar la vista
+            // Leer el IV desde la metadata del archivo PNG
+            String ivBase64 = null;
+            try (ImageInputStream iis = ImageIO.createImageInputStream(encryptedFile)) {
+                Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("png");
+                if (!readers.hasNext()) {
+                    showError("No PNG reader available.");
+                    return;
+                }
+                ImageReader reader = readers.next();
+                reader.setInput(iis, true);
+                IIOMetadata metadata = reader.getImageMetadata(0);
+                String nativeFormat = metadata.getNativeMetadataFormatName();
+                Node root = metadata.getAsTree(nativeFormat);
+
+                // Recorrer el árbol de metadata para encontrar el nodo tEXtEntry con keyword "IV"
+                ivBase64 = null;
+                NodeList nodeList = root.getChildNodes();
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    ivBase64 = searchForIV(nodeList.item(i));
+                    if (ivBase64 != null) {
+                        break;
+                    }
+                }
+                reader.dispose();
+            } catch (IOException e) {
+                showError("Error reading image metadata: " + e.getMessage());
+                return;
+            }
+
+            if (ivBase64 == null || ivBase64.isEmpty()) {
+                showError("IV not found in image metadata.");
+                return;
+            }
+
+// Actualizar el campo IV en la interfaz
+            textFieldIV.setText(ivBase64);
+
+// Decodificar el IV
+            byte[] iv;
+            try {
+                iv = Base64.getDecoder().decode(ivBase64);
+            } catch (IllegalArgumentException e) {
+                showError("Invalid IV format in metadata.");
+                return;
+            }
+
+// Desencriptar la imagen usando el IV obtenido
+            BufferedImage decryptedImage = AESManager.decryptImage(encryptedImage, key, iv);
             javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(decryptedImage, null);
             displayImage(fxImage, unencryptedImageView);
             unencryptedImageView.setStyle("-fx-background-color: transparent;");
@@ -670,9 +755,29 @@ public class AESImageController implements CipherController, Initializable {
             textAreaPathUnencryptedImage.setEditable(false);
 
 
+
         } catch (Exception e) {
             showError("Decryption failed: " + e.getMessage());
         }
+    }
+
+    private String searchForIV(Node node) {
+        if (node.getNodeName().equals("tEXtEntry")) {
+            NamedNodeMap attributes = node.getAttributes();
+            Node keywordNode = attributes.getNamedItem("keyword");
+            Node valueNode = attributes.getNamedItem("value");
+            if (keywordNode != null && "IV".equals(keywordNode.getNodeValue()) && valueNode != null) {
+                return valueNode.getNodeValue();
+            }
+        }
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            String result = searchForIV(children.item(i));
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
     }
 
 

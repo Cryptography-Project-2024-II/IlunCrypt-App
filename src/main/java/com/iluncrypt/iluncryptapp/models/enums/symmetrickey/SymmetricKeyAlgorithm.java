@@ -1,34 +1,35 @@
 package com.iluncrypt.iluncryptapp.models.enums.symmetrickey;
 
-/**
- * Enumeration of supported symmetric encryption algorithms.
- * Defines the base IV size and supported encryption modes.
- */
 public enum SymmetricKeyAlgorithm {
     /** AES (Advanced Encryption Standard) supports various block modes and key sizes. */
     AES(16, new SymmetricKeyMode[]{
             SymmetricKeyMode.ECB, SymmetricKeyMode.CBC,
             SymmetricKeyMode.CFB, SymmetricKeyMode.OFB,
-            SymmetricKeyMode.CTR, SymmetricKeyMode.GCM}),
+            SymmetricKeyMode.CTR, SymmetricKeyMode.GCM
+    }, new KeySize[]{KeySize.AES_128, KeySize.AES_192, KeySize.AES_256}),
 
     /** DES (Data Encryption Standard) with a fixed key size of 56 bits. */
     DES(8, new SymmetricKeyMode[]{
             SymmetricKeyMode.ECB, SymmetricKeyMode.CBC,
             SymmetricKeyMode.CFB, SymmetricKeyMode.OFB,
-            SymmetricKeyMode.CTR}),
+            SymmetricKeyMode.CTR
+    }, new KeySize[]{KeySize.DES_56}),
 
     /** TDES (Triple DES) applies DES three times for increased security. */
     TDES(8, new SymmetricKeyMode[]{
             SymmetricKeyMode.ECB, SymmetricKeyMode.CBC,
             SymmetricKeyMode.CFB, SymmetricKeyMode.OFB,
-            SymmetricKeyMode.CTR});
+            SymmetricKeyMode.CTR
+    }, new KeySize[]{KeySize.TDES_112, KeySize.TDES_168});
 
     private final int baseIVSize;
     private final SymmetricKeyMode[] supportedModes;
+    private final KeySize[] supportedKeySizes;
 
-    SymmetricKeyAlgorithm(int baseIVSize, SymmetricKeyMode[] supportedModes) {
+    SymmetricKeyAlgorithm(int baseIVSize, SymmetricKeyMode[] supportedModes, KeySize[] supportedKeySizes) {
         this.baseIVSize = baseIVSize;
         this.supportedModes = supportedModes;
+        this.supportedKeySizes = supportedKeySizes;
     }
 
     /**
@@ -38,6 +39,24 @@ public enum SymmetricKeyAlgorithm {
      */
     public int getBaseIVSize() {
         return baseIVSize;
+    }
+
+    /**
+     * Returns the supported encryption modes for this algorithm.
+     *
+     * @return an array of supported SymmetricKeyMode.
+     */
+    public SymmetricKeyMode[] getSupportedModes() {
+        return supportedModes;
+    }
+
+    /**
+     * Returns the supported key sizes for this algorithm.
+     *
+     * @return an array of supported KeySize.
+     */
+    public KeySize[] getSupportedKeySizes() {
+        return supportedKeySizes;
     }
 
     /**

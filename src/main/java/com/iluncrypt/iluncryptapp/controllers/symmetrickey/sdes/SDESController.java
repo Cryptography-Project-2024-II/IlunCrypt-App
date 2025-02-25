@@ -90,7 +90,44 @@ public class SDESController implements CipherController, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureDialogs();
-        setupFieldListeners();
+        // Listener para campo de texto en modo "Plain Text"
+        mfxPlainTextLetters.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingPlain && newVal.length() == 2) {
+                updatingPlain = true;
+                String bits = letterToBits(newVal);
+                mfxPlainTextBits.setText(bits);
+                updatingPlain = false;
+            }
+        });
+
+        mfxPlainTextBits.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingPlain && newVal.length() == 8) {
+                updatingPlain = true;
+                String letters = bitsToLetters(newVal);
+                mfxPlainTextLetters.setText(letters);
+                updatingPlain = false;
+            }
+        });
+
+// Listener para campo de texto en modo "Cipher Text"
+        mfxCipherTextLetters.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingCipher && newVal.length() == 2) {
+                updatingCipher = true;
+                String bits = letterToBits(newVal);
+                mfxCipherTextBits.setText(bits);
+                updatingCipher = false;
+            }
+        });
+
+        mfxCipherTextBits.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingCipher && newVal.length() == 8) {
+                updatingCipher = true;
+                String letters = bitsToLetters(newVal);
+                mfxCipherTextLetters.setText(letters);
+                updatingCipher = false;
+            }
+        });
+
     }
 
     /**
@@ -102,187 +139,6 @@ public class SDESController implements CipherController, Initializable {
         errorDialog.setOwnerNode(grid);
     }
 
-    /**
-     * Sets up listeners on the text fields to enforce mutual exclusivity, automatic conversion, and length restrictions.
-     */
-    private void setupFieldListeners() {
-        // Mutual exclusivity
-        mfxPlainTextLetters.textProperty().addListener((obs, oldVal, newVal) -> updateFieldStates());
-        mfxPlainTextBits.textProperty().addListener((obs, oldVal, newVal) -> updateFieldStates());
-        mfxCipherTextLetters.textProperty().addListener((obs, oldVal, newVal) -> updateFieldStates());
-        mfxCipherTextBits.textProperty().addListener((obs, oldVal, newVal) -> updateFieldStates());
-
-        // --- Automatic conversion for Plain Text fields ---
-        mfxPlainTextLetters.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (updatingPlain) return;
-            updatingPlain = true;
-            // Si se intenta ingresar más de 2 caracteres, se conserva el valor anterior.
-            if (newVal.length() > 2) {
-                mfxPlainTextLetters.setText(oldVal);
-                updatingPlain = false;
-                return;
-            }
-            // Convertir a mayúsculas
-            String upper = newVal.toUpperCase();
-            // Validar que solo se ingresen caracteres A-P
-            if (!upper.matches("[A-P]*")) {
-                errorDialog.showInfoDialog("Error", "Invalid characters in Plain Text Letters. Only A–P allowed.");
-                mfxPlainTextLetters.setText(oldVal);
-                updatingPlain = false;
-                return;
-            }
-            // Si se ingresan exactamente 2 letras, actualizar el campo de bits.
-            if (upper.length() == 2) {
-                String bits = letterToBits(upper);
-                mfxPlainTextBits.setText(bits);
-            } else {
-                mfxPlainTextBits.clear();
-            }
-            updatingPlain = false;
-        });
-
-        mfxPlainTextBits.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (updatingPlain) return;
-            updatingPlain = true;
-            // Si se intenta ingresar más de 8 caracteres, se conserva el valor anterior.
-            if (newVal.length() > 8) {
-                mfxPlainTextBits.setText(oldVal);
-                updatingPlain = false;
-                return;
-            }
-            // Validar que solo se ingresen 0 y 1
-            if (!newVal.matches("[01]*")) {
-                errorDialog.showInfoDialog("Error", "Invalid bits in Plain Text Bits. Only 0 and 1 allowed.");
-                mfxPlainTextBits.setText(oldVal);
-                updatingPlain = false;
-                return;
-            }
-            // Si se ingresan exactamente 8 bits, actualizar el campo de letras.
-            if (newVal.length() == 8) {
-                String letters = bitsToLetters(newVal);
-                mfxPlainTextLetters.setText(letters);
-            } else {
-                mfxPlainTextLetters.clear();
-            }
-            updatingPlain = false;
-        });
-
-        // --- Automatic conversion for Encrypted Text fields ---
-        mfxCipherTextLetters.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (updatingCipher) return;
-            updatingCipher = true;
-            // Si se intenta ingresar más de 2 caracteres, se conserva el valor anterior.
-            if (newVal.length() > 2) {
-                mfxCipherTextLetters.setText(oldVal);
-                updatingCipher = false;
-                return;
-            }
-            String upper = newVal.toUpperCase();
-            if (!upper.matches("[A-P]*")) {
-                errorDialog.showInfoDialog("Error", "Invalid characters in Encrypted Text Letters. Only A–P allowed.");
-                mfxCipherTextLetters.setText(oldVal);
-                updatingCipher = false;
-                return;
-            }
-            if (upper.length() == 2) {
-                String bits = letterToBits(upper);
-                mfxCipherTextBits.setText(bits);
-            } else {
-                mfxCipherTextBits.clear();
-            }
-            updatingCipher = false;
-        });
-
-        mfxCipherTextBits.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (updatingCipher) return;
-            updatingCipher = true;
-            // Si se intenta ingresar más de 8 caracteres, se conserva el valor anterior.
-            if (newVal.length() > 8) {
-                mfxCipherTextBits.setText(oldVal);
-                updatingCipher = false;
-                return;
-            }
-            if (!newVal.matches("[01]*")) {
-                errorDialog.showInfoDialog("Error", "Invalid bits in Encrypted Text Bits. Only 0 and 1 allowed.");
-                mfxCipherTextBits.setText(oldVal);
-                updatingCipher = false;
-                return;
-            }
-            if (newVal.length() == 8) {
-                String letters = bitsToLetters(newVal);
-                mfxCipherTextLetters.setText(letters);
-            } else {
-                mfxCipherTextLetters.clear();
-            }
-            updatingCipher = false;
-        });
-
-        // --- Length restriction for Key field ---
-        textFieldKey.textProperty().addListener((obs, oldVal, newVal) -> {
-            // Si se intenta ingresar más de 10 caracteres, se conserva el valor anterior.
-            if (newVal.length() > 10) {
-                textFieldKey.setText(oldVal);
-                return;
-            }
-            // Solo permitir 0 y 1 en el campo de clave.
-            if (!newVal.matches("[01]*")) {
-                errorDialog.showInfoDialog("Error", "Invalid characters in Key. Only 0 and 1 allowed.");
-                textFieldKey.setText(oldVal);
-            }
-        });
-    }
-
-
-    /**
-     * Updates the disabled state of text fields.
-     * <ul>
-     *   <li>Within each section, if one field is non-empty, the other is disabled.</li>
-     *   <li>If any field in one section is non-empty, both fields in the opposite section are disabled.</li>
-     *   <li>If both sections are empty, all fields remain enabled.</li>
-     * </ul>
-     */
-    private void updateFieldStates() {
-        boolean plainLettersFilled = !mfxPlainTextLetters.getText().trim().isEmpty();
-        boolean plainBitsFilled = !mfxPlainTextBits.getText().trim().isEmpty();
-        boolean encryptedLettersFilled = !mfxCipherTextLetters.getText().trim().isEmpty();
-        boolean encryptedBitsFilled = !mfxCipherTextBits.getText().trim().isEmpty();
-
-        // Intra-section exclusivity: Plain Text
-        if (plainLettersFilled) {
-            mfxPlainTextBits.setDisable(true);
-        } else if (plainBitsFilled) {
-            mfxPlainTextLetters.setDisable(true);
-        } else {
-            mfxPlainTextLetters.setDisable(false);
-            mfxPlainTextBits.setDisable(false);
-        }
-
-        // Intra-section exclusivity: Encrypted Text
-        if (encryptedLettersFilled) {
-            mfxCipherTextBits.setDisable(true);
-        } else if (encryptedBitsFilled) {
-            mfxCipherTextLetters.setDisable(true);
-        } else {
-            mfxCipherTextLetters.setDisable(false);
-            mfxCipherTextBits.setDisable(false);
-        }
-
-        // Inter-section exclusivity:
-        boolean plainSectionActive = plainLettersFilled || plainBitsFilled;
-        boolean encryptedSectionActive = encryptedLettersFilled || encryptedBitsFilled;
-        if (plainSectionActive) {
-            mfxCipherTextLetters.setDisable(true);
-            mfxCipherTextBits.setDisable(true);
-        } else if (encryptedSectionActive) {
-            mfxPlainTextLetters.setDisable(true);
-            mfxPlainTextBits.setDisable(true);
-        } else {
-            mfxPlainTextLetters.setDisable(false);
-            mfxPlainTextBits.setDisable(false);
-            mfxCipherTextLetters.setDisable(false);
-            mfxCipherTextBits.setDisable(false);
-        }
-    }
 
     /**
      * Navigates back to the encryption method selection menu.
@@ -328,7 +184,7 @@ public class SDESController implements CipherController, Initializable {
         String input = "";
         boolean inputIsLetters = false;
 
-        if (!mfxPlainTextLetters.getText().trim().isEmpty() && !mfxPlainTextLetters.isDisabled()) {
+        if (!mfxPlainTextLetters.getText().trim().isEmpty() && mfxPlainTextLetters.isEditable()) {
             // Validate that exactly 2 valid letters are provided
             String letters = mfxPlainTextLetters.getText().trim().toUpperCase();
             if (!letters.matches("^[A-P]{2}$")) {
@@ -337,7 +193,7 @@ public class SDESController implements CipherController, Initializable {
             }
             input = letters;
             inputIsLetters = true;
-        } else if (!mfxPlainTextBits.getText().trim().isEmpty() && !mfxPlainTextBits.isDisabled()) {
+        } else if (!mfxPlainTextBits.getText().trim().isEmpty() && mfxPlainTextBits.isEditable()) {
             if (mfxPlainTextBits.getText().trim().length() != 8) {
                 errorDialog.showInfoDialog("Error", "Plain Text Bits must be exactly 8 bits.");
                 return;
@@ -379,7 +235,7 @@ public class SDESController implements CipherController, Initializable {
         } catch (IllegalArgumentException e) {
             errorDialog.showInfoDialog("Encryption Error", e.getMessage());
         }
-        updateFieldStates();
+
     }
 
     /**
@@ -396,7 +252,7 @@ public class SDESController implements CipherController, Initializable {
         String input = "";
         boolean inputIsLetters = false;
 
-        if (!mfxCipherTextLetters.getText().trim().isEmpty() && !mfxCipherTextLetters.isDisabled()) {
+        if (!mfxCipherTextLetters.getText().trim().isEmpty() && mfxCipherTextLetters.isEditable()) {
             String letters = mfxCipherTextLetters.getText().trim().toUpperCase();
             if (!letters.matches("^[A-P]{2}$")) {
                 errorDialog.showInfoDialog("Error", "Encrypted Text Letters must consist of exactly 2 characters (A–P).");
@@ -404,7 +260,7 @@ public class SDESController implements CipherController, Initializable {
             }
             input = letters;
             inputIsLetters = true;
-        } else if (!mfxCipherTextBits.getText().trim().isEmpty() && !mfxCipherTextBits.isDisabled()) {
+        } else if (!mfxCipherTextBits.getText().trim().isEmpty() && mfxCipherTextBits.isEditable()) {
             if (mfxCipherTextBits.getText().trim().length() != 8) {
                 errorDialog.showInfoDialog("Error", "Encrypted Text Bits must be exactly 8 bits.");
                 return;
@@ -444,7 +300,7 @@ public class SDESController implements CipherController, Initializable {
         } catch (IllegalArgumentException e) {
             errorDialog.showInfoDialog("Decryption Error", e.getMessage());
         }
-        updateFieldStates();
+
     }
 
     /**
@@ -469,7 +325,6 @@ public class SDESController implements CipherController, Initializable {
         mfxCipherTextLetters.clear();
         mfxCipherTextBits.clear();
         textFieldKey.clear();  // Ahora se limpia también la clave.
-        updateFieldStates();
     }
 
     /**

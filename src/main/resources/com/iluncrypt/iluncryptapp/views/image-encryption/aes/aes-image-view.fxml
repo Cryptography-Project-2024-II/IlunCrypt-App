@@ -173,9 +173,9 @@
                         <MFXFontIcon description="fas-eraser" size="16.0" styleClass = "button-icon"/>
                     </graphic>
                 </MFXButton>
-                <MFXButton text="Advanced Options" styleClass="outline-button" fx:id="btnAdvancedOptions" prefWidth="200.0" prefHeight="40.0">
+                <MFXButton text="Advanced Options"  managed="false" fx:id="btnAdvancedOptions" prefWidth="200.0" prefHeight="40.0">
                     <graphic>
-                        <MFXFontIcon description="fas-gear" size="16.0" styleClass="button-icon"/>
+                        <MFXFontIcon managed="false" description="fas-gear" size="16.0" styleClass="button-icon"/>
                     </graphic>
                 </MFXButton>
             </VBox>

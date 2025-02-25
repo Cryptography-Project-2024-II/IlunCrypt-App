@@ -4,20 +4,18 @@ import com.iluncrypt.iluncryptapp.models.SymmetricKeyConfig;
 import com.iluncrypt.iluncryptapp.models.enums.symmetrickey.*;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileData;
 import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileManager;
-import com.iluncrypt.iluncryptapp.utils.filemanager.IlunFileMetadata;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -276,126 +274,90 @@ public class AESManager {
         return java.nio.file.Files.readAllBytes(file.toPath());
     }
 
-    public static BufferedImage encryptImage(
-            BufferedImage original,
-            SecretKey key,
-            byte[] iv,
-            SymmetricKeyConfig config) throws Exception {
+    /**
+     * Encripta la imagen a nivel de píxeles y devuelve un BufferedImage visualizable.
+     * @param inputImage La imagen original a encriptar.
+     * @param key La clave AES.
+     * @param iv El vector de inicialización (debe tener 16 bytes).
+     * @return La imagen encriptada como BufferedImage.
+     * @throws Exception Si ocurre algún error durante la encriptación.
+     */
+    public static BufferedImage encryptImage(BufferedImage inputImage, SecretKey key, byte[] iv) throws Exception {
+        // Asegurarse de que la imagen esté en formato TYPE_INT_ARGB
+        if (inputImage.getType() != BufferedImage.TYPE_INT_ARGB) {
+            BufferedImage converted = new BufferedImage(inputImage.getWidth(), inputImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = converted.createGraphics();
+            g2d.drawImage(inputImage, 0, 0, null);
+            g2d.dispose();
+            inputImage = converted;
+        }
+        int width = inputImage.getWidth();
+        int height = inputImage.getHeight();
+        int[] pixels = inputImage.getRGB(0, 0, width, height, null, 0, width);
 
-        // Convertir la imagen en un array de bytes (ARGB)
-        byte[] plainBytes = convertImageToByteArray(original);
-        long realLen = plainBytes.length;
+        // Convertir el arreglo de enteros (4 bytes cada uno) a un arreglo de bytes
+        ByteBuffer buffer = ByteBuffer.allocate(pixels.length * 4);
+        for (int pixel : pixels) {
+            buffer.putInt(pixel);
+        }
+        byte[] pixelBytes = buffer.array();
 
-        // Crear un ByteBuffer para incluir la longitud real (8 bytes)
-        ByteBuffer lenBuf = ByteBuffer.allocate(8);
-        lenBuf.putLong(realLen);
-        byte[] dataWithLen = ByteBuffer.allocate(plainBytes.length + 8)
-                .put(plainBytes)
-                .put(lenBuf.array())
-                .array();
+        // Cifrar los bytes usando AES/CTR/NoPadding
+        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+        byte[] encryptedBytes = cipher.doFinal(pixelBytes);
 
-        // Obtener IV y autenticación si es necesario
-        int ivLen = config.getMode().requiresIV() ? (iv != null ? iv.length : 0) : 0;
-        int authLen = (config.getMode() == SymmetricKeyMode.GCM) ? config.getGCMTagSize().getSize() / 8 : 0;
-
-        // Cifrar los datos con AES (IV || Cifrado || Auth)
-        byte[] encryptedData = encrypt(dataWithLen, key, iv, config);
-
-        // Crear imagen para almacenar los datos cifrados
-        return createEncryptedImage(encryptedData, original.getWidth());
-    }
-
-
-    public static BufferedImage decryptImage(
-            BufferedImage encryptedImg,
-            SecretKey key,
-            SymmetricKeyConfig config) throws Exception {
-
-        // Extraer los datos cifrados de la imagen
-        byte[] allBytes = extractEncryptedDataFromImage(encryptedImg);
-
-        // Obtener IV y autenticación si aplica
-        int ivLen = config.getMode().requiresIV() ? config.getAlgorithm().getBaseIVSize() : 0;
-        int authLen = (config.getMode() == SymmetricKeyMode.GCM) ? config.getGCMTagSize().getSize() / 8 : 0;
-
-        // Extraer las partes IV || Cifrado || Auth
-        byte[] realIV = Arrays.copyOfRange(allBytes, 0, ivLen);
-        byte[] realAuth = Arrays.copyOfRange(allBytes, allBytes.length - authLen, allBytes.length);
-        byte[] cipherData = Arrays.copyOfRange(allBytes, ivLen, allBytes.length - authLen);
-
-        // Desencriptar los datos
-        byte[] decrypted = decrypt(ByteBuffer.allocate(ivLen + cipherData.length + authLen)
-                .put(realIV)
-                .put(cipherData)
-                .put(realAuth)
-                .array(), key, config);
-
-        // Extraer la longitud real de la imagen
-        if (decrypted.length < 8) {
-            throw new SecurityException("Decrypted data too short to contain the real length.");
+        // Convertir los bytes cifrados de vuelta a un arreglo de enteros
+        ByteBuffer encryptedBuffer = ByteBuffer.wrap(encryptedBytes);
+        int[] encryptedPixels = new int[pixels.length];
+        for (int i = 0; i < encryptedPixels.length; i++) {
+            encryptedPixels[i] = encryptedBuffer.getInt();
         }
 
-        ByteBuffer decBuf = ByteBuffer.wrap(decrypted);
-        long realLen = decBuf.getLong(decrypted.length - 8);
-
-        // Verificar que la longitud sea válida
-        if (realLen < 0 || realLen > (decrypted.length - 8)) {
-            throw new SecurityException("Invalid real length: " + realLen);
-        }
-
-        // Reconstruir la imagen original
-        return convertByteArrayToImage(Arrays.copyOf(decrypted, (int) realLen), encryptedImg.getWidth());
-    }
-
-
-
-
-
-    // --- Métodos auxiliares de conversión de imagen ---
-
-    private static byte[] convertImageToByteArray(BufferedImage image) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
-        return baos.toByteArray();  // Asegura que devuelve un byte[], no byte[][]
-    }
-
-
-
-    private static BufferedImage convertByteArrayToImage(byte[] data, int width) throws Exception {
-        int height = (data.length / 4) / width;
-
-        if (data.length % 4 != 0) {
-            throw new IllegalArgumentException("El tamaño del array de bytes no es múltiplo de 4, posible corrupción de datos.");
-        }
-
-        int[] pixels = new int[width * height];
-        ByteBuffer buffer = ByteBuffer.wrap(data);
-
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = buffer.getInt();
-        }
-
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        image.setRGB(0, 0, width, height, pixels, 0, width);
-
-        return image;
-    }
-
-
-    private static byte[] extractEncryptedDataFromImage(BufferedImage image) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
-        return baos.toByteArray();
-    }
-
-
-    private static BufferedImage createEncryptedImage(byte[] encryptedData, int width) {
-        int height = (int) Math.ceil((double) encryptedData.length / (width * 4));
-
+        // Crear un nuevo BufferedImage usando los píxeles cifrados
         BufferedImage encryptedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        encryptedImage.getRaster().setDataElements(0, 0, width, height, encryptedData);
-
+        encryptedImage.setRGB(0, 0, width, height, encryptedPixels, 0, width);
         return encryptedImage;
+    }
+
+    /**
+     * Descifra la imagen encriptada a nivel de píxeles y devuelve la imagen original como BufferedImage.
+     * @param encryptedImage La imagen cifrada (visualizable) que contiene los píxeles cifrados.
+     * @param key La clave AES.
+     * @param iv El vector de inicialización (debe ser el mismo utilizado en la encriptación).
+     * @return La imagen descifrada como BufferedImage.
+     * @throws Exception Si ocurre algún error durante la descifrado.
+     */
+    public static BufferedImage decryptImage(BufferedImage encryptedImage, SecretKey key, byte[] iv) throws Exception {
+        int width = encryptedImage.getWidth();
+        int height = encryptedImage.getHeight();
+        int[] encryptedPixels = encryptedImage.getRGB(0, 0, width, height, null, 0, width);
+
+        // Convertir el arreglo de enteros cifrados a bytes
+        ByteBuffer buffer = ByteBuffer.allocate(encryptedPixels.length * 4);
+        for (int pixel : encryptedPixels) {
+            buffer.putInt(pixel);
+        }
+        byte[] encryptedBytes = buffer.array();
+
+        // Descifrar los bytes usando AES/CTR/NoPadding
+        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        // Convertir los bytes descifrados a un arreglo de enteros
+        ByteBuffer decryptedBuffer = ByteBuffer.wrap(decryptedBytes);
+        int[] decryptedPixels = new int[encryptedPixels.length];
+        for (int i = 0; i < decryptedPixels.length; i++) {
+            decryptedPixels[i] = decryptedBuffer.getInt();
+        }
+
+        // Crear la imagen descifrada con los píxeles originales
+        BufferedImage decryptedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        decryptedImage.setRGB(0, 0, width, height, decryptedPixels, 0, width);
+        return decryptedImage;
     }
 
 }

@@ -26,11 +26,5 @@
     <TextFlow textAlignment="JUSTIFY">
         <Text text="• DES Image Encryption" styleClass="body" />
     </TextFlow>
-    <TextFlow textAlignment="JUSTIFY">
-        <Text text="• Hill Cipher for Image Encryption" styleClass="body" />
-    </TextFlow>
-    <TextFlow textAlignment="JUSTIFY">
-        <Text text="• Permutation-based Image Encryption" styleClass="body" />
-    </TextFlow>
 
 </VBox>
