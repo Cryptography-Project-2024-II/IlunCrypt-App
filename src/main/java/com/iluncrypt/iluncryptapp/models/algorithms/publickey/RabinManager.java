@@ -2,6 +2,7 @@ package com.iluncrypt.iluncryptapp.models.algorithms.publickey;
 
 import com.iluncrypt.iluncryptapp.models.RabinConfig;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +32,8 @@ public class RabinManager {
     public static String encryptText(String plainText, String publicKey,
                                      RabinConfig config) throws Exception {
         BigInteger n = new BigInteger(publicKey);
-        byte[] bytes = plainText.getBytes();
+        // Use UTF-8 encoding to convert plain text to bytes
+        byte[] bytes = plainText.getBytes(StandardCharsets.UTF_8);
         BigInteger m = new BigInteger(1, bytes);
 
         if (m.compareTo(n) >= 0) {
@@ -52,8 +54,13 @@ public class RabinManager {
 
         BigInteger[] roots = computeSquareRoots(c, p, q);
 
-        for(BigInteger m : roots) {
-            results.add(Arrays.toString(m.toByteArray()));
+        for (BigInteger m : roots) {
+            byte[] bytes = m.toByteArray();
+            if (bytes.length > 0 && bytes[0] == 0) {
+                bytes = Arrays.copyOfRange(bytes, 1, bytes.length);
+            }
+            String text = new String(bytes, StandardCharsets.UTF_8);
+            results.add(text);
         }
 
         return results;
